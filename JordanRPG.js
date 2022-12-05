@@ -158,10 +158,13 @@ window.onload = function() {
             context.drawImage(cursor, screen.mouseCanvasCoords[0], screen.mouseCanvasCoords[1], 100, 100);
         },
         drawInterface: function() {
+            // calculate the dimensions and position of the inventory
             var inventoryWidth = a_canvas.width * 0.7;
             var inventoryHeight = a_canvas.height * 0.15;
             var inventoryX = (a_canvas.width - inventoryWidth) / 2.0;
             var inventoryY = (a_canvas.height - inventoryHeight) * 0.9;
+          
+            // draw the background of the inventory
             context.beginPath();
             context.rect(inventoryX, inventoryY, inventoryWidth, inventoryHeight);
             context.lineWidth = 3;
@@ -169,34 +172,43 @@ window.onload = function() {
             context.stroke();
             context.fillStyle = "rgba(0,255,255,0.3)";
             context.fill();
-
+          
+            // calculate the dimensions of each inventory slot
             var numOfSlots = 6;
             var slotWidth = inventoryWidth / numOfSlots;
             var slotHeight = inventoryHeight;
+          
+            // draw each inventory slot
             for (var i = 0; i < numOfSlots; i++) {
-                var slotX = inventoryX + (slotWidth * i);
-                var slotY = inventoryY;
-                context.beginPath();
-                context.lineWidth = 3;
-                context.rect(slotX, slotY, slotWidth, slotHeight);
-                //Todo: animate selection change, blue square sliding to the selected slot
-                context.strokeStyle = "yellow";
-                context.stroke();
-                var fontSize = 72;
-                context.fillStyle = "white";
-                context.font = fontSize + "px Arial";
-                context.fillText(i + 1,slotX + (slotWidth / 2) - (fontSize / 3),slotY + (slotHeight / 2) + (fontSize / 3),slotWidth);
-                //slot numbers are not quite centered
+              var slotX = inventoryX + (slotWidth * i);
+              var slotY = inventoryY;
+              context.beginPath();
+              context.lineWidth = 3;
+              context.rect(slotX, slotY, slotWidth, slotHeight);
+              //Todo: animate selection change, blue square sliding to the selected slot
+              context.strokeStyle = "yellow";
+              context.stroke();
+          
+              // draw the slot number in the center of each slot
+              var fontSize = 72;
+              context.fillStyle = "white";
+              context.font = fontSize + "px Arial";
+              context.fillText(i + 1, slotX + (slotWidth / 2) - (fontSize / 3), slotY + (slotHeight / 2) + (fontSize / 3), slotWidth);
+              //slot numbers are not quite centered
             }
+          
+            // draw the selected slot with a red border
             var selectedSlotX = inventoryX + (slotWidth * interface.inventorySlotSelected);
             var selectedSlotY = inventoryY;
             context.lineWidth = 6;
             context.strokeStyle = "rgb(150,0,0)";
             context.beginPath();
-            context.rect(selectedSlotX,selectedSlotY,slotWidth,slotHeight);
+            context.rect(selectedSlotX, selectedSlotY, slotWidth, slotHeight);
             context.stroke();
+          
+            // draw an image in the first inventory slot
             context.drawImage(interface.icons.hatchet, inventoryX, inventoryY, slotWidth, slotHeight);
-        },
+          },
         drawPlayerCoords: function() {
             context.fillStyle = "yellow";
             context.fillText("Screen Coords: (" + player.squareX + "," + player.squareY + ")", player.pixelX, player.pixelY + player.imgHeight + 20);
