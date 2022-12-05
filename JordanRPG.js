@@ -13,7 +13,6 @@ window.onload = function() {
     var a_canvas = document.getElementById("a");
     var context = a_canvas.getContext("2d");
     var showOptionsMenu = false;
-
     var cursor = new Image();
     cursor.src = "res/swordicon.png";
     var boat = new Image();
@@ -25,10 +24,7 @@ window.onload = function() {
         this.image = new Image();
         this.image.src = image;
     }
-    var notifications = [];
-    notifications.push("Move with W,A,S,D keys or by clicking/tapping");
-    notifications.push("Press Esc to open options menu");
-    notifications.push("Use number keys to select inventory slot");
+    var notifications = [  "Move with W,A,S,D keys or by clicking/tapping",  "Press Esc to open options menu",  "Use number keys to select inventory slot"];    
     var map = {};
     var screen = {
         offsetX: 0,
