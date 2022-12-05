@@ -69,28 +69,22 @@ window.onload = function() {
     };
     player.pixelX = player.screenTileX * screen.tileWidth;
     player.pixelY = player.screenTileY * screen.tileHeight - screen.tileHeight;
-    player.animateMovement = function(direction) {
-        //todo:change animation time to be based on distance to move, player's movement speed
-        var animationTime = 1000;
-        var numFrames = config.fps;
+
+    const movementDirections = {
+        east: { worldX: screen.tileWidth, worldY: 0 },
+        west: { worldX: -screen.tileWidth, worldY: 0 },
+        north: { worldX: 0, worldY: -screen.tileHeight },
+        south: { worldX: 0, worldY: screen.tileHeight }
+      };
+      
+      player.animateMovement = function(direction, animationTime = 1000, numFrames = config.fps) {
         screen.offsetX = 0;
         screen.offsetY = 0;
         player.isMoving = true;
-        switch (direction) {
-            case "east":
-                player.worldX += screen.tileWidth;
-                break;
-            case "west":
-                player.worldX -= screen.tileWidth;
-                break;
-            case "north":
-                player.worldY -= screen.tileHeight;
-                break;
-            case "south":
-                player.worldY += screen.tileHeight;
-                break;
-        }
-    }
+        const movement = movementDirections[direction];
+        player.worldX += movement.worldX;
+        player.worldY += movement.worldY;
+      }
 
     var interface = {
         inventorySlotSelected: 0,
