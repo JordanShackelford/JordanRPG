@@ -444,25 +444,38 @@ window.onload = function() {
     //pre-gameloop setup
     generator.generateChunk();
     
-    var directions = {
-        "west": moveWest,
-        "east": moveEast,
-        "north": moveNorth,
-        "south": moveSouth,
-        "northwest": moveNorthWest,
-        "northeast": moveNorthEast,
-        "southwest": moveSouthWest,
-        "southeast": moveSouthEast
-    };
     var processPlayerMovement = setInterval(function() {
         if (player.movementQueue.length > 0) {
           var direction = player.movementQueue.shift();
-          if (directions[direction]) {
-            directions[direction]();
+          switch (direction) {
+            case "west":
+              moveWest();
+              break;
+            case "east":
+              moveEast();
+              break;
+            case "north":
+              moveNorth();
+              break;
+            case "south":
+              moveSouth();
+              break;
+            case "northwest":
+              moveNorthWest();
+              break;
+            case "northeast":
+              moveNorthEast();
+              break;
+            case "southwest":
+              moveSouthWest();
+              break;
+            case "southeast":
+              moveSouthEast();
+              break;
           }
         }
     }, 1000 / player.moveSpeed);
-
+      
     var gameLoop = setInterval(function() {
         graphics.redrawMap();
         graphics.drawSelectionBox(screen.oldSelectionBoxCoords, screen.selectionBoxCoords);
@@ -613,69 +626,72 @@ window.onload = function() {
         return false;
     }, false);
     
-    window.addEventListener("keydown", function(e) {
+    function handleKeyDown(e) {
         switch (e.keyCode) {
-            case 87:
-                player.movementQueue.push("north");
-                break;
-            case 83:
-                player.movementQueue.push("south");
-                break;
-            case 65:
-                player.movementQueue.push("west");
-                break;
-            case 68:
-                player.movementQueue.push("east");
-                break;
-            case 46:
-                notifications = [];
-                break;
-            case 49:
-                interface.inventorySlotSelected = 0;
-                break;
-            case 50:
-                interface.inventorySlotSelected = 1;
-                break;
-            case 51:
-                interface.inventorySlotSelected = 2;
-                break;
-            case 52:
-                interface.inventorySlotSelected = 3;
-                break;
-            case 53:
-                interface.inventorySlotSelected = 4;
-                break;
-            case 54:
-                interface.inventorySlotSelected = 5;
-                break;
-            case 107: //zoom out
-                //has to be 2 because numRows and numColumns need to stay odd
-                screen.numRows -= 2;
-                screen.numColumns -= 2;
-                screen.tileWidth = a_canvas.width / screen.numColumns;
-                screen.tileHeight = a_canvas.height / screen.numRows;
-                break;
-            case 109: //zoom in
-                screen.numRows += 2;
-                screen.numColumns += 2;
-                screen.tileWidth = a_canvas.width / screen.numColumns;
-                screen.tileHeight = a_canvas.height / screen.numRows;
-                break;
-            case 187:
-                break;
-
-            //TODO: rotate from center instead of top left edge
-            case 39: //right arrow, rotate camera clockwise
-                //move to center to rotate around that point
-                context.rotate(1 * Math.PI / 180);
-                break;
-            case 37: //left arrow
-                context.rotate(-1 * Math.PI / 180);
-                break;
-
-            case 27:
-                if (showOptionsMenu === true) showOptionsMenu = false;
-                else showOptionsMenu = true;
+          case 87:
+            player.movementQueue.push("north");
+            break;
+          case 83:
+            player.movementQueue.push("south");
+            break;
+          case 65:
+            player.movementQueue.push("west");
+            break;
+          case 68:
+            player.movementQueue.push("east");
+            break;
+          case 46:
+            notifications = [];
+            break;
+          case 49:
+            interface.inventorySlotSelected = 0;
+            break;
+          case 50:
+            interface.inventorySlotSelected = 1;
+            break;
+          case 51:
+            interface.inventorySlotSelected = 2;
+            break;
+          case 52:
+            interface.inventorySlotSelected = 3;
+            break;
+          case 53:
+            interface.inventorySlotSelected = 4;
+            break;
+          case 54:
+            interface.inventorySlotSelected = 5;
+            break;
+          case 107: //zoom out
+            //has to be 2 because numRows and numColumns need to stay odd
+            screen.numRows -= 2;
+            screen.numColumns -= 2;
+            screen.tileWidth = a_canvas.width / screen.numColumns;
+            screen.tileHeight = a_canvas.height / screen.numRows;
+            break;
+          case 109: //zoom in
+            screen.numRows += 2;
+            screen.numColumns += 2;
+            screen.tileWidth = a_canvas.width / screen.numColumns;
+            screen.tileHeight = a_canvas.height / screen.numRows;
+            break;
+          case 187:
+            break;
+      
+          //TODO: rotate from center instead of top left edge
+          case 39: //right arrow, rotate camera clockwise
+            //move to center to rotate around that point
+            context.rotate(1 * Math.PI / 180);
+            break;
+          case 37: //left arrow
+            context.rotate(-1 * Math.PI / 180);
+            break;
+      
+          case 27:
+            if (showOptionsMenu === true) showOptionsMenu = false;
+            else showOptionsMenu = true;
         }
-    }, false)
+      }
+      
+      window.addEventListener("keydown", handleKeyDown, false);
+      
 }
