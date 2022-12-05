@@ -398,37 +398,21 @@ window.onload = function() {
                     var center = map.tileMap[i][j];
                     counts[center] += 1;
               
-                    // Check left of tile
-                    var left = map.tileMap[i - 1][j];
-                    counts[left] += 1;
+                    var surrounding = [        [i - 1, j],     // left
+                      [i - 1, j - 1], // top-left
+                      [i, j - 1],     // top
+                      [i + 1, j - 1], // top-right
+                      [i + 1, j],     // right
+                      [i + 1, j + 1], // bottom-right
+                      [i, j + 1],     // bottom
+                      [i - 1, j + 1], // bottom-left
+                    ];
               
-                    // Check top-left of tile
-                    var topLeft = map.tileMap[i - 1][j - 1];
-                    counts[topLeft] += 1;
-              
-                    // Check top of tile
-                    var top = map.tileMap[i][j - 1];
-                    counts[top] += 1;
-              
-                    // Check top-right of tile
-                    var topRight = map.tileMap[i + 1][j - 1];
-                    counts[topRight] += 1;
-              
-                    // Check right of tile
-                    var right = map.tileMap[i + 1][j];
-                    counts[right] += 1;
-              
-                    // Check bottom-right of tile
-                    var bottomRight = map.tileMap[i + 1][j + 1];
-                    counts[bottomRight] += 1;
-              
-                    // Check bottom of tile
-                    var bottom = map.tileMap[i][j + 1];
-                    counts[bottom] += 1;
-              
-                    // Check bottom-left of tile
-                    var bottomLeft = map.tileMap[i - 1][j + 1];
-                    counts[bottomLeft] += 1;
+                    // Update the counts for each surrounding tile
+                    for (var [r, c] of surrounding) {
+                      var tile = map.tileMap[r][c];
+                      counts[tile] += 1;
+                    }
               
                     // Update the center tile based on the counts
                     if (counts[0] >= counts[1] && counts[0] >= counts[2]) {
@@ -440,7 +424,8 @@ window.onload = function() {
                     }
                   }
                 }
-              }              
+              }
+                          
               
             numTiles = tilesList.length;
         },
