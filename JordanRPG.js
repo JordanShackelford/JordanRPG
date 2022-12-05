@@ -210,9 +210,17 @@ window.onload = function() {
             context.drawImage(interface.icons.hatchet, inventoryX, inventoryY, slotWidth, slotHeight);
           },
         drawPlayerCoords: function() {
-            context.fillStyle = "yellow";
-            context.fillText("Screen Coords: (" + player.squareX + "," + player.squareY + ")", player.pixelX, player.pixelY + player.imgHeight + 20);
-            context.fillText("Chunk Coords: ( , ) ", player.pixelX, player.pixelY + player.imgHeight + 40);
+        // set the fill style and font
+        context.fillStyle = "yellow";
+        context.font = "14px Arial";
+        
+        // calculate the player's chunk coordinates
+        var chunkX = Math.floor(player.squareX / screen.numColumns);
+        var chunkY = Math.floor(player.squareY / screen.numRows);
+        
+        // draw the player's screen and chunk coordinates
+        context.fillText(`Screen Coords: (${player.squareX},${player.squareY})`, player.pixelX, player.pixelY + player.imgHeight + 20);
+        context.fillText(`Chunk Coords: (${chunkX},${chunkY})`, player.pixelX, player.pixelY + player.imgHeight + 40);
         },
         drawTrees: function() {
             var distLeftRight = (screen.numColumns - 1) / 2;
@@ -245,38 +253,53 @@ window.onload = function() {
             context.fillText("(" + tileX + "," + tileY + ")", screen.selectionBoxCoords[0], screen.selectionBoxCoords[1] + screen.tileHeight + 20);
         },
         drawNotifications: function() {
+            // set the font and stroke style
             context.font = "40px Arial";
             context.lineWidth = 4;
             context.strokeStyle = "red";
+          
+            // calculate the dimensions and position of the notifications box
+            var boxWidth = a_canvas.width * 0.6;
+            var boxHeight = 200;
+            var boxX = a_canvas.width * 0.01;
+            var boxY = a_canvas.height * 0.01;
+          
+            // draw the notifications box
             context.beginPath();
-            context.rect(a_canvas.width * 0.01, a_canvas.height * 0.01, a_canvas.width * 0.6, 200);
+            context.rect(boxX, boxY, boxWidth, boxHeight);
             context.stroke();
             context.fillStyle = "rgba(0,150,150,0.5)";
             context.fill();
+          
+            // draw each notification in the notifications array
             for (var i = 0; i < notifications.length; i++) {
-                if (notifications.length > 6) {
-                    notifications.shift();
-                }
-                context.fillStyle = "yellow";
-                context.fillText(notifications[i], screen.notificationX, screen.notificationY + screen.notificationSpacing * i);
+              // remove the oldest notification if there are more than 6 notifications
+              if (notifications.length > 6) {
+                notifications.shift();
+              }
+          
+              // draw the notification text
+              context.fillStyle = "yellow";
+              context.fillText(notifications[i], screen.notificationX, screen.notificationY + screen.notificationSpacing * i);
             }
-        },
+        },          
         drawOptionsMenu: function() {
+            // only draw the options menu if it is visible
             if (showOptionsMenu === true) {
-                var menuWidth = a_canvas.width * 0.9;
-                var menuHeight = a_canvas.height * 0.9;
-                
-                //vert. and horiz. centered
-                var menuX = (a_canvas.width - menuWidth) / 2;
-                var menuY = (a_canvas.height - menuHeight) / 2;
-                
-                context.beginPath();
-                context.rect(menuX, menuY, menuWidth, menuHeight);
-                context.lineWidth = 3;
-                context.strokeStyle = "yellow";
-                context.stroke();
-                context.fillStyle = "rgb(50,50,50)";
-                context.fill();
+              // calculate the dimensions and position of the menu
+              var menuWidth = a_canvas.width * 0.9;
+              var menuHeight = a_canvas.height * 0.9;
+              var menuX = (a_canvas.width - menuWidth) / 2;
+              var menuY = (a_canvas.height - menuHeight) / 2;
+          
+              // draw the menu
+              context.beginPath();
+              context.rect(menuX, menuY, menuWidth, menuHeight);
+              context.lineWidth = 3;
+              context.strokeStyle = "yellow";
+              context.stroke();
+              context.fillStyle = "rgb(50,50,50)";
+              context.fill();
             }
         }
     };
