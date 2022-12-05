@@ -433,36 +433,33 @@ window.onload = function() {
 
     var waterAnimationFrame = 0;
     setInterval(function() {
-        if (waterAnimationFrame === 0) {
-            tiles.water.image.src = "res/water1.png";
-            waterAnimationFrame = 1;
-        } else {
-            tiles.water.image.src = "res/water2.png";
-            waterAnimationFrame = 0;
-        }
-    }, 500);
+    waterAnimationFrame = (waterAnimationFrame + 1) % 2;
+    if (waterAnimationFrame === 0) {
+        tiles.water.image.src = "res/water1.png";
+    } else {
+        tiles.water.image.src = "res/water2.png";
+    }
+    }, 300);
 
     //pre-gameloop setup
     generator.generateChunk();
     
-    var processPlayerMovement = setInterval(function(){
-        //need to refactor to allow diagonal movement
-        if(player.movementQueue.length > 0){
-            var direction = player.movementQueue.shift();
-            switch(direction){
-                case "west":
-                    moveWest();
-                    break;
-                case "east":
-                    moveEast();
-                    break;
-                case "north":
-                    moveNorth();
-                    break;
-                case "south":
-                    moveSouth();
-                    break;
-            }
+    var directions = {
+        "west": moveWest,
+        "east": moveEast,
+        "north": moveNorth,
+        "south": moveSouth,
+        "northwest": moveNorthWest,
+        "northeast": moveNorthEast,
+        "southwest": moveSouthWest,
+        "southeast": moveSouthEast
+    };
+    var processPlayerMovement = setInterval(function() {
+        if (player.movementQueue.length > 0) {
+          var direction = player.movementQueue.shift();
+          if (directions[direction]) {
+            directions[direction]();
+          }
         }
     }, 1000 / player.moveSpeed);
 
