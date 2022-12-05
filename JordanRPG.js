@@ -1,10 +1,9 @@
 /* need to fix animations and stop repeating code so much */
-
 window.onload = function() {
     //will use to rotate screen based on tilt of mobile device
     if (window.DeviceMotionEvent) {
         window.addEventListener("devicemotion", function() {
-            
+
         }, false);
     } else {
         console.log("DeviceMotionEvent is not supported");
@@ -24,7 +23,7 @@ window.onload = function() {
         this.image = new Image();
         this.image.src = image;
     }
-    var notifications = [  "Move with W,A,S,D keys or by clicking/tapping",  "Press Esc to open options menu",  "Use number keys to select inventory slot"];    
+    var notifications = ["Move with W,A,S,D keys or by clicking/tapping", "Press Esc to open options menu", "Use number keys to select inventory slot"];
     var map = {};
     var screen = {
         offsetX: 0,
@@ -61,35 +60,48 @@ window.onload = function() {
         moveSpeed: 5,
         isMoving: false,
         animationFrame: 0,
-        movementQueue:[]
+        movementQueue: []
     };
     player.pixelX = player.screenTileX * screen.tileWidth;
     player.pixelY = player.screenTileY * screen.tileHeight - screen.tileHeight;
 
     const movementDirections = {
-        east: { worldX: screen.tileWidth, worldY: 0 },
-        west: { worldX: -screen.tileWidth, worldY: 0 },
-        north: { worldX: 0, worldY: -screen.tileHeight },
-        south: { worldX: 0, worldY: screen.tileHeight }
-      };
-      
-      player.animateMovement = function(direction, animationTime = 1000, numFrames = config.fps) {
+        east: {
+            worldX: screen.tileWidth,
+            worldY: 0
+        },
+        west: {
+            worldX: -screen.tileWidth,
+            worldY: 0
+        },
+        north: {
+            worldX: 0,
+            worldY: -screen.tileHeight
+        },
+        south: {
+            worldX: 0,
+            worldY: screen.tileHeight
+        }
+    };
+
+    player.animateMovement = function(direction, animationTime = 1000, numFrames = config.fps) {
         screen.offsetX = 0;
         screen.offsetY = 0;
         player.isMoving = true;
         const movement = movementDirections[direction];
         player.worldX += movement.worldX;
         player.worldY += movement.worldY;
-      }
+    }
 
     var interface = {
         inventorySlotSelected: 0,
-            icons: {
-                hatchet: document.getElementById("hatchet"),
-                treeSapling: document.getElementById("appletreesapling")
-            },
+        icons: {
+            hatchet: document.getElementById("hatchet"),
+            treeSapling: document.getElementById("appletreesapling")
+        },
     };
     var graphics = {
+
         redrawMap: function() {
             //camera centered on player so numRows and numColumns should always be odd
             var distLeftRight = (screen.numColumns - 1) / 2;
@@ -121,10 +133,27 @@ window.onload = function() {
         },
         drawPlayer: function() {
             //animation is completely broken
-            var animationClips = [[8,7],[55,2],[102,2],[153,2],[8,150],[51,150],[104,150],[155,150],[8,76],[51,76],[104,76],[155,76],[8,220],[51,220],[104,220],[155,220]];
+            var animationClips = [
+                [8, 7],
+                [55, 2],
+                [102, 2],
+                [153, 2],
+                [8, 150],
+                [51, 150],
+                [104, 150],
+                [155, 150],
+                [8, 76],
+                [51, 76],
+                [104, 76],
+                [155, 76],
+                [8, 220],
+                [51, 220],
+                [104, 220],
+                [155, 220]
+            ];
             var xClip = animationClips[player.animationFrame][0];
             var yClip = animationClips[player.animationFrame][1];
-           
+
             context.font = "40px Comic Sans MS";
             context.strokeStyle = "yellow";
             context.lineWidth = 2;
@@ -143,26 +172,26 @@ window.onload = function() {
             var rightEdge = player.worldX + distLeftRight;
             var topEdge = player.worldY - distTopBot;
             var botEdge = player.worldY + distTopBot;
-          
+
             // check if the enemy is within the bounds of the screen
             if (leftEdge < enemies.worldX < rightEdge && topEdge < enemies.worldY < botEdge) {
-              // calculate the coordinates of the enemy's sprite on the sprite sheet
-              var xClip = enemies.animationFrame * 47 + 8;
-              var yClip = [7, 2, 2, 2, 150, 150, 150, 150, 76, 76, 76, 76, 220, 220, 220, 220][enemies.animationFrame];
-          
-              // draw the enemy on the screen
-              context.drawImage(enemies.img, xClip, yClip, 32, 64, player.pixelX, player.pixelY, enemies.imgWidth, enemies.imgHeight);
+                // calculate the coordinates of the enemy's sprite on the sprite sheet
+                var xClip = enemies.animationFrame * 47 + 8;
+                var yClip = [7, 2, 2, 2, 150, 150, 150, 150, 76, 76, 76, 76, 220, 220, 220, 220][enemies.animationFrame];
+
+                // draw the enemy on the screen
+                context.drawImage(enemies.img, xClip, yClip, 32, 64, player.pixelX, player.pixelY, enemies.imgWidth, enemies.imgHeight);
             }
-          },
+        },
         drawCursor: function() {
             context.drawImage(cursor, screen.mouseCanvasCoords[0], screen.mouseCanvasCoords[1], 100, 100);
         },
         drawInterface: function() {
             // calculate the dimensions and position of the inventory
-            var inventoryWidth = a_canvas.width * 0.7;
-            var inventoryHeight = a_canvas.height * 0.15;
-            var inventoryX = (a_canvas.width - inventoryWidth) / 2.0;
-            var inventoryY = (a_canvas.height - inventoryHeight) * 0.9;
+            const inventoryWidth = a_canvas.width * 0.7;
+            const inventoryHeight = a_canvas.height * 0.15;
+            const inventoryX = (a_canvas.width - inventoryWidth) / 2.0;
+            const inventoryY = (a_canvas.height - inventoryHeight) * 0.9;
           
             // draw the background of the inventory
             context.beginPath();
@@ -174,14 +203,14 @@ window.onload = function() {
             context.fill();
           
             // calculate the dimensions of each inventory slot
-            var numOfSlots = 6;
-            var slotWidth = inventoryWidth / numOfSlots;
-            var slotHeight = inventoryHeight;
+            const numOfSlots = 6;
+            const slotWidth = inventoryWidth / numOfSlots;
+            const slotHeight = inventoryHeight;
           
             // draw each inventory slot
-            for (var i = 0; i < numOfSlots; i++) {
-              var slotX = inventoryX + (slotWidth * i);
-              var slotY = inventoryY;
+            for (let i = 0; i < numOfSlots; i++) {
+              const slotX = inventoryX + (slotWidth * i);
+              const slotY = inventoryY;
               context.beginPath();
               context.lineWidth = 3;
               context.rect(slotX, slotY, slotWidth, slotHeight);
@@ -190,37 +219,43 @@ window.onload = function() {
               context.stroke();
           
               // draw the slot number in the center of each slot
-              var fontSize = 72;
+              const fontSize = 72;
               context.fillStyle = "white";
               context.font = fontSize + "px Arial";
-              context.fillText(i + 1, slotX + (slotWidth / 2) - (fontSize / 3), slotY + (slotHeight / 2) + (fontSize / 3), slotWidth);
+              context.fillText(
+                i + 1,
+                slotX + (slotWidth / 2) - (fontSize / 3),
+                slotY + (slotHeight / 2) + (fontSize / 3),
+                slotWidth
+              );
               //slot numbers are not quite centered
             }
           
             // draw the selected slot with a red border
-            var selectedSlotX = inventoryX + (slotWidth * interface.inventorySlotSelected);
-            var selectedSlotY = inventoryY;
+            const selectedSlotX = inventoryX + (slotWidth * interface.inventorySlotSelected);
+            const selectedSlotY = inventoryY;
             context.lineWidth = 6;
             context.strokeStyle = "rgb(150,0,0)";
             context.beginPath();
-            context.rect(selectedSlotX, selectedSlotY, slotWidth, slotHeight);
+            context.rect(selectedSlotX,selectedSlotY, slotWidth, slotHeight);
             context.stroke();
-          
+            
             // draw an image in the first inventory slot
             context.drawImage(interface.icons.hatchet, inventoryX, inventoryY, slotWidth, slotHeight);
-          },
+            },
+          
         drawPlayerCoords: function() {
-        // set the fill style and font
-        context.fillStyle = "yellow";
-        context.font = "14px Arial";
-        
-        // calculate the player's chunk coordinates
-        var chunkX = Math.floor(player.squareX / screen.numColumns);
-        var chunkY = Math.floor(player.squareY / screen.numRows);
-        
-        // draw the player's screen and chunk coordinates
-        context.fillText(`Screen Coords: (${player.squareX},${player.squareY})`, player.pixelX, player.pixelY + player.imgHeight + 20);
-        context.fillText(`Chunk Coords: (${chunkX},${chunkY})`, player.pixelX, player.pixelY + player.imgHeight + 40);
+            // set the fill style and font
+            context.fillStyle = "yellow";
+            context.font = "14px Arial";
+
+            // calculate the player's chunk coordinates
+            var chunkX = Math.floor(player.squareX / screen.numColumns);
+            var chunkY = Math.floor(player.squareY / screen.numRows);
+
+            // draw the player's screen and chunk coordinates
+            context.fillText(`Screen Coords: (${player.squareX},${player.squareY})`, player.pixelX, player.pixelY + player.imgHeight + 20);
+            context.fillText(`Chunk Coords: (${chunkX},${chunkY})`, player.pixelX, player.pixelY + player.imgHeight + 40);
         },
         drawTrees: function() {
             var distLeftRight = (screen.numColumns - 1) / 2;
@@ -257,49 +292,49 @@ window.onload = function() {
             context.font = "40px Arial";
             context.lineWidth = 4;
             context.strokeStyle = "red";
-          
+
             // calculate the dimensions and position of the notifications box
             var boxWidth = a_canvas.width * 0.6;
             var boxHeight = 200;
             var boxX = a_canvas.width * 0.01;
             var boxY = a_canvas.height * 0.01;
-          
+
             // draw the notifications box
             context.beginPath();
             context.rect(boxX, boxY, boxWidth, boxHeight);
             context.stroke();
             context.fillStyle = "rgba(0,150,150,0.5)";
             context.fill();
-          
+
             // draw each notification in the notifications array
             for (var i = 0; i < notifications.length; i++) {
-              // remove the oldest notification if there are more than 6 notifications
-              if (notifications.length > 6) {
-                notifications.shift();
-              }
-          
-              // draw the notification text
-              context.fillStyle = "yellow";
-              context.fillText(notifications[i], screen.notificationX, screen.notificationY + screen.notificationSpacing * i);
+                // remove the oldest notification if there are more than 6 notifications
+                if (notifications.length > 6) {
+                    notifications.shift();
+                }
+
+                // draw the notification text
+                context.fillStyle = "yellow";
+                context.fillText(notifications[i], screen.notificationX, screen.notificationY + screen.notificationSpacing * i);
             }
-        },          
+        },
         drawOptionsMenu: function() {
             // only draw the options menu if it is visible
             if (showOptionsMenu === true) {
-              // calculate the dimensions and position of the menu
-              var menuWidth = a_canvas.width * 0.9;
-              var menuHeight = a_canvas.height * 0.9;
-              var menuX = (a_canvas.width - menuWidth) / 2;
-              var menuY = (a_canvas.height - menuHeight) / 2;
-          
-              // draw the menu
-              context.beginPath();
-              context.rect(menuX, menuY, menuWidth, menuHeight);
-              context.lineWidth = 3;
-              context.strokeStyle = "yellow";
-              context.stroke();
-              context.fillStyle = "rgb(50,50,50)";
-              context.fill();
+                // calculate the dimensions and position of the menu
+                var menuWidth = a_canvas.width * 0.9;
+                var menuHeight = a_canvas.height * 0.9;
+                var menuX = (a_canvas.width - menuWidth) / 2;
+                var menuY = (a_canvas.height - menuHeight) / 2;
+
+                // draw the menu
+                context.beginPath();
+                context.rect(menuX, menuY, menuWidth, menuHeight);
+                context.lineWidth = 3;
+                context.strokeStyle = "yellow";
+                context.stroke();
+                context.fillStyle = "rgb(50,50,50)";
+                context.fill();
             }
         }
     };
@@ -330,20 +365,20 @@ window.onload = function() {
         stone: [1, 1, "res/stone.jpg"],
         wood: [1, 1, "res/wood.jpg"],
         stoneWall: [1, 1, "res/stoneWall.jpg"],
-      };
-      var tiles = {};
-      Object.assign(tiles, tileData);
-      // Convert the data arrays to Tile objects
-      for (var key in tiles) {
+    };
+    var tiles = {};
+    Object.assign(tiles, tileData);
+    // Convert the data arrays to Tile objects
+    for (var key in tiles) {
         if (tiles.hasOwnProperty(key)) {
-          var data = tiles[key];
-          tiles[key] = new Tile(data[0], data[1], data[2]);
+            var data = tiles[key];
+            tiles[key] = new Tile(data[0], data[1], data[2]);
         }
-    } 
+    }
     var config = {
         fps: 60
     };
-    
+
     var generator = {
         generateChunk: function() {
             var chunkHeight = 300;
@@ -385,97 +420,98 @@ window.onload = function() {
 
             function makeLikeSurroundingTiles() {
                 for (var i = 0; i < chunkHeight; i++) {
-                  for (var j = 0; j < chunkWidth; j++) {
-                    // Skip tiles that are on the edge or corner of the chunk
-                    if (i === 0 || j === 0 || i === chunkWidth - 1 || j === chunkHeight - 1) continue;
-              
-                    var counts = {
-                      0: 0, // grass
-                      1: 0, // water
-                      2: 0, // dirt
-                    };
-              
-                    var center = map.tileMap[i][j];
-                    counts[center] += 1;
-              
-                    var surrounding = [        [i - 1, j],     // left
-                      [i - 1, j - 1], // top-left
-                      [i, j - 1],     // top
-                      [i + 1, j - 1], // top-right
-                      [i + 1, j],     // right
-                      [i + 1, j + 1], // bottom-right
-                      [i, j + 1],     // bottom
-                      [i - 1, j + 1], // bottom-left
-                    ];
-              
-                    // Update the counts for each surrounding tile
-                    for (var [r, c] of surrounding) {
-                      var tile = map.tileMap[r][c];
-                      counts[tile] += 1;
+                    for (var j = 0; j < chunkWidth; j++) {
+                        // Skip tiles that are on the edge or corner of the chunk
+                        if (i === 0 || j === 0 || i === chunkWidth - 1 || j === chunkHeight - 1) continue;
+
+                        var counts = {
+                            0: 0, // grass
+                            1: 0, // water
+                            2: 0, // dirt
+                        };
+
+                        var center = map.tileMap[i][j];
+                        counts[center] += 1;
+
+                        var surrounding = [
+                            [i - 1, j], // left
+                            [i - 1, j - 1], // top-left
+                            [i, j - 1], // top
+                            [i + 1, j - 1], // top-right
+                            [i + 1, j], // right
+                            [i + 1, j + 1], // bottom-right
+                            [i, j + 1], // bottom
+                            [i - 1, j + 1], // bottom-left
+                        ];
+
+                        // Update the counts for each surrounding tile
+                        for (var [r, c] of surrounding) {
+                            var tile = map.tileMap[r][c];
+                            counts[tile] += 1;
+                        }
+
+                        // Update the center tile based on the counts
+                        if (counts[0] >= counts[1] && counts[0] >= counts[2]) {
+                            map.tileMap[i][j] = 0; // grass
+                        } else if (counts[1] >= counts[0] && counts[1] >= counts[2]) {
+                            map.tileMap[i][j] = 1; // water
+                        } else {
+                            map.tileMap[i][j] = 2; // dirt
+                        }
                     }
-              
-                    // Update the center tile based on the counts
-                    if (counts[0] >= counts[1] && counts[0] >= counts[2]) {
-                      map.tileMap[i][j] = 0; // grass
-                    } else if (counts[1] >= counts[0] && counts[1] >= counts[2]) {
-                      map.tileMap[i][j] = 1; // water
-                    } else {
-                      map.tileMap[i][j] = 2; // dirt
-                    }
-                  }
                 }
-              }
-                          
-              
+            }
+
+
             numTiles = tilesList.length;
         },
     };
 
     var waterAnimationFrame = 0;
     setInterval(function() {
-    waterAnimationFrame = (waterAnimationFrame + 1) % 2;
-    if (waterAnimationFrame === 0) {
-        tiles.water.image.src = "res/water1.png";
-    } else {
-        tiles.water.image.src = "res/water2.png";
-    }
+        waterAnimationFrame = (waterAnimationFrame + 1) % 2;
+        if (waterAnimationFrame === 0) {
+            tiles.water.image.src = "res/water1.png";
+        } else {
+            tiles.water.image.src = "res/water2.png";
+        }
     }, 300);
 
     //pre-gameloop setup
     generator.generateChunk();
-    
+
     var processPlayerMovement = setInterval(function() {
         if (player.movementQueue.length > 0) {
-          var direction = player.movementQueue.shift();
-          switch (direction) {
-            case "west":
-              moveWest();
-              break;
-            case "east":
-              moveEast();
-              break;
-            case "north":
-              moveNorth();
-              break;
-            case "south":
-              moveSouth();
-              break;
-            case "northwest":
-              moveNorthWest();
-              break;
-            case "northeast":
-              moveNorthEast();
-              break;
-            case "southwest":
-              moveSouthWest();
-              break;
-            case "southeast":
-              moveSouthEast();
-              break;
-          }
+            var direction = player.movementQueue.shift();
+            switch (direction) {
+                case "west":
+                    moveWest();
+                    break;
+                case "east":
+                    moveEast();
+                    break;
+                case "north":
+                    moveNorth();
+                    break;
+                case "south":
+                    moveSouth();
+                    break;
+                case "northwest":
+                    moveNorthWest();
+                    break;
+                case "northeast":
+                    moveNorthEast();
+                    break;
+                case "southwest":
+                    moveSouthWest();
+                    break;
+                case "southeast":
+                    moveSouthEast();
+                    break;
+            }
         }
     }, 1000 / player.moveSpeed);
-      
+
     var gameLoop = setInterval(function() {
         graphics.redrawMap();
         graphics.drawSelectionBox(screen.oldSelectionBoxCoords, screen.selectionBoxCoords);
@@ -483,7 +519,7 @@ window.onload = function() {
         graphics.drawTrees();
         graphics.drawCursor();
         graphics.drawNotifications();
-        graphics.drawInterface();   
+        graphics.drawInterface();
         graphics.drawOptionsMenu();
     }, 1000 / config.fps);
 
@@ -586,112 +622,123 @@ window.onload = function() {
         screen.oldSelectionBoxCoords = screen.selectionBoxCoords;
         screen.selectionBoxCoords = math.calculateTileClicked(screen.mouseCanvasCoords);
     }, false);
-    
+
     a_canvas.addEventListener('click', function(evt) {
         var canvasCoords = math.calculateCanvasCoordsFromWindowCoords(evt.clientX, evt.clientY);
         var tileCoords = [Math.floor(canvasCoords[0] / screen.tileWidth), Math.floor(canvasCoords[1] / screen.tileHeight)];
-        
-        if (tileCoords[0] < player.screenTileX){
+
+        if (tileCoords[0] < player.screenTileX) {
             var distance = player.screenTileX - tileCoords[0];
-            for(var i = 0; i < distance; i++){
+            for (var i = 0; i < distance; i++) {
                 player.movementQueue.push("west");
             }
-        }
-        
-        else if (tileCoords[0] > player.screenTileX){
+        } else if (tileCoords[0] > player.screenTileX) {
             var distance = tileCoords[0] - player.screenTileX;
-            for(var i = 0; i < distance; i++){
+            for (var i = 0; i < distance; i++) {
                 player.movementQueue.push("east");
             }
         }
-        
-        if (tileCoords[1] < player.screenTileY){
+
+        if (tileCoords[1] < player.screenTileY) {
             var distance = player.screenTileY - tileCoords[1];
-            for(var i = 0; i < distance; i++){
+            for (var i = 0; i < distance; i++) {
                 player.movementQueue.push("north");
             }
-        }
-        
-        else if (tileCoords[1] > player.screenTileY){
+        } else if (tileCoords[1] > player.screenTileY) {
             var distance = tileCoords[1] - player.screenTileY;
-            for(var i = 0; i < distance; i++){
+            for (var i = 0; i < distance; i++) {
                 player.movementQueue.push("south");
             }
         }
 
     }, false);
-    
+
     a_canvas.addEventListener('contextmenu', function(evt) {
         evt.preventDefault();
         return false;
     }, false);
-    
+
+    const KEY_CODE_ACTIONS = {
+        87: "north",
+        83: "south",
+        65: "west",
+        68: "east",
+        46: "clear notifications",
+        49: "select inventory slot 0",
+        50: "select inventory slot 1",
+        51: "select inventory slot 2",
+        52: "select inventory slot 3",
+        53: "select inventory slot 4",
+        54: "select inventory slot 5",
+        107: "zoom out",
+        109: "zoom in",
+        187: "unused",
+        39: "rotate clockwise",
+        37: "rotate counter-clockwise",
+        27: "toggle options menu"
+    };
+
     function handleKeyDown(e) {
-        switch (e.keyCode) {
-          case 87:
-            player.movementQueue.push("north");
-            break;
-          case 83:
-            player.movementQueue.push("south");
-            break;
-          case 65:
-            player.movementQueue.push("west");
-            break;
-          case 68:
-            player.movementQueue.push("east");
-            break;
-          case 46:
-            notifications = [];
-            break;
-          case 49:
-            interface.inventorySlotSelected = 0;
-            break;
-          case 50:
-            interface.inventorySlotSelected = 1;
-            break;
-          case 51:
-            interface.inventorySlotSelected = 2;
-            break;
-          case 52:
-            interface.inventorySlotSelected = 3;
-            break;
-          case 53:
-            interface.inventorySlotSelected = 4;
-            break;
-          case 54:
-            interface.inventorySlotSelected = 5;
-            break;
-          case 107: //zoom out
-            //has to be 2 because numRows and numColumns need to stay odd
-            screen.numRows -= 2;
-            screen.numColumns -= 2;
-            screen.tileWidth = a_canvas.width / screen.numColumns;
-            screen.tileHeight = a_canvas.height / screen.numRows;
-            break;
-          case 109: //zoom in
-            screen.numRows += 2;
-            screen.numColumns += 2;
-            screen.tileWidth = a_canvas.width / screen.numColumns;
-            screen.tileHeight = a_canvas.height / screen.numRows;
-            break;
-          case 187:
-            break;
-      
-          //TODO: rotate from center instead of top left edge
-          case 39: //right arrow, rotate camera clockwise
-            //move to center to rotate around that point
-            context.rotate(1 * Math.PI / 180);
-            break;
-          case 37: //left arrow
-            context.rotate(-1 * Math.PI / 180);
-            break;
-      
-          case 27:
-            if (showOptionsMenu === true) showOptionsMenu = false;
-            else showOptionsMenu = true;
+        const action = KEY_CODE_ACTIONS[e.keyCode];
+        if (!action) return;
+
+        switch (action) {
+            case "north":
+                player.movementQueue.push(action);
+                break;
+            case "south":
+                player.movementQueue.push(action);
+                break;
+            case "west":
+                player.movementQueue.push(action);
+                break;
+            case "east":
+                player.movementQueue.push(action);
+                break;
+            case "clear notifications":
+                notifications = [];
+                break;
+            case "select inventory slot 0":
+                interface.inventorySlotSelected = 0;
+                break;
+            case "select inventory slot 1":
+                interface.inventorySlotSelected = 1;
+                break;
+            case "select inventory slot 2":
+                interface.inventorySlotSelected = 2;
+                break;
+            case "select inventory slot 3":
+                interface.inventorySlotSelected = 3;
+                break;
+            case "select inventory slot 4":
+                interface.inventorySlotSelected = 4;
+                break;
+            case "select inventory slot 5":
+                interface.inventorySlotSelected = 5;
+                break;
+            case "zoom out":
+                screen.numRows -= 2;
+                screen.numColumns -= 2;
+                screen.tileWidth = a_canvas.width / screen.numColumns;
+                screen.tileHeight = a_canvas.height / screen.numRows;
+                break;
+            case "zoom in":
+                screen.numRows += 2;
+                screen.numColumns += 2;
+                screen.tileWidth = a_canvas.width / screen.numColumns;
+                screen.tileHeight = a_canvas.height / screen.numRows;
+                break;
+            case "rotate clockwise":
+                context.rotate(1 * Math.PI / 180);
+                break;
+            case "rotate counter-clockwise":
+                context.rotate(-1 * Math.PI / 180);
+                break;
+            case "toggle options menu":
+                showOptionsMenu = !showOptionsMenu;
         }
-      }
-      
-      window.addEventListener("keydown", handleKeyDown, false);
-      
+    }
+
+    window.addEventListener("keydown", handleKeyDown, false);
+
 }
