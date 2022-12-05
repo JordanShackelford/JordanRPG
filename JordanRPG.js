@@ -17,7 +17,7 @@ window.onload = function() {
     var boat = new Image();
     boat.src = "res/boat.png";
 
-    function Tile(width, height, image) {
+    function Tile(width = 1, height = 1, image) {
         this.width = screen.tileWidth * width;
         this.height = screen.tileHeight * height;
         this.image = new Image();
