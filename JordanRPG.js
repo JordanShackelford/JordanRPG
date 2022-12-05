@@ -306,8 +306,8 @@ window.onload = function() {
 
     var math = {
         calculateTileClicked: function(coords) {
-            var x = Math.floor(coords[0] / screen.tileWidth) * Math.floor(screen.tileWidth);
-            var y = Math.floor(coords[1] / screen.tileHeight) * Math.floor(screen.tileHeight);
+            var x = Math.floor(coords[0] / screen.tileWidth) * screen.tileWidth;
+            var y = Math.floor(coords[1] / screen.tileHeight) * screen.tileHeight;
             return [x, y];
         },
         calculateCanvasCoordsFromWindowCoords: function(windowX, windowY) {
