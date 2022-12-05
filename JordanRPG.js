@@ -67,7 +67,6 @@ window.onload = function() {
         animationFrame: 0,
         movementQueue:[]
     };
-    player.name = window.prompt("What is your name?");
     player.pixelX = player.screenTileX * screen.tileWidth;
     player.pixelY = player.screenTileY * screen.tileHeight - screen.tileHeight;
     player.animateMovement = function(direction) {
