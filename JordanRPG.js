@@ -312,32 +312,40 @@ window.onload = function() {
         },
         calculateCanvasCoordsFromWindowCoords: function(windowX, windowY) {
             var rect = context.canvas.getBoundingClientRect();
-            var canvasX = Math.round((windowX - rect.left) / (rect.right - rect.left) * context.canvas.width);
-            var canvasY = Math.round((windowY - rect.top) / (rect.bottom - rect.top) * context.canvas.height);
-            return [canvasX, canvasY];
+            var canvasX = (windowX - rect.left) / (rect.right - rect.left) * context.canvas.width;
+            var canvasY = (windowY - rect.top) / (rect.bottom - rect.top) * context.canvas.height;
+            return [Math.round(canvasX), Math.round(canvasY)];
         }
     };
-    var tiles = {
-        grass: new Tile(1, 1, "res/grass.jpg"),
-        water: new Tile(1, 1, "res/water1.png"),
-        tree1: new Tile(2, 5, "res/tree1.png"),
-        tree2: new Tile(2, 5, "res/tree2.png"),
-        flower: new Tile(1, 2, "res/flower.png"),
-        rock: new Tile(1, 1, "res/rock.png"),
-        dirt: new Tile(1, 1, "res/dirt.jpg")
-    };
+
+    var tileData = {
+        grass: [1, 1, "res/grass.jpg"],
+        water: [1, 1, "res/water1.png"],
+        tree1: [2, 5, "res/tree1.png"],
+        tree2: [2, 5, "res/tree2.png"],
+        flower: [1, 2, "res/flower.png"],
+        rock: [1, 1, "res/rock.png"],
+        dirt: [1, 1, "res/dirt.jpg"],
+        sand: [1, 1, "res/sand.jpg"],
+        stone: [1, 1, "res/stone.jpg"],
+        wood: [1, 1, "res/wood.jpg"],
+        stoneWall: [1, 1, "res/stoneWall.jpg"],
+      };
+      var tiles = {};
+      Object.assign(tiles, tileData);
+      // Convert the data arrays to Tile objects
+      for (var key in tiles) {
+        if (tiles.hasOwnProperty(key)) {
+          var data = tiles[key];
+          tiles[key] = new Tile(data[0], data[1], data[2]);
+        }
+    } 
     var config = {
         fps: 60
     };
-    /*
-    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent)) {
-        config.fps = 30;
-    }
-    */
+    
     var generator = {
-
         generateChunk: function() {
-
             var chunkHeight = 300;
             var chunkWidth = 300;
             var tilesList = new Array();
@@ -376,153 +384,64 @@ window.onload = function() {
             }
 
             function makeLikeSurroundingTiles() {
-                //probably too much code repetition here
                 for (var i = 0; i < chunkHeight; i++) {
-                    for (var j = 0; j < chunkWidth; j++) {
-                        var grassSurrounding = 0;
-                        var waterSurrounding = 0;
-                        var dirtSurrounding = 0;
-
-                        var center = map.tileMap[i][j];
-                        switch (center) {
-                            case 0:
-                                grassSurrounding += 1;
-                                break;
-                            case 1:
-                                waterSurrounding += 1;
-                                break;
-                            case 2:
-                                dirtSurrounding += 1;
-                                break;
-                        }
-                        //don't check left of left edge because they are undefined
-                        if (i > 0) {
-                            var left = map.tileMap[i - 1][j];
-                            switch (left) {
-                                case 0:
-                                    grassSurrounding += 1;
-                                    break;
-                                case 1:
-                                    waterSurrounding += 1;
-                                    break;
-                                case 2:
-                                    dirtSurrounding += 1;
-                                    break;
-                            }
-                        }
-                        //don't check topleft corner of corner pieces
-                        if (i > 0 && j > 0) {
-                            var topLeft = map.tileMap[i - 1][j - 1];
-                            switch (topLeft) {
-                                case 0:
-                                    grassSurrounding += 1;
-                                    break;
-                                case 1:
-                                    waterSurrounding += 1;
-                                    break;
-                                case 2:
-                                    dirtSurrounding += 1;
-                                    break;
-                            }
-                        }
-                        var top = map.tileMap[i][j - 1];
-                        switch (top) {
-                            case 0:
-                                grassSurrounding += 1;
-                                break;
-                            case 1:
-                                waterSurrounding += 1;
-                                break;
-                            case 2:
-                                dirtSurrounding += 1;
-                                break;
-                        }
-                        if (i < chunkWidth - 1 && j > 0) {
-                            var topRight = map.tileMap[i + 1][j - 1];
-                            switch (topRight) {
-                                case 0:
-                                    grassSurrounding += 1;
-                                    break;
-                                case 1:
-                                    waterSurrounding += 1;
-                                    break;
-                                case 2:
-                                    dirtSurrounding += 1;
-                                    break;
-                            }
-                        }
-                        if (i < chunkWidth - 1) {
-                            var right = map.tileMap[i + 1][j];
-                            switch (right) {
-                                case 0:
-                                    grassSurrounding += 1;
-                                    break;
-                                case 1:
-                                    waterSurrounding += 1;
-                                    break;
-                                case 2:
-                                    dirtSurrounding += 1;
-                                    break;
-                            }
-                        }
-                        if (i < chunkWidth - 1 && j < chunkHeight - 1) {
-                            var bottomRight = map.tileMap[i + 1][j + 1];
-                            switch (bottomRight) {
-                                case 0:
-                                    grassSurrounding += 1;
-                                    break;
-                                case 1:
-                                    waterSurrounding += 1;
-                                    break;
-                                case 2:
-                                    dirtSurrounding += 1;
-                                    break;
-                            }
-                        }
-                        var bottom = map.tileMap[i][j + 1];
-                        switch (bottom) {
-                            case 0:
-                                grassSurrounding += 1;
-                                break;
-                            case 1:
-                                waterSurrounding += 1;
-                                break;
-                            case 2:
-                                dirtSurrounding += 1;
-                                break;
-                        }
-                        if (i > 0 && j < chunkHeight) {
-                            var bottomLeft = map.tileMap[i - 1][j + 1];
-                            switch (bottomLeft) {
-                                case 0:
-                                    grassSurrounding += 1;
-                                    break;
-                                case 1:
-                                    waterSurrounding += 1;
-                                    break;
-                                case 2:
-                                    dirtSurrounding += 1;
-                                    break;
-                            }
-                        }
-                        var total = grassSurrounding + waterSurrounding + dirtSurrounding;
-                        var grassChance = grassSurrounding / total;
-                        var waterChance = waterSurrounding / total;
-                        var dirtChance = dirtSurrounding / total;
-
-                        var randNum = Math.random();
-
-                        if (randNum < grassChance) {
-                            map.tileMap[i][j] = 0;
-                        } else if (randNum < waterChance + grassChance) {
-                            map.tileMap[i][j] = 1;
-                        } else {
-                            map.tileMap[i][j] = 2;
-                        }
-                        //alert("Grass: " + grassSurrounding + " Water: " + waterSurrounding);
+                  for (var j = 0; j < chunkWidth; j++) {
+                    // Skip tiles that are on the edge or corner of the chunk
+                    if (i === 0 || j === 0 || i === chunkWidth - 1 || j === chunkHeight - 1) continue;
+              
+                    var counts = {
+                      0: 0, // grass
+                      1: 0, // water
+                      2: 0, // dirt
+                    };
+              
+                    var center = map.tileMap[i][j];
+                    counts[center] += 1;
+              
+                    // Check left of tile
+                    var left = map.tileMap[i - 1][j];
+                    counts[left] += 1;
+              
+                    // Check top-left of tile
+                    var topLeft = map.tileMap[i - 1][j - 1];
+                    counts[topLeft] += 1;
+              
+                    // Check top of tile
+                    var top = map.tileMap[i][j - 1];
+                    counts[top] += 1;
+              
+                    // Check top-right of tile
+                    var topRight = map.tileMap[i + 1][j - 1];
+                    counts[topRight] += 1;
+              
+                    // Check right of tile
+                    var right = map.tileMap[i + 1][j];
+                    counts[right] += 1;
+              
+                    // Check bottom-right of tile
+                    var bottomRight = map.tileMap[i + 1][j + 1];
+                    counts[bottomRight] += 1;
+              
+                    // Check bottom of tile
+                    var bottom = map.tileMap[i][j + 1];
+                    counts[bottom] += 1;
+              
+                    // Check bottom-left of tile
+                    var bottomLeft = map.tileMap[i - 1][j + 1];
+                    counts[bottomLeft] += 1;
+              
+                    // Update the center tile based on the counts
+                    if (counts[0] >= counts[1] && counts[0] >= counts[2]) {
+                      map.tileMap[i][j] = 0; // grass
+                    } else if (counts[1] >= counts[0] && counts[1] >= counts[2]) {
+                      map.tileMap[i][j] = 1; // water
+                    } else {
+                      map.tileMap[i][j] = 2; // dirt
                     }
+                  }
                 }
-            }
+              }              
+              
             numTiles = tilesList.length;
         },
     };
