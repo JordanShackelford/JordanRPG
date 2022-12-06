@@ -1,14 +1,5 @@
 /* need to fix animations and stop repeating code so much */
 window.onload = function() {
-    //will use to rotate screen based on tilt of mobile device
-    if (window.DeviceMotionEvent) {
-        window.addEventListener("devicemotion", function() {
-
-        }, false);
-    } else {
-        console.log("DeviceMotionEvent is not supported");
-    }
-
     var a_canvas = document.getElementById("a");
     var context = a_canvas.getContext("2d");
     var showOptionsMenu = false;
