@@ -2,10 +2,8 @@
 window.onload = function() {
     var a_canvas = document.getElementById("a");
     var context = a_canvas.getContext("2d");
-    var showOptionsMenu = false;
-    var cursor = new Image();
+    var cursor = new Image(), boat = new Image();
     cursor.src = "res/swordicon.png";
-    var boat = new Image();
     boat.src = "res/boat.png";
 
     function Tile({ size = [1, 1], image } = {}) {
