@@ -86,13 +86,12 @@ window.onload = function() {
         }
     };
 
-    player.animateMovement = function(direction, animationTime = 1000, numFrames = config.fps) {
+    player.animateMovement = (direction, { animationTime = 1000, numFrames = config.fps } = {}) => {
         screen.offsetX = 0;
         screen.offsetY = 0;
         player.isMoving = true;
-        const movement = movementDirections[direction];
-        player.worldX += movement.worldX;
-        player.worldY += movement.worldY;
+        player.worldX += movementDirections[direction].worldX;
+        player.worldY += movementDirections[direction].worldY;
     }
 
     var interface = {
