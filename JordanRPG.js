@@ -17,12 +17,14 @@ window.onload = function() {
     var boat = new Image();
     boat.src = "res/boat.png";
 
-    function Tile(width = 1, height = 1, image) {
+    function Tile({ size = [1, 1], image } = {}) {
+        [width, height] = size;
         this.width = screen.tileWidth * width;
         this.height = screen.tileHeight * height;
         this.image = new Image();
         this.image.src = image;
     }
+    
     var notifications = ["Move with W,A,S,D keys or by clicking/tapping", "Press Esc to open options menu", "Use number keys to select inventory slot"];
     var map = {};
     var screen = {
@@ -372,9 +374,10 @@ window.onload = function() {
     for (var key in tiles) {
         if (tiles.hasOwnProperty(key)) {
             var data = tiles[key];
-            tiles[key] = new Tile(data[0], data[1], data[2]);
+            tiles[key] = new Tile({ size: data.slice(0, 2), image: data[2] });
         }
     }
+
     var config = {
         fps: 60
     };
