@@ -86,7 +86,7 @@ window.onload = function() {
         }
     };
 
-    player.animateMovement = (direction, { animationTime = 1000, numFrames = config.fps } = {}) => {
+    player.animateMovement = (direction) => {
         screen.offsetX = 0;
         screen.offsetY = 0;
         player.isMoving = true;
