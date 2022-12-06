@@ -49,22 +49,10 @@ window.onload = function() {
     };
     player.pixelX = player.screenTileX * screen.tileWidth, player.pixelY = player.screenTileY * screen.tileHeight - screen.tileHeight;
     const movementDirections = {
-        east: {
-            worldX: screen.tileWidth,
-            worldY: 0
-        },
-        west: {
-            worldX: -screen.tileWidth,
-            worldY: 0
-        },
-        north: {
-            worldX: 0,
-            worldY: -screen.tileHeight
-        },
-        south: {
-            worldX: 0,
-            worldY: screen.tileHeight
-        }
+        east: { worldX: screen.tileWidth, worldY: 0 },
+        west: { worldX: -screen.tileWidth, worldY: 0 },
+        north: { worldX: 0, worldY: -screen.tileHeight },
+        south: { worldX: 0, worldY: screen.tileHeight }
     };
     player.animateMovement = (direction) => {
         screen.offsetX = 0;
