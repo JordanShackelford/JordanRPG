@@ -1,6 +1,5 @@
 /* need to fix animations and stop repeating code so much */
 window.onload = function() {
-    var showOptionsMenu = false;
     var a_canvas = document.getElementById("a");
     var context = a_canvas.getContext("2d");
     var cursor = new Image(), boat = new Image();
@@ -15,20 +14,22 @@ window.onload = function() {
     }
     var notifications = ["Move with W,A,S,D keys or by clicking/tapping", "Press Esc to open options menu", "Use number keys to select inventory slot"];
     var map = {};
-    const screen = {
-        offset: [0, 0],
-        dimensions: [15, 15],
+    var screen = {
+        offsetX: 0,
+        offsetY: 0,
+        numRows: 15,
+        numColumns: 15,
         mouseCanvasCoords: [0, 0],
         oldSelectionBoxCoords: [0, 0],
         selectionBoxCoords: [0, 0],
         tileX: 0,
         tileY: 0,
-        notificationPosition: a_canvas.width * 0.02,
+        notificationX: a_canvas.width * 0.02,
+        notificationY: a_canvas.height * 0.045,
         notificationSpacing: 30,
         numOfInventorySlots: 4
     };
-    screen.tileWidth = a_canvas.width / screen.numColumns;
-    screen.tileHeight = a_canvas.height / screen.numRows;
+    screen.tileWidth = a_canvas.width / screen.numColumns, screen.tileHeight = a_canvas.height / screen.numRows;
     var sounds = {
         walking: new Audio("res/walking.mp3")
     };
@@ -46,8 +47,7 @@ window.onload = function() {
         animationFrame: 0,
         movementQueue: []
     };
-    player.pixelX = player.screenTileX * screen.tileWidth;
-    player.pixelY = player.screenTileY * screen.tileHeight - screen.tileHeight;
+    player.pixelX = player.screenTileX * screen.tileWidth, player.pixelY = player.screenTileY * screen.tileHeight - screen.tileHeight;
     const movementDirections = {
         east: {
             worldX: screen.tileWidth,
@@ -270,7 +270,7 @@ window.onload = function() {
             }
         },
         drawOptionsMenu: function() {
-            if (showOptionsMenu) {
+            if (showOptionsMenu === true) {
                 var menuWidth = a_canvas.width * 0.9;
                 var menuHeight = a_canvas.height * 0.9;
                 var menuX = (a_canvas.width - menuWidth) / 2;
