@@ -63,7 +63,9 @@ window.onload = function() {
         inventorySlotSelected: 0,
         icons: {
             hatchet: document.getElementById("hatchet"),
-            treeSapling: document.getElementById("appletreesapling")
+            treeSapling: document.getElementById("appletreesapling"),
+            apple: document.getElementById("apple"),
+            dagger: document.getElementById("dagger")
         },
     };
     var graphics = {
