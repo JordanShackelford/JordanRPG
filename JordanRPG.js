@@ -421,16 +421,6 @@ window.onload = function() {
             }
         }
     }, 1000 / player.moveSpeed);
-    var gameLoop = setInterval(function() {
-        graphics.redrawMap();
-        graphics.drawSelectionBox(screen.oldSelectionBoxCoords, screen.selectionBoxCoords);
-        graphics.drawPlayer();
-        graphics.drawTrees();
-        graphics.drawCursor();
-        graphics.drawNotifications();
-        graphics.drawInterface();
-        graphics.drawOptionsMenu();
-    }, 1000 / config.fps);
     function moveNorth() {
         sounds.walking.play();
         if (player.animationFrame > 2) {
@@ -617,4 +607,15 @@ window.onload = function() {
         }
     }
     window.addEventListener("keydown", handleKeyDown, false);
+
+    var gameLoop = setInterval(function() {
+        graphics.redrawMap();
+        graphics.drawSelectionBox(screen.oldSelectionBoxCoords, screen.selectionBoxCoords);
+        graphics.drawPlayer();
+        graphics.drawTrees();
+        graphics.drawCursor();
+        graphics.drawNotifications();
+        graphics.drawInterface();
+        graphics.drawOptionsMenu();
+    }, 1000 / config.fps);
 }   
