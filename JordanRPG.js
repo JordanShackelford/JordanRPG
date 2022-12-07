@@ -55,12 +55,10 @@ window.onload = function() {
         south: { worldX: 0, worldY: screen.tileHeight }
     };
     player.animateMovement = (direction) => {
-        screen.offsetX = 0;
-        screen.offsetY = 0;
-        player.isMoving = true;
-        player.worldX += movementDirections[direction].worldX;
-        player.worldY += movementDirections[direction].worldY;
-    }
+        const { worldX, worldY } = movementDirections[direction];
+        Object.assign(screen, { offsetX: 0, offsetY: 0 });
+        Object.assign(player, { isMoving: true, worldX, worldY });
+    }      
     var interface = {
         inventorySlotSelected: 0,
         icons: {
