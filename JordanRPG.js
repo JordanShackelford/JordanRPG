@@ -99,7 +99,6 @@ window.onload = function() {
             context.stroke();
         },
         drawPlayer: function() {
-            //animation is completely broken
             var animationClips = [
                 [8, 7],
                 [55, 2],
@@ -237,13 +236,13 @@ window.onload = function() {
             context.fillText("(" + tileX + "," + tileY + ")", screen.selectionBoxCoords[0], screen.selectionBoxCoords[1] + screen.tileHeight + 20);
         },
         drawNotifications: function() {
+            var boxWidth = a_canvas.width * 0.6,
+                boxHeight = 200,
+                boxX = a_canvas.width * 0.01,
+                boxY = a_canvas.height * 0.01;
             context.font = "40px Arial";
             context.lineWidth = 4;
             context.strokeStyle = "red";
-            var boxWidth = a_canvas.width * 0.6;
-            var boxHeight = 200;
-            var boxX = a_canvas.width * 0.01;
-            var boxY = a_canvas.height * 0.01;
             context.beginPath();
             context.rect(boxX, boxY, boxWidth, boxHeight);
             context.stroke();
@@ -527,29 +526,14 @@ window.onload = function() {
     a_canvas.addEventListener('click', function(evt) {
         var canvasCoords = math.calculateCanvasCoordsFromWindowCoords(evt.clientX, evt.clientY);
         var tileCoords = [Math.floor(canvasCoords[0] / screen.tileWidth), Math.floor(canvasCoords[1] / screen.tileHeight)];
-        if (tileCoords[0] < player.screenTileX) {
-            var distance = player.screenTileX - tileCoords[0];
-            for (var i = 0; i < distance; i++) {
-                player.movementQueue.push("west");
-            }
-        } else if (tileCoords[0] > player.screenTileX) {
-            var distance = tileCoords[0] - player.screenTileX;
-            for (var i = 0; i < distance; i++) {
-                player.movementQueue.push("east");
+        for (var i = 0; i < 2; i++) {
+            var direction = tileCoords[i] < player["screenTile" + ["X", "Y"][i]] ? ["west", "north"][i] : ["east", "south"][i];
+            var distance = Math.abs(tileCoords[i] - player["screenTile" + ["X", "Y"][i]]);
+            for (var j = 0; j < distance; j++) {
+                player.movementQueue.push(direction);
             }
         }
-        if (tileCoords[1] < player.screenTileY) {
-            var distance = player.screenTileY - tileCoords[1];
-            for (var i = 0; i < distance; i++) {
-                player.movementQueue.push("north");
-            }
-        } else if (tileCoords[1] > player.screenTileY) {
-            var distance = tileCoords[1] - player.screenTileY;
-            for (var i = 0; i < distance; i++) {
-                player.movementQueue.push("south");
-            }
-        }
-    }, false);
+    }, false);    
     a_canvas.addEventListener('contextmenu', function(evt) {
         evt.preventDefault();
         return false;
@@ -633,4 +617,4 @@ window.onload = function() {
         }
     }
     window.addEventListener("keydown", handleKeyDown, false);
-}
+}   
