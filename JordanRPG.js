@@ -60,25 +60,13 @@ window.onload = function() {
         Object.assign(player, { isMoving: true, worldX, worldY });
     }      
     var interface = {
-  inventorySlotSelected: 0,
-  icons: {
-    [document.getElementById("hatchet").id]: document.getElementById("hatchet"),
-    [document.getElementById("appletreesapling").id]: document.getElementById("appletreesapling"),
-    [document.getElementById("apple").id]: document.getElementById("apple"),
-    [document.getElementById("dagger").id]: document.getElementById("dagger"),
-    [document.getElementById("sword").id]: document.getElementById("sword"),
-    [document.getElementById("bow").id]: document.getElementById("bow"),
-    [document.getElementById("arrow").id]: document.getElementById("arrow"),
-    [document.getElementById("wood").id]: document.getElementById("wood"),
-    [document.getElementById("stone").id]: document.getElementById("stone"),
-    [document.getElementById("iron").id]: document.getElementById("iron"),
-    [document.getElementById("gold").id]: document.getElementById("gold"),
-    [document.getElementById("diamond").id]: document.getElementById("diamond"),
-    [document.getElementById("coal").id]: document.getElementById("coal"),
-    [document.getElementById("fish").id]: document.getElementById("fish"),
-    [document.getElementById("fishingspear").id]: document.getElementById("fishingspear"),
-  },
-};
+        inventorySlotSelected: 0,
+        icons: {},
+      };
+      var elements = [  "hatchet",  "appletreesapling",  "apple",  "dagger",  "sword",  "bow",  "arrow",  "wood",  "stone",  "iron",  "gold",  "diamond",  "coal",  "fish",  "fishingspear",];
+      for (var i = 0; i < elements.length; i++) {
+        interface.icons[elements[i]] = document.getElementById(elements[i]);
+      }
     var graphics = {
         redrawMap: function() {
             //camera centered on player so numRows and numColumns should always be odd
