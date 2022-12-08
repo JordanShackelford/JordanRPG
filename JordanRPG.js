@@ -129,21 +129,15 @@ window.onload = function() {
             }
         },
         drawEnemies: function() {
-            // calculate the distance from the player to the edges of the screen
             var distLeftRight = (screen.numColumns - 1) / 2;
             var distTopBot = (screen.numRows - 1) / 2;
             var leftEdge = player.worldX - distLeftRight;
             var rightEdge = player.worldX + distLeftRight;
             var topEdge = player.worldY - distTopBot;
             var botEdge = player.worldY + distTopBot;
-
-            // check if the enemy is within the bounds of the screen
             if (leftEdge < enemies.worldX < rightEdge && topEdge < enemies.worldY < botEdge) {
-                // calculate the coordinates of the enemy's sprite on the sprite sheet
                 var xClip = enemies.animationFrame * 47 + 8;
                 var yClip = [7, 2, 2, 2, 150, 150, 150, 150, 76, 76, 76, 76, 220, 220, 220, 220][enemies.animationFrame];
-
-                // draw the enemy on the screen
                 context.drawImage(enemies.img, xClip, yClip, 32, 64, player.pixelX, player.pixelY, enemies.imgWidth, enemies.imgHeight);
             }
         },
@@ -151,12 +145,10 @@ window.onload = function() {
             context.drawImage(cursor, screen.mouseCanvasCoords[0], screen.mouseCanvasCoords[1], 100, 100);
         },
         drawInterface: function() {
-            // calculate the dimensions and position of the inventory
             const inventoryWidth = a_canvas.width * 0.7;
             const inventoryHeight = a_canvas.height * 0.15;
             const inventoryX = (a_canvas.width - inventoryWidth) / 2.0;
             const inventoryY = (a_canvas.height - inventoryHeight) * 0.9;
-            // draw the background of the inventory
             context.beginPath();
             context.rect(inventoryX, inventoryY, inventoryWidth, inventoryHeight);
             context.lineWidth = 3;
@@ -164,21 +156,17 @@ window.onload = function() {
             context.stroke();
             context.fillStyle = "rgba(0,255,255,0.3)";
             context.fill();
-            // calculate the dimensions of each inventory slot
             const numOfSlots = 6;
             const slotWidth = inventoryWidth / numOfSlots;
             const slotHeight = inventoryHeight; 
-            // draw each inventory slot
             for (let i = 0; i < numOfSlots; i++) {
               const slotX = inventoryX + (slotWidth * i);
               const slotY = inventoryY;
               context.beginPath();
               context.lineWidth = 3;
               context.rect(slotX, slotY, slotWidth, slotHeight);
-              //Todo: animate selection change, blue square sliding to the selected slot
               context.strokeStyle = "yellow";
               context.stroke();
-              // draw the slot number in the center of each slot
               const fontSize = 72;
               context.fillStyle = "white";
               context.font = fontSize + "px Arial";
@@ -617,4 +605,4 @@ window.onload = function() {
         graphics.drawInterface();
         graphics.drawOptionsMenu();
     }, 1000 / config.fps);
-}   
+}
