@@ -59,13 +59,13 @@ window.onload = function() {
         Object.assign(screen, { offsetX: 0, offsetY: 0 });
         Object.assign(player, { isMoving: true, worldX, worldY });
     }      
-    var interface = {
+    var gameInterface = {
         inventorySlotSelected: 0,
         icons: {},
       };
       var elements = [  "hatchet",  "appletreesapling",  "apple",  "dagger",  "sword",  "bow",  "arrow",  "wood",  "stone",  "iron",  "gold",  "diamond",  "coal",  "fish",  "fishingspear",];
       for (var i = 0; i < elements.length; i++) {
-        interface.icons[elements[i]] = document.getElementById(elements[i]);
+        gameInterface.icons[elements[i]] = document.getElementById(elements[i]);
       }
     var graphics = {
         redrawMap: function() {
@@ -177,14 +177,14 @@ window.onload = function() {
                 slotWidth
               );
             }
-            const selectedSlotX = inventoryX + (slotWidth * interface.inventorySlotSelected);
+            const selectedSlotX = inventoryX + (slotWidth * gameInterface.inventorySlotSelected);
             const selectedSlotY = inventoryY;
             context.lineWidth = 6;
             context.strokeStyle = "rgb(150,0,0)";
             context.beginPath();
             context.rect(selectedSlotX,selectedSlotY, slotWidth, slotHeight);
             context.stroke();            
-            context.drawImage(interface.icons.hatchet, inventoryX, inventoryY, slotWidth, slotHeight);
+            context.drawImage(gameInterface.icons.hatchet, inventoryX, inventoryY, slotWidth, slotHeight);
             },
         drawPlayerCoords: function() {
             context.fillStyle = "yellow";
@@ -554,22 +554,22 @@ window.onload = function() {
                 notifications = [];
                 break;
             case "select inventory slot 0":
-                interface.inventorySlotSelected = 0;
+                gameInterface.inventorySlotSelected = 0;
                 break;
             case "select inventory slot 1":
-                interface.inventorySlotSelected = 1;
+                gameInterface.inventorySlotSelected = 1;
                 break;
             case "select inventory slot 2":
-                interface.inventorySlotSelected = 2;
+                gameInterface.inventorySlotSelected = 2;
                 break;
             case "select inventory slot 3":
-                interface.inventorySlotSelected = 3;
+                gameInterface.inventorySlotSelected = 3;
                 break;
             case "select inventory slot 4":
-                interface.inventorySlotSelected = 4;
+                gameInterface.inventorySlotSelected = 4;
                 break;
             case "select inventory slot 5":
-                interface.inventorySlotSelected = 5;
+                gameInterface.inventorySlotSelected = 5;
                 break;
             case "zoom out":
                 screen.numRows -= 2;
@@ -584,10 +584,16 @@ window.onload = function() {
                 screen.tileHeight = a_canvas.height / screen.numRows;
                 break;
             case "rotate clockwise":
-                context.rotate(1 * Math.PI / 180);
+                angle = 1 * (Math.PI / 180)
+                context.translate(a_canvas.width / 2, a_canvas.height / 2)
+                context.rotate(angle)
+                context.translate(-a_canvas.width / 2, -a_canvas.height / 2)
                 break;
             case "rotate counter-clockwise":
-                context.rotate(-1 * Math.PI / 180);
+                angle = -1 * (Math.PI / 180)
+                context.translate(a_canvas.width / 2, a_canvas.height / 2)
+                context.rotate(angle)
+                context.translate(-a_canvas.width / 2, -a_canvas.height / 2)
                 break;
             case "toggle options menu":
                 showOptionsMenu = !showOptionsMenu;
