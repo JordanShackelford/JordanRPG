@@ -128,19 +128,6 @@ window.onload = function() {
                 context.drawImage(player.img, xClip, yClip, 32, 64, player.pixelX, player.pixelY, player.imgWidth, player.imgHeight);
             }
         },
-        drawEnemies: function() {
-            var distLeftRight = (screen.numColumns - 1) / 2;
-            var distTopBot = (screen.numRows - 1) / 2;
-            var leftEdge = player.worldX - distLeftRight;
-            var rightEdge = player.worldX + distLeftRight;
-            var topEdge = player.worldY - distTopBot;
-            var botEdge = player.worldY + distTopBot;
-            if (leftEdge < enemies.worldX < rightEdge && topEdge < enemies.worldY < botEdge) {
-                var xClip = enemies.animationFrame * 47 + 8;
-                var yClip = [7, 2, 2, 2, 150, 150, 150, 150, 76, 76, 76, 76, 220, 220, 220, 220][enemies.animationFrame];
-                context.drawImage(enemies.img, xClip, yClip, 32, 64, player.pixelX, player.pixelY, enemies.imgWidth, enemies.imgHeight);
-            }
-        },
         drawCursor: function() {
             context.drawImage(cursor, screen.mouseCanvasCoords[0], screen.mouseCanvasCoords[1], 100, 100);
         },
