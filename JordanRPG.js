@@ -405,20 +405,19 @@ window.onload = function() {
         if (map.treeMap[player.worldX][player.worldY + 1] === 3) {
             notifications.push("There is a rock right there!");
         } else {
-            if (!player.IsMoving) {
+            player.isMoving ? null : (() => {
                 player.isMoving = true;
-                var moveUp = setInterval(function() {
-                    screen.offsetY += screen.tileHeight / 15;
-                }, 250 / 15);
-                setTimeout(function() {
+                const moveUp = setInterval(() => screen.offsetY += screen.tileHeight / 15, 250 / 15);
+                setTimeout(() => {
                     player.worldY -= 1;
                     clearInterval(moveUp);
                     player.isMoving = false;
                     screen.offsetY = 0;
                 }, 250);
-            }
+            })();
         }
     }
+    
     function moveSouth() {
         sounds.walking.play();
         if (player.animationFrame > 2) {
@@ -588,7 +587,7 @@ window.onload = function() {
     }
     window.addEventListener("keydown", handleKeyDown, false);
 
-    var gameLoop = setInterval(function() {
+    setInterval(() => {
         graphics.redrawMap();
         graphics.drawSelectionBox(screen.oldSelectionBoxCoords, screen.selectionBoxCoords);
         graphics.drawPlayer();
