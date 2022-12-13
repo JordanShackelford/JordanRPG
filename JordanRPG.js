@@ -131,7 +131,7 @@ window.onload = function() {
         drawCursor: function() {
             context.drawImage(cursor, screen.mouseCanvasCoords[0], screen.mouseCanvasCoords[1], 100, 100);
         },
-        drawInterface:function {
+        drawInterface: function() {
             const inventoryWidth = a_canvas.width * 0.7;
             const inventoryHeight = a_canvas.height * 0.15;
             const inventoryX = (a_canvas.width - inventoryWidth) / 2.0;
