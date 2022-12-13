@@ -181,6 +181,27 @@ window.onload = function() {
             context.fillText(`Screen Coords: (${player.squareX},${player.squareY})`, player.pixelX, player.pixelY + player.imgHeight + 20);
             context.fillText(`Chunk Coords: (${chunkX},${chunkY})`, player.pixelX, player.pixelY + player.imgHeight + 40);
         },
+        drawTrees: function() {
+            var distLeftRight = (screen.numColumns - 1) / 2;
+            var distTopBot = (screen.numRows - 1) / 2;
+            var leftEdge = player.worldX - distLeftRight;
+            var topEdge = player.worldY - distTopBot;
+            for (var i = 0; i < screen.numColumns; i++) {
+                for (var j = 0; j < screen.numRows; j++) {
+                    switch (map.treeMap[Math.floor(leftEdge + i)][Math.floor(topEdge + j)]) {
+                        case 1:
+                            context.drawImage(tiles.tree1.image, (screen.tileWidth * i) - screen.tileWidth / 2 + screen.offsetX, screen.tileHeight * j + screen.offsetY, tiles.tree1.width, tiles.tree1.height);
+                            break;
+                        case 2:
+                            context.drawImage(tiles.tree2.image, screen.tileWidth * i - screen.tileWidth / 2 + screen.offsetX, screen.tileHeight * j + screen.offsetY, tiles.tree2.width, tiles.tree2.height);
+                            break;
+                        case 4:
+                            context.drawImage(tiles.flower.image, screen.tileWidth * i + screen.offsetX, screen.tileHeight * j + screen.offsetY, tiles.flower.width, tiles.flower.height);
+                            break;
+                    }
+                }
+            }
+        },
         drawMouseCoords: function() {
             var tileX = Math.floor(screen.mouseCanvasCoords[0] / screen.tileWidth);
             var tileY = Math.floor(screen.mouseCanvasCoords[1] / screen.tileHeight);
@@ -571,7 +592,6 @@ window.onload = function() {
         graphics.redrawMap();
         graphics.drawSelectionBox(screen.oldSelectionBoxCoords, screen.selectionBoxCoords);
         graphics.drawPlayer();
-        graphics.drawTrees();
         graphics.drawCursor();
         graphics.drawNotifications();
         graphics.drawInterface();
