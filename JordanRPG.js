@@ -99,10 +99,10 @@ window.onload = function() {
         },
         drawPlayer: function() {
             var animationClips = [
-                [8, 7],
-                [55, 2],
-                [102, 2],
-                [153, 2],
+                [8, 7], //north 1
+                [55, 2], //north 2
+                [102, 2], //north 3
+                [153, 2], //north 4
                 [8, 150],
                 [51, 150],
                 [104, 150],
@@ -397,11 +397,7 @@ window.onload = function() {
     }, 1000 / player.moveSpeed);
     function moveNorth() {
         sounds.walking.play();
-        if (player.animationFrame > 2) {
-            player.animationFrame = 0;
-        } else {
-            player.animationFrame++;
-        }
+        player.animationFrame = 12;
         if (map.treeMap[player.worldX][player.worldY + 1] === 3) {
             notifications.push("There is a rock right there!");
         } else {
@@ -420,11 +416,7 @@ window.onload = function() {
     
     function moveSouth() {
         sounds.walking.play();
-        if (player.animationFrame > 2) {
-            player.animationFrame = 0;
-        } else {
-            player.animationFrame++;
-        }
+        player.animationFrame = 0;
         if (map.treeMap[player.worldX][player.worldY + 1] === 3) {
             notifications.push("There is a rock right there!");
         } else {
@@ -444,7 +436,7 @@ window.onload = function() {
     }
     function moveEast() {
         sounds.walking.play();
-        player.animationFrame++;
+        player.animationFrame = 4;
         if (map.treeMap[player.worldX + 1][player.worldY] === 3) {
             notifications.push("There is a rock right there!");
         } else {
