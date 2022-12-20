@@ -294,6 +294,17 @@ window.onload = function() {
                 map.tileMap[i] = new Array(chunkWidth);
                 map.treeMap[i] = new Array(chunkWidth);
             }
+
+            //randomly add trees
+            for(var i = 0; i < chunkHeight; i++) {
+                for(var j = 0; j < chunkWidth; j++) {
+                    if (Math.random() < 0.05) {
+                        map.treeMap[i][j] = 1
+                      }
+                    
+                }
+            }
+
             seed();
             for (var i = 0; i < 150; i++) {
                 makeLikeSurroundingTiles();
@@ -622,6 +633,7 @@ window.onload = function() {
         graphics.redrawMap();
         graphics.drawSelectionBox(screen.oldSelectionBoxCoords, screen.selectionBoxCoords);
         graphics.drawPlayer();
+        graphics.drawTrees();
         graphics.drawCursor();
         graphics.drawNotifications();
         graphics.drawInterface();
