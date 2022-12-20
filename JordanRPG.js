@@ -397,7 +397,17 @@ window.onload = function() {
     }, 1000 / player.moveSpeed);
     function moveNorth() {
         sounds.walking.play();
-        player.animationFrame = 12;
+
+        if(player.animationFrame == 12){
+            player.animationFrame = 13;
+        } else if (player.animationFrame == 13){
+            player.animationFrame = 14;
+        } else if (player.animationFrame == 14){
+            player.animationFrame = 15;
+        } else {
+            player.animationFrame = 12;
+        }
+
         if (map.treeMap[player.worldX][player.worldY + 1] === 3) {
             notifications.push("There is a rock right there!");
         } else {
@@ -416,7 +426,17 @@ window.onload = function() {
     
     function moveSouth() {
         sounds.walking.play();
-        player.animationFrame = 0;
+        
+        if(player.animationFrame == 0){
+            player.animationFrame = 1;
+        } else if (player.animationFrame == 1){
+            player.animationFrame = 2;
+        } else if (player.animationFrame == 2){
+            player.animationFrame = 3;
+        } else {
+            player.animationFrame = 0;
+        }
+
         if (map.treeMap[player.worldX][player.worldY + 1] === 3) {
             notifications.push("There is a rock right there!");
         } else {
@@ -436,7 +456,17 @@ window.onload = function() {
     }
     function moveEast() {
         sounds.walking.play();
-        player.animationFrame = 4;
+
+        if(player.animationFrame == 4){
+            player.animationFrame = 5;
+        } else if (player.animationFrame == 5){
+            player.animationFrame = 6;
+        } else if (player.animationFrame == 6){
+            player.animationFrame = 7;
+        } else {
+            player.animationFrame = 4;
+        }
+
         if (map.treeMap[player.worldX + 1][player.worldY] === 3) {
             notifications.push("There is a rock right there!");
         } else {
@@ -455,7 +485,16 @@ window.onload = function() {
     }
     function moveWest() {
         sounds.walking.play();
-        player.animationFrame = 8;
+        if(player.animationFrame == 8){
+            player.animationFrame = 9;
+        } else if (player.animationFrame == 9){
+            player.animationFrame = 10;
+        } else if (player.animationFrame == 10){
+            player.animationFrame = 11;
+        } else {
+            player.animationFrame = 8;
+        }
+
         if (map.treeMap[player.worldX - 1][player.worldY] === 3) {
             notifications.push("There is a rock right there!");
         } else {
