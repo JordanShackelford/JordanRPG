@@ -121,7 +121,7 @@ window.onload = function() {
             context.font = "40px Comic Sans MS";
             context.strokeStyle = "yellow";
             context.lineWidth = 2;
-            context.strokeText(player.name, player.pixelX - player.imgWidth / 2, player.pixelY);
+            context.strokeText(player.name, player.pixelX - player.imgWidth / 10, player.pixelY);
             if (map.tileMap[Math.floor(player.worldX)][Math.floor(player.worldY)] === 1) {
                 context.drawImage(boat, player.pixelX, player.pixelY, player.imgWidth, player.imgHeight);
             } else {
