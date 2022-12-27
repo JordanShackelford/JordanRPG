@@ -1,4 +1,3 @@
-/* need to fix animations and stop repeating code so much */
 window.onload = function() {
     var a_canvas = document.getElementById("a");
     var context = a_canvas.getContext("2d");
@@ -69,27 +68,31 @@ window.onload = function() {
       }
     var graphics = {
         redrawMap: function() {
-            //camera centered on player so numRows and numColumns should always be odd
-            var distLeftRight = (screen.numColumns - 1) / 2;
-            var distTopBot = (screen.numRows - 1) / 2;
-            var leftEdge = player.worldX - distLeftRight;
-            var topEdge = player.worldY - distTopBot;
-            for (var i = 0; i < screen.numColumns; i++) {
-                for (var j = 0; j < screen.numRows; j++) {
-                    switch (map.tileMap[Math.floor(leftEdge + i)][Math.floor(topEdge + j)]) {
-                        case 0:
-                            context.drawImage(tiles.grass.image, screen.tileWidth * i + screen.offsetX, screen.tileHeight * j + screen.offsetY, tiles.grass.width, tiles.grass.height);
-                            break;
-                        case 1:
-                            context.drawImage(tiles.water.image, screen.tileWidth * i + screen.offsetX, screen.tileHeight * j + screen.offsetY, tiles.water.width, tiles.water.height);
-                            break;
-                        case 2:
-                            context.drawImage(tiles.dirt.image, screen.tileWidth * i + screen.offsetX, screen.tileHeight * j + screen.offsetY, tiles.dirt.width, tiles.dirt.height);
-                            break;
-                    }
+            // Calculate edges of map
+            const distLeftRight = (screen.numColumns - 1) / 2;
+            const distTopBot = (screen.numRows - 1) / 2;
+            const leftEdge = player.worldX - distLeftRight;
+            const topEdge = player.worldY - distTopBot;
+            // Iterate through tiles on screen
+            for (let i = 0; i < screen.numColumns; i++) {
+              for (let j = 0; j < screen.numRows; j++) {
+                const tileValue = map.tileMap[Math.floor(leftEdge + i)][Math.floor(topEdge + j)];
+                let image;
+                switch (tileValue) {
+                  case 0:
+                    image = tiles.grass;
+                    break;
+                  case 1:
+                    image = tiles.water;
+                    break;
+                  case 2:
+                    image = tiles.dirt;
+                    break;
                 }
+                context.drawImage(image.image, screen.tileWidth * i + screen.offsetX, screen.tileHeight * j + screen.offsetY, image.width, image.height);
+              }
             }
-        },
+          },
         drawSelectionBox: function(newCoords, oldCoords) {
             context.beginPath();
             context.lineWidth = 3;
@@ -124,6 +127,7 @@ window.onload = function() {
             context.strokeText(player.name, player.pixelX - player.imgWidth / 10, player.pixelY);
             if (map.tileMap[Math.floor(player.worldX)][Math.floor(player.worldY)] === 1) {
                 context.drawImage(boat, player.pixelX, player.pixelY, player.imgWidth, player.imgHeight);
+                
             } else {
                 context.drawImage(player.img, xClip, yClip, 32, 64, player.pixelX, player.pixelY, player.imgWidth, player.imgHeight);
             }
