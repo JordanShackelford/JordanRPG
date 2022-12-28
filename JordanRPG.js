@@ -1,4 +1,5 @@
 window.onload = function() {
+    let showOptionsMenu = false;
     var a_canvas = document.getElementById("a");
     var context = a_canvas.getContext("2d");
     var cursor = new Image(), boat = new Image();
@@ -53,11 +54,26 @@ window.onload = function() {
         north: { worldX: 0, worldY: -screen.tileHeight },
         south: { worldX: 0, worldY: screen.tileHeight }
     };
-    player.animateMovement = (direction) => {
-        const { worldX, worldY } = movementDirections[direction];
-        Object.assign(screen, { offsetX: 0, offsetY: 0 });
-        Object.assign(player, { isMoving: true, worldX, worldY });
-    }      
+
+    var enemyImg = new Image();
+    enemyImg.src = "res/enemy.png";
+
+    var enemy = {
+        name: "Enemy",
+        screenTileX: Math.floor(screen.numRows / 2),
+        screenTileY: Math.floor(screen.numColumns / 2),
+        worldX: 152,
+        worldY: 152,
+        img: enemyImg,
+        imgWidth: screen.tileWidth,
+        imgHeight: screen.tileHeight * 2,
+        moveSpeed: 5,
+        isMoving: false,
+        animationFrame: 0,
+        movementQueue: []
+    };
+    enemy.pixelX = enemy.screenTileX * screen.tileWidth, enemy.pixelY = enemy.screenTileY * screen.tileHeight - screen.tileHeight;
+
     var gameInterface = {
         inventorySlotSelected: 0,
         icons: {},
@@ -74,8 +90,8 @@ window.onload = function() {
             const leftEdge = player.worldX - distLeftRight;
             const topEdge = player.worldY - distTopBot;
             // Iterate through tiles on screen
-            for (let i = 0; i < screen.numColumns; i++) {
-              for (let j = 0; j < screen.numRows; j++) {
+            for (let i = -6; i < screen.numColumns + 6; i++) {
+              for (let j = -6; j < screen.numRows + 6; j++) {
                 const tileValue = map.tileMap[Math.floor(leftEdge + i)][Math.floor(topEdge + j)];
                 let image;
                 switch (tileValue) {
@@ -131,6 +147,11 @@ window.onload = function() {
             } else {
                 context.drawImage(player.img, xClip, yClip, 32, 64, player.pixelX, player.pixelY, player.imgWidth, player.imgHeight);
             }
+        },
+        drawEnemy: function(){
+            enemy.pixelX = (enemy.worldX - screen.offsetX) * screen.tileWidth;
+            enemy.pixelY = (enemy.worldY - screen.offsetY) * screen.tileHeight;
+            context.drawImage(enemy.img, enemy.pixelX, enemy.pixelY, enemy.imgWidth, enemy.imgHeight);
         },
         drawCursor: function() {
             context.drawImage(cursor, screen.mouseCanvasCoords[0], screen.mouseCanvasCoords[1], 100, 100);
@@ -299,16 +320,6 @@ window.onload = function() {
                 map.treeMap[i] = new Array(chunkWidth);
             }
 
-            //randomly add trees
-            for(var i = 0; i < chunkHeight; i++) {
-                for(var j = 0; j < chunkWidth; j++) {
-                    if (Math.random() < 0.05) {
-                        map.treeMap[i][j] = 1
-                      }
-                    
-                }
-            }
-
             seed();
             for (var i = 0; i < 150; i++) {
                 makeLikeSurroundingTiles();
@@ -368,6 +379,19 @@ window.onload = function() {
             }
             numTiles = tilesList.length;
         },
+        generateTrees: function(){
+            for (var i = 0; i < map.tileMap.length; i++) {
+                for (var j = 0; j < map.tileMap[i].length; j++) {
+                    if (map.tileMap[i][j] === 0 && map.treeMap[i][j] !== 1) {
+                        if (Math.random() < 0.01) {
+                            map.treeMap[i][j] = 1;
+                        } else if (Math.random() < 0.01) {
+                            map.treeMap[i][j] = 2;
+                        }
+                    }
+                }
+            }
+        }
     };
     var waterAnimationFrame = 0;
     setInterval(function() {
@@ -379,6 +403,7 @@ window.onload = function() {
         }
     }, 300);
     generator.generateChunk();
+    generator.generateTrees();
     var processPlayerMovement = setInterval(function() {
         if (player.movementQueue.length > 0) {
             var direction = player.movementQueue.shift();
@@ -616,13 +641,13 @@ window.onload = function() {
                 screen.tileHeight = a_canvas.height / screen.numRows;
                 break;
             case "rotate clockwise":
-                angle = 1 * (Math.PI / 180)
+                angle = 5 * (Math.PI / 180)
                 context.translate(a_canvas.width / 2, a_canvas.height / 2)
                 context.rotate(angle)
                 context.translate(-a_canvas.width / 2, -a_canvas.height / 2)
                 break;
             case "rotate counter-clockwise":
-                angle = -1 * (Math.PI / 180)
+                angle = -5 * (Math.PI / 180)
                 context.translate(a_canvas.width / 2, a_canvas.height / 2)
                 context.rotate(angle)
                 context.translate(-a_canvas.width / 2, -a_canvas.height / 2)
@@ -631,8 +656,8 @@ window.onload = function() {
                 showOptionsMenu = !showOptionsMenu;
         }
     }
-    window.addEventListener("keydown", handleKeyDown, false);
-
+    window.addEventListener("keydown", handleKeyDown, false)
+  
     setInterval(() => {
         graphics.redrawMap();
         graphics.drawSelectionBox(screen.oldSelectionBoxCoords, screen.selectionBoxCoords);
@@ -642,5 +667,6 @@ window.onload = function() {
         graphics.drawNotifications();
         graphics.drawInterface();
         graphics.drawOptionsMenu();
+        graphics.drawEnemy();
     }, 1000 / config.fps);
 }
