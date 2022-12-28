@@ -31,8 +31,10 @@ window.onload = function() {
     };
     screen.tileWidth = a_canvas.width / screen.numColumns, screen.tileHeight = a_canvas.height / screen.numRows;
     var sounds = {
-        walking: new Audio("res/walking.mp3")
+        walking: new Audio("res/walking.mp3"),
+        music: new Audio("res/backgroundmusic.mp3"),
     };
+
     var player = {
         name: "Jordan",
         screenTileX: Math.floor(screen.numRows / 2),
@@ -45,7 +47,9 @@ window.onload = function() {
         moveSpeed: 5,
         isMoving: false,
         animationFrame: 0,
-        movementQueue: []
+        movementQueue: [],
+        deltaX: 0,
+        deltaY: 0
     };
     player.pixelX = player.screenTileX * screen.tileWidth, player.pixelY = player.screenTileY * screen.tileHeight - screen.tileHeight;
     const movementDirections = {
@@ -207,26 +211,33 @@ window.onload = function() {
             context.fillText(`Chunk Coords: (${chunkX},${chunkY})`, player.pixelX, player.pixelY + player.imgHeight + 40);
         },
         drawTrees: function() {
-            var distLeftRight = (screen.numColumns - 1) / 2;
-            var distTopBot = (screen.numRows - 1) / 2;
+            var distLeftRight = (screen.numColumns - 1) / 2 + 6;
+            var distTopBot = (screen.numRows - 1) / 2 + 6;
             var leftEdge = player.worldX - distLeftRight;
             var topEdge = player.worldY - distTopBot;
-            for (var i = 0; i < screen.numColumns; i++) {
-                for (var j = 0; j < screen.numRows; j++) {
-                    switch (map.treeMap[Math.floor(leftEdge + i)][Math.floor(topEdge + j)]) {
-                        case 1:
-                            context.drawImage(tiles.tree1.image, (screen.tileWidth * i) - screen.tileWidth / 2 + screen.offsetX, screen.tileHeight * j + screen.offsetY, tiles.tree1.width, tiles.tree1.height);
-                            break;
-                        case 2:
-                            context.drawImage(tiles.tree2.image, screen.tileWidth * i - screen.tileWidth / 2 + screen.offsetX, screen.tileHeight * j + screen.offsetY, tiles.tree2.width, tiles.tree2.height);
-                            break;
-                        case 4:
-                            context.drawImage(tiles.flower.image, screen.tileWidth * i + screen.offsetX, screen.tileHeight * j + screen.offsetY, tiles.flower.width, tiles.flower.height);
-                            break;
-                    }
+          
+            for (var i = -6; i < screen.numColumns + 6; i++) {
+              for (var j = -6; j < screen.numRows + 6; j++) {
+                var treeX = screen.tileWidth * i - screen.tileWidth / 2 + screen.offsetX;
+                var treeY = screen.tileHeight * j + screen.offsetY;
+          
+                switch (map.treeMap[Math.floor(leftEdge + i)][Math.floor(topEdge + j)]) {
+                  case 1:
+                    context.drawImage(tiles.tree1.image, treeX, treeY, tiles.tree1.width, tiles.tree1.height);
+                    break;
+                  case 2:
+                    context.drawImage(tiles.tree2.image, treeX, treeY, tiles.tree2.width, tiles.tree2.height);
+                    break;
+                  case 4:
+                    context.drawImage(tiles.flower.image, treeX, treeY, tiles.flower.width, tiles.flower.height);
+                    break;
                 }
+              }
             }
-        },
+          },
+             
+
+        
         drawMouseCoords: function() {
             var tileX = Math.floor(screen.mouseCanvasCoords[0] / screen.tileWidth);
             var tileY = Math.floor(screen.mouseCanvasCoords[1] / screen.tileHeight);
@@ -657,7 +668,8 @@ window.onload = function() {
         }
     }
     window.addEventListener("keydown", handleKeyDown, false)
-  
+    sounds.music.play();
+
     setInterval(() => {
         graphics.redrawMap();
         graphics.drawSelectionBox(screen.oldSelectionBoxCoords, screen.selectionBoxCoords);
