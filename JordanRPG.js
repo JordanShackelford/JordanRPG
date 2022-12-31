@@ -580,52 +580,52 @@ window.onload = function() {
         const action = KEY_CODE_ACTIONS[e.keyCode];
         if (!action) return;
         switch (action) {
-          case "north":
-          case "south":
-          case "west":
-          case "east":
-            player.movementQueue.push(action);
-            break;
-          case "clear notifications":
-            notifications = [];
-            break;
-          case "select inventory slot 0":
-          case "select inventory slot 1":
-          case "select inventory slot 2":
-          case "select inventory slot 3":
-          case "select inventory slot 4":
-          case "select inventory slot 5":
-            gameInterface.inventorySlotSelected = action.slice(-1);
-            break;
-          case "zoom out":
-            screen.numRows -= 2;
-            screen.numColumns -= 2;
-            screen.tileWidth = a_canvas.width / screen.numColumns;
-            screen.tileHeight = a_canvas.height / screen.numRows;
-            break;
-          case "zoom in":
-            screen.numRows += 2;
-            screen.numColumns += 2;
-            screen.tileWidth = a_canvas.width / screen.numColumns;
-            screen.tileHeight = a_canvas.height / screen.numRows;
-            break;
-          case "rotate clockwise":
-            angle = 5 * (Math.PI / 180);
-            context.translate(a_canvas.width / 2, a_canvas.height / 2);
-            context.rotate(angle);
-            context.translate(-a_canvas.width / 2, -a_canvas.height / 2);
-            break;
-          case "rotate counter-clockwise":
-            angle = -5 * (Math.PI / 180);
-            context.translate(a_canvas.width / 2, a_canvas.height / 2);
-            context.rotate(angle);
-            context.translate(-a_canvas.width / 2, -a_canvas.height / 2);
-            break;
-          case "toggle options menu":
-            showOptionsMenu = !showOptionsMenu;
+        case "north":
+        case "south":
+        case "west":
+        case "east":
+        player.movementQueue.push(action);
+        break;
+        case "clear notifications":
+        notifications = [];
+        break;
+        case "select inventory slot 0":
+        case "select inventory slot 1":
+        case "select inventory slot 2":
+        case "select inventory slot 3":
+        case "select inventory slot 4":
+        case "select inventory slot 5":
+        gameInterface.inventorySlotSelected = action.slice(-1);
+        break;
+        case "zoom out":
+        screen.numRows -= 2;
+        screen.numColumns -= 2;
+        screen.tileWidth = a_canvas.width / screen.numColumns;
+        screen.tileHeight = a_canvas.height / screen.numRows;
+        break;
+        case "zoom in":
+        screen.numRows += 2;
+        screen.numColumns += 2;
+        screen.tileWidth = a_canvas.width / screen.numColumns;
+        screen.tileHeight = a_canvas.height / screen.numRows;
+        break;
+        case "rotate clockwise":
+        angle = 5 * (Math.PI / 180);
+        context.translate(a_canvas.width / 2, a_canvas.height / 2);
+        context.rotate(angle);
+        context.translate(-a_canvas.width / 2, -a_canvas.height / 2);
+        break;
+        case "rotate counter-clockwise":
+        angle = -5 * (Math.PI / 180);
+        context.translate(a_canvas.width / 2, a_canvas.height / 2);
+        context.rotate(angle);
+        context.translate(-a_canvas.width / 2, -a_canvas.height / 2);
+        break;
+        case "toggle options menu":
+        showOptionsMenu = !showOptionsMenu;
+        break;
         }
-      }
-      
+        }
     window.addEventListener("keydown", handleKeyDown, false)
     sounds.music.play();
     function updateEnemyPosition() {
