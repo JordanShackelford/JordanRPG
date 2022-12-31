@@ -374,19 +374,17 @@ window.onload = function() {
               }
               numTiles = tilesList.length;
         },
-        generateTrees: function(){
+        generateTrees: function() {
             for (var i = 0; i < map.tileMap.length; i++) {
-                for (var j = 0; j < map.tileMap[i].length; j++) {
-                    if (map.tileMap[i][j] === 0 && map.treeMap[i][j] !== 1) {
-                        if (Math.random() < 0.01) {
-                            map.treeMap[i][j] = 1;
-                        } else if (Math.random() < 0.01) {
-                            map.treeMap[i][j] = 2;
-                        }
-                    }
+              for (var j = 0; j < map.tileMap[i].length; j++) {
+                if (map.tileMap[i][j] === 0 && !map.treeMap[i][j]) {
+                  if (Math.random() < 0.01) {
+                    map.treeMap[i][j] = Math.random() < 0.5 ? 1 : 2;
+                  }
                 }
+              }
             }
-        }
+          }
     };
     var waterAnimationFrame = 0;
     setInterval(function() {
