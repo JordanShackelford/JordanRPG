@@ -1,66 +1,63 @@
 window.onload = function() {
     let showOptionsMenu = false;
-    var a_canvas = document.getElementById("a"),context = a_canvas.getContext("2d"),
-    cursor = new Image(), boat = new Image();
+    var a_canvas = document.getElementById("a"), context = a_canvas.getContext("2d"), cursor = new Image(), boat = new Image();
     cursor.src = "res/swordicon.png";
     boat.src = "res/boat.png";
     function Tile({ size = [1, 1], image } = {}) {
-        [width, height] = size;
-        this.width = screen.tileWidth * width;
-        this.height = screen.tileHeight * height;
-        this.image = new Image();
-        this.image.src = image;
+      var width, height;
+      [width, height] = size;
+      this.width = screen.tileWidth * width;
+      this.height = screen.tileHeight * height;
+      this.image = new Image();
+      this.image.src = image;
     }
     var notifications = ["Move with W,A,S,D keys or by clicking/tapping", "Press Esc to open options menu", "Use number keys to select inventory slot"];
     var map = {};
     var screen = {
-        offsetX: 0,
-        offsetY: 0,
-        numRows: 15,
-        numColumns: 15,
-        mouseCanvasCoords: [0, 0],
-        oldSelectionBoxCoords: [0, 0],
-        selectionBoxCoords: [0, 0],
-        tileX: 0,
-        tileY: 0,
-        notificationX: a_canvas.width * 0.02,
-        notificationY: a_canvas.height * 0.045,
-        notificationSpacing: 30,
-        numOfInventorySlots: 4
+      offsetX: 0,
+      offsetY: 0,
+      numRows: 15,
+      numColumns: 15,
+      mouseCanvasCoords: [0, 0],
+      oldSelectionBoxCoords: [0, 0],
+      selectionBoxCoords: [0, 0],
+      tileX: 0,
+      tileY: 0,
+      notificationX: a_canvas.width * 0.02,
+      notificationY: a_canvas.height * 0.045,
+      notificationSpacing: 30,
+      numOfInventorySlots: 4
     };
     screen.tileWidth = a_canvas.width / screen.numColumns, screen.tileHeight = a_canvas.height / screen.numRows;
     var sounds = {
-        walking: new Audio("res/walking.mp3"),
-        music: new Audio("res/backgroundmusic.mp3"),
+      walking: new Audio("res/walking.mp3"),
+      music: new Audio("res/backgroundmusic.mp3")
     };
-
     var player = {
-        name: "Jordan",
-        screenTileX: Math.floor(screen.numRows / 2),
-        screenTileY: Math.floor(screen.numColumns / 2),
-        worldX: 150,
-        worldY: 150,
-        img: document.getElementById("player"),
-        imgWidth: screen.tileWidth,
-        imgHeight: screen.tileHeight * 2,
-        moveSpeed: 5,
-        isMoving: false,
-        animationFrame: 0,
-        movementQueue: [],
-        deltaX: 0,
-        deltaY: 0
+      name: "Jordan",
+      screenTileX: Math.floor(screen.numRows / 2),
+      screenTileY: Math.floor(screen.numColumns / 2),
+      worldX: 150,
+      worldY: 150,
+      img: document.getElementById("player"),
+      imgWidth: screen.tileWidth,
+      imgHeight: screen.tileHeight * 2,
+      moveSpeed: 5,
+      isMoving: false,
+      animationFrame: 0,
+      movementQueue: [],
+      deltaX: 0,
+      deltaY: 0
     };
     player.pixelX = player.screenTileX * screen.tileWidth, player.pixelY = player.screenTileY * screen.tileHeight - screen.tileHeight;
     const movementDirections = {
-        east: { worldX: screen.tileWidth, worldY: 0 },
-        west: { worldX: -screen.tileWidth, worldY: 0 },
-        north: { worldX: 0, worldY: -screen.tileHeight },
-        south: { worldX: 0, worldY: screen.tileHeight }
+      east: { worldX: screen.tileWidth, worldY: 0 },
+      west: { worldX: -screen.tileWidth, worldY: 0 },
+      north: { worldX: 0, worldY: -screen.tileHeight },
+      south: { worldX: 0, worldY: screen.tileHeight }
     };
-
     var enemyImg = new Image();
     enemyImg.src = "res/enemy.png";
-
     var enemy = {
         name: "Enemy",
         screenTileX: Math.floor(screen.numRows / 2),
@@ -75,7 +72,6 @@ window.onload = function() {
         animationFrame: 0,
         movementQueue: []
     };
-    
     var gameInterface = {
         inventorySlotSelected: 0,
         icons: {},
