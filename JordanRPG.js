@@ -116,22 +116,22 @@ window.onload = function() {
         },
         drawPlayer: function() {
             var animationClips = [
-                [8, 7], //north 1
-                [55, 2], //north 2
-                [102, 2], //north 3
-                [153, 2], //north 4
-                [8, 150],
-                [51, 150],
-                [104, 150],
-                [155, 150],
-                [8, 76],
-                [51, 76],
-                [104, 76],
-                [155, 76],
-                [8, 220],
-                [51, 220],
-                [104, 220],
-                [155, 220]
+                [8,7], //north 1
+                [55,2], //north 2
+                [102,2], //north 3
+                [153,2], //north 4
+                [8,150],
+                [51,150],
+                [104,150],
+                [155,150],
+                [8,76],
+                [51,76],
+                [104,76],
+                [155,76],
+                [8,220],
+                [51,220],
+                [104,220],
+                [155,220]
             ];
             var xClip = animationClips[player.animationFrame][0];
             var yClip = animationClips[player.animationFrame][1];
