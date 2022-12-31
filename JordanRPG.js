@@ -239,11 +239,11 @@ window.onload = function() {
             context.fillStyle = "yellow";
             context.fillText("(" + tileX + "," + tileY + ")", screen.selectionBoxCoords[0], screen.selectionBoxCoords[1] + screen.tileHeight + 20);
         },
-        drawNotifications: function() {
-            var boxWidth = a_canvas.width * 0.6,
-                boxHeight = 200,
-                boxX = a_canvas.width * 0.01,
-                boxY = a_canvas.height * 0.01;
+        drawNotifications:function() {
+            const boxWidth = a_canvas.width * 0.6;
+            const boxHeight = 200;
+            const boxX = a_canvas.width * 0.01;
+            const boxY = a_canvas.height * 0.01;
             context.font = "40px Arial";
             context.lineWidth = 4;
             context.strokeStyle = "red";
@@ -252,14 +252,12 @@ window.onload = function() {
             context.stroke();
             context.fillStyle = "rgba(0,150,150,0.5)";
             context.fill();
-            for (var i = 0; i < notifications.length; i++) {
-                if (notifications.length > 6) {
-                    notifications.shift();
-                }
-                context.fillStyle = "yellow";
-                context.fillText(notifications[i], screen.notificationX, screen.notificationY + screen.notificationSpacing * i);
+            for (let i = 0; i < notifications.length; i++) {
+              if (notifications.length > 6) notifications.shift();
+              context.fillStyle = "yellow";
+              context.fillText(notifications[i], screen.notificationX, screen.notificationY + screen.notificationSpacing * i);
             }
-        },
+        },          
         drawOptionsMenu: function() {
             if (showOptionsMenu === true) {
                 var menuWidth = a_canvas.width * 0.9;
