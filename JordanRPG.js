@@ -259,19 +259,15 @@ window.onload = function() {
             }
         },          
         drawOptionsMenu: function() {
-            if (showOptionsMenu === true) {
-                var menuWidth = a_canvas.width * 0.9;
-                var menuHeight = a_canvas.height * 0.9;
-                var menuX = (a_canvas.width - menuWidth) / 2;
-                var menuY = (a_canvas.height - menuHeight) / 2;
+            if (showOptionsMenu) {
                 context.beginPath();
-                context.rect(menuX, menuY, menuWidth, menuHeight);
+                context.rect((a_canvas.width * 0.05) / 2, (a_canvas.height * 0.05) / 2, a_canvas.width * 0.9, a_canvas.height * 0.9);
                 context.lineWidth = 3;
                 context.strokeStyle = "yellow";
-                context.stroke();
                 context.fillStyle = "rgb(50,50,50)";
                 context.fill();
-            }
+                context.stroke();
+              }
         }
     };
     var math = {
