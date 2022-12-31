@@ -298,10 +298,8 @@ window.onload = function() {
     var tiles = {};
     Object.assign(tiles, tileData);
     for (var key in tiles) {
-        if (tiles.hasOwnProperty(key)) {
-            var data = tiles[key];
-            tiles[key] = new Tile({ size: data.slice(0, 2), image: data[2] });
-        }
+        var data = tiles[key];
+        tiles[key] = new Tile({ size: data.slice(0, 2), image: data[2] });
     }
     var config = {
         fps: 60
