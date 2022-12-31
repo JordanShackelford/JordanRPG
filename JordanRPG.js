@@ -139,7 +139,6 @@ window.onload = function() {
             context.strokeText(player.name, player.pixelX - player.imgWidth / 10, player.pixelY);
             if (map.tileMap[Math.floor(player.worldX)][Math.floor(player.worldY)] === 1) {
                 context.drawImage(boat, player.pixelX, player.pixelY, player.imgWidth, player.imgHeight);
-                
             } else {
                 context.drawImage(player.img, xClip, yClip, 32, 64, player.pixelX, player.pixelY, player.imgWidth, player.imgHeight);
             }
@@ -332,39 +331,39 @@ window.onload = function() {
             }
             function makeLikeSurroundingTiles() {
                 for (var i = 0; i < chunkHeight; i++) {
-                  for (var j = 0; j < chunkWidth; j++) {
-                    if (i === 0 || j === 0 || i === chunkWidth - 1 || j === chunkHeight - 1) continue;
-                    var counts = {
-                      0: 0, // grass
-                      1: 0, // water
-                      2: 0, // dirt
-                    };
-                    var center = map.tileMap[i][j];
-                    counts[center] += 1;
-                    var surrounding = [        [i - 1, j], // left
-                      [i - 1, j - 1], // top-left
-                      [i, j - 1], // top
-                      [i + 1, j - 1], // top-right
-                      [i + 1, j], // right
-                      [i + 1, j + 1], // bottom-right
-                      [i, j + 1], // bottom
-                      [i - 1, j + 1], // bottom-left
-                    ];
-                    surrounding.forEach(([r, c]) => {
-                      var tile = map.tileMap[r][c];
-                      counts[tile] += 1;
-                    });
-                    if (counts[0] >= counts[1] && counts[0] >= counts[2]) {
-                      map.tileMap[i][j] = 0; // grass
-                    } else if (counts[1] >= counts[0] && counts[1] >= counts[2]) {
-                      map.tileMap[i][j] = 1; // water
-                    } else {
-                      map.tileMap[i][j] = 2; // dirt
+                    for (var j = 0; j < chunkWidth; j++) {
+                        if (i === 0 || j === 0 || i === chunkWidth - 1 || j === chunkHeight - 1) continue;
+                        var counts = {
+                            0: 0, // grass
+                            1: 0, // water
+                            2: 0, // dirt
+                        };
+                        var center = map.tileMap[i][j];
+                        counts[center] += 1;
+                        var surrounding = [                    [i - 1, j], // left
+                            [i - 1, j - 1], // top-left
+                            [i, j - 1], // top
+                            [i + 1, j - 1], // top-right
+                            [i + 1, j], // right
+                            [i + 1, j + 1], // bottom-right
+                            [i, j + 1], // bottom
+                            [i - 1, j + 1], // bottom-left
+                        ];
+                        surrounding.forEach(([r, c]) => {
+                            var tile = map.tileMap[r][c];
+                            counts[tile] += 1;
+                        });
+                        if (counts[0] >= counts[1] && counts[0] >= counts[2]) {
+                            map.tileMap[i][j] = 0; // grass
+                        } else if (counts[1] >= counts[0] && counts[1] >= counts[2]) {
+                            map.tileMap[i][j] = 1; // water
+                        } else {
+                            map.tileMap[i][j] = 2; // dirt
+                        }
                     }
-                  }
                 }
-              }
-              numTiles = tilesList.length;
+            }
+            numTiles = tilesList.length;
         },
         generateTrees: function() {
             for (var i = 0; i < map.tileMap.length; i++) {
