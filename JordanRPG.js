@@ -207,12 +207,10 @@ window.onload = function() {
             var distTopBot = (screen.numRows - 1) / 2 + 6;
             var leftEdge = player.worldX - distLeftRight;
             var topEdge = player.worldY - distTopBot;
-          
             for (var i = -6; i < screen.numColumns + 6; i++) {
               for (var j = -6; j < screen.numRows + 6; j++) {
                 var treeX = screen.tileWidth * i - screen.tileWidth / 2 + screen.offsetX;
                 var treeY = screen.tileHeight * j + screen.offsetY;
-          
                 switch (map.treeMap[Math.floor(leftEdge + i)][Math.floor(topEdge + j)]) {
                   case 1:
                     context.drawImage(tiles.tree1.image, treeX, treeY, tiles.tree1.width, tiles.tree1.height);
@@ -227,9 +225,6 @@ window.onload = function() {
               }
             }
           },
-             
-
-        
         drawMouseCoords: function() {
             var tileX = Math.floor(screen.mouseCanvasCoords[0] / screen.tileWidth);
             var tileY = Math.floor(screen.mouseCanvasCoords[1] / screen.tileHeight);
@@ -313,7 +308,6 @@ window.onload = function() {
                 map.tileMap[i] = new Array(chunkWidth);
                 map.treeMap[i] = new Array(chunkWidth);
             }
-
             seed();
             for (var i = 0; i < 150; i++) {
                 makeLikeSurroundingTiles();
@@ -382,7 +376,7 @@ window.onload = function() {
                 }
               }
             }
-          }
+        }
     };
     var waterAnimationFrame = 0;
     setInterval(function() {
@@ -623,7 +617,7 @@ window.onload = function() {
         showOptionsMenu = !showOptionsMenu;
         break;
         }
-        }
+    }
     window.addEventListener("keydown", handleKeyDown, false)
     sounds.music.play();
     function updateEnemyPosition() {
