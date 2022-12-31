@@ -82,12 +82,10 @@ window.onload = function() {
       }
     var graphics = {
         redrawMap: function() {
-            // Calculate edges of map
             const distLeftRight = (screen.numColumns - 1) / 2;
             const distTopBot = (screen.numRows - 1) / 2;
             const leftEdge = player.worldX - distLeftRight;
             const topEdge = player.worldY - distTopBot;
-            // Iterate through tiles on screen
             for (let i = -6; i < screen.numColumns + 6; i++) {
               for (let j = -6; j < screen.numRows + 6; j++) {
                 const tileValue = map.tileMap[Math.floor(leftEdge + i)][Math.floor(topEdge + j)];
