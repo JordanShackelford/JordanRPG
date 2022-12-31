@@ -430,7 +430,6 @@ window.onload = function() {
     }, 1000 / player.moveSpeed);
     function moveNorth() {
         sounds.walking.play();
-
         if(player.animationFrame == 12){
             player.animationFrame = 13;
         } else if (player.animationFrame == 13){
@@ -440,7 +439,6 @@ window.onload = function() {
         } else {
             player.animationFrame = 12;
         }
-
         if (map.treeMap[player.worldX][player.worldY + 1] === 3) {
             notifications.push("There is a rock right there!");
         } else {
@@ -456,10 +454,8 @@ window.onload = function() {
             })();
         }
     }
-    
     function moveSouth() {
         sounds.walking.play();
-        
         if(player.animationFrame == 0){
             player.animationFrame = 1;
         } else if (player.animationFrame == 1){
@@ -469,7 +465,6 @@ window.onload = function() {
         } else {
             player.animationFrame = 0;
         }
-
         if (map.treeMap[player.worldX][player.worldY + 1] === 3) {
             notifications.push("There is a rock right there!");
         } else {
@@ -489,7 +484,6 @@ window.onload = function() {
     }
     function moveEast() {
         sounds.walking.play();
-
         if(player.animationFrame == 4){
             player.animationFrame = 5;
         } else if (player.animationFrame == 5){
@@ -499,7 +493,6 @@ window.onload = function() {
         } else {
             player.animationFrame = 4;
         }
-
         if (map.treeMap[player.worldX + 1][player.worldY] === 3) {
             notifications.push("There is a rock right there!");
         } else {
@@ -527,7 +520,6 @@ window.onload = function() {
         } else {
             player.animationFrame = 8;
         }
-
         if (map.treeMap[player.worldX - 1][player.worldY] === 3) {
             notifications.push("There is a rock right there!");
         } else {
@@ -650,16 +642,11 @@ window.onload = function() {
         }
     }
     window.addEventListener("keydown", handleKeyDown, false)
-
-    
     sounds.music.play();
-
     function updateEnemyPosition() {
         enemy.worldX += enemy.deltaX;
         enemy.worldY += enemy.deltaY;
       }
-
-    
     function gameLoop(){
         graphics.redrawMap();
         graphics.drawSelectionBox(screen.oldSelectionBoxCoords, screen.selectionBoxCoords);
@@ -671,10 +658,7 @@ window.onload = function() {
         graphics.drawNotifications();
         graphics.drawInterface();
         graphics.drawOptionsMenu();
-
-        //print enemy pixel x and y
-        notifications.push(enemy.pixelX + " " + enemy.pixelY);
+        notifications.push(enemy.pixelX + " " + enemy.pixelY);//print enemy pixel x and y
     }
-
     setInterval((gameLoop), 1000 / config.fps);
 }
