@@ -1,8 +1,7 @@
 window.onload = function() {
     let showOptionsMenu = false;
-    var a_canvas = document.getElementById("a");
-    var context = a_canvas.getContext("2d");
-    var cursor = new Image(), boat = new Image();
+    var a_canvas = document.getElementById("a"),context = a_canvas.getContext("2d"),
+    cursor = new Image(), boat = new Image();
     cursor.src = "res/swordicon.png";
     boat.src = "res/boat.png";
     function Tile({ size = [1, 1], image } = {}) {
@@ -76,8 +75,7 @@ window.onload = function() {
         animationFrame: 0,
         movementQueue: []
     };
-    enemy.pixelX = enemy.screenTileX * screen.tileWidth, enemy.pixelY = enemy.screenTileY * screen.tileHeight - screen.tileHeight;
-
+    
     var gameInterface = {
         inventorySlotSelected: 0,
         icons: {},
@@ -152,9 +150,9 @@ window.onload = function() {
                 context.drawImage(player.img, xClip, yClip, 32, 64, player.pixelX, player.pixelY, player.imgWidth, player.imgHeight);
             }
         },
-        drawEnemy: function(){
-            enemy.pixelX = (enemy.worldX - screen.offsetX) * screen.tileWidth;
-            enemy.pixelY = (enemy.worldY - screen.offsetY) * screen.tileHeight;
+        drawEnemy: function() {
+            enemy.pixelX = (enemy.worldX - player.offsetX) * screen.tileWidth;
+            enemy.pixelY = (enemy.worldY - player.offsetY) * screen.tileHeight;
             context.drawImage(enemy.img, enemy.pixelX, enemy.pixelY, enemy.imgWidth, enemy.imgHeight);
         },
         drawCursor: function() {
@@ -668,17 +666,31 @@ window.onload = function() {
         }
     }
     window.addEventListener("keydown", handleKeyDown, false)
+
+    
     sounds.music.play();
 
-    setInterval(() => {
+    function updateEnemyPosition() {
+        enemy.worldX += enemy.deltaX;
+        enemy.worldY += enemy.deltaY;
+      }
+
+    
+    function gameLoop(){
         graphics.redrawMap();
         graphics.drawSelectionBox(screen.oldSelectionBoxCoords, screen.selectionBoxCoords);
         graphics.drawPlayer();
+        updateEnemyPosition(); 
+        graphics.drawEnemy();
         graphics.drawTrees();
         graphics.drawCursor();
         graphics.drawNotifications();
         graphics.drawInterface();
         graphics.drawOptionsMenu();
-        graphics.drawEnemy();
-    }, 1000 / config.fps);
+
+        //print enemy pixel x and y
+        notifications.push(enemy.pixelX + " " + enemy.pixelY);
+    }
+
+    setInterval((gameLoop), 1000 / config.fps);
 }
