@@ -271,16 +271,15 @@ window.onload = function() {
         }
     };
     var math = {
-        calculateTileClicked: function(coords) {
-            var x = Math.floor(coords[0] / screen.tileWidth) * screen.tileWidth;
-            var y = Math.floor(coords[1] / screen.tileHeight) * screen.tileHeight;
-            return [x, y];
-        },
-        calculateCanvasCoordsFromWindowCoords: function(windowX, windowY) {
-            var rect = context.canvas.getBoundingClientRect();
-            var canvasX = (windowX - rect.left) / (rect.right - rect.left) * context.canvas.width;
-            var canvasY = (windowY - rect.top) / (rect.bottom - rect.top) * context.canvas.height;
-            return [Math.round(canvasX), Math.round(canvasY)];
+        calculateTileClicked: (coords) => [
+          Math.floor(coords[0] / screen.tileWidth) * screen.tileWidth,
+          Math.floor(coords[1] / screen.tileHeight) * screen.tileHeight
+        ],
+        calculateCanvasCoordsFromWindowCoords: (windowX, windowY) => {
+          const rect = context.canvas.getBoundingClientRect();
+          const canvasX = (windowX - rect.left) / (rect.right - rect.left) * context.canvas.width;
+          const canvasY = (windowY - rect.top) / (rect.bottom - rect.top) * context.canvas.height;
+          return [Math.round(canvasX), Math.round(canvasY)];
         }
     };
     var tileData = {
