@@ -449,11 +449,13 @@ window.onload = function() {
         } else if (!player.isMoving) {
           dir.sound.play();
           player.isMoving = true;
-          player.animationFrame = (player.animationFrame + 1) % 4;
+          player.animationFrame = dir.animationFrame[(player.animationFrame + 1) % 4];
           let moveInterval = setInterval(() => {
             screen.offsetX += dir.offsetX;
             screen.offsetY += dir.offsetY;
           }, 250 / 15);
+          const distance = Math.abs(dir.x) + Math.abs(dir.y);
+          const duration = 250 * distance;
           setTimeout(() => {
             player.worldX += dir.x;
             player.worldY += dir.y;
@@ -461,10 +463,9 @@ window.onload = function() {
             player.isMoving = false;
             screen.offsetX = 0;
             screen.offsetY = 0;
-          }, 250);
+          }, duration);
         }
-      }
-      
+      }        
     a_canvas.addEventListener('mousemove', function(evt) {
         screen.mouseCanvasCoords = math.calculateCanvasCoordsFromWindowCoords(evt.clientX, evt.clientY);
         screen.oldSelectionBoxCoords = screen.selectionBoxCoords;
@@ -508,52 +509,41 @@ window.onload = function() {
         const action = KEY_CODE_ACTIONS[e.keyCode];
         if (!action) return;
         switch (action) {
-        case "north":
-        case "south":
-        case "west":
-        case "east":
-        player.movementQueue.push(action);
-        break;
-        case "clear notifications":
-        notifications = [];
-        break;
-        case "select inventory slot 0":
-        case "select inventory slot 1":
-        case "select inventory slot 2":
-        case "select inventory slot 3":
-        case "select inventory slot 4":
-        case "select inventory slot 5":
-        gameInterface.inventorySlotSelected = action.slice(-1);
-        break;
-        case "zoom out":
-        screen.numRows -= 2;
-        screen.numColumns -= 2;
-        screen.tileWidth = a_canvas.width / screen.numColumns;
-        screen.tileHeight = a_canvas.height / screen.numRows;
-        break;
-        case "zoom in":
-        screen.numRows += 2;
-        screen.numColumns += 2;
-        screen.tileWidth = a_canvas.width / screen.numColumns;
-        screen.tileHeight = a_canvas.height / screen.numRows;
-        break;
-        case "rotate clockwise":
-        angle = 5 * (Math.PI / 180);
-        context.translate(a_canvas.width / 2, a_canvas.height / 2);
-        context.rotate(angle);
-        context.translate(-a_canvas.width / 2, -a_canvas.height / 2);
-        break;
-        case "rotate counter-clockwise":
-        angle = -5 * (Math.PI / 180);
-        context.translate(a_canvas.width / 2, a_canvas.height / 2);
-        context.rotate(angle);
-        context.translate(-a_canvas.width / 2, -a_canvas.height / 2);
-        break;
-        case "toggle options menu":
-        showOptionsMenu = !showOptionsMenu;
-        break;
+          case "north":
+          case "south":
+          case "west":
+          case "east":
+            player.movementQueue.push(action);
+            break;
+          case "clear notifications":
+            notifications = [];
+            break;
+          case "select inventory slot 0":
+          case "select inventory slot 1":
+          case "select inventory slot 2":
+          case "select inventory slot 3":
+          case "select inventory slot 4":
+          case "select inventory slot 5":
+            gameInterface.inventorySlotSelected = action.slice(-1);
+            break;
+          case "zoom out":
+            screen.zoom(-2);
+            break;
+          case "zoom in":
+            screen.zoom(2);
+            break;
+          case "rotate clockwise":
+            screen.rotate(5);
+            break;
+          case "rotate counter-clockwise":
+            screen.rotate(-5);
+            break;
+          case "toggle options menu":
+            showOptionsMenu = !showOptionsMenu;
+            break;
         }
-    }
+      }
+      
     window.addEventListener("keydown", handleKeyDown, false)
     sounds.music.play();
     function updateEnemyPosition() {
