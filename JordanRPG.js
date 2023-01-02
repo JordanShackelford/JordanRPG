@@ -167,6 +167,9 @@ window.onload = function() {
             const inventoryHeight = a_canvas.height * 0.15;
             const inventoryX = (a_canvas.width - inventoryWidth) / 2.0;
             const inventoryY = (a_canvas.height - inventoryHeight) * 0.9;
+            const numOfSlots = 6;
+            const slotWidth = inventoryWidth / numOfSlots;
+            const slotHeight = inventoryHeight; 
             context.beginPath();
             context.rect(inventoryX, inventoryY, inventoryWidth, inventoryHeight);
             context.lineWidth = 3;
@@ -174,9 +177,6 @@ window.onload = function() {
             context.stroke();
             context.fillStyle = "rgba(0,255,255,0.3)";
             context.fill();
-            const numOfSlots = 6;
-            const slotWidth = inventoryWidth / numOfSlots;
-            const slotHeight = inventoryHeight; 
             for (let i = 0; i < numOfSlots; i++) {
               const slotX = inventoryX + (slotWidth * i);
               const slotY = inventoryY;
@@ -201,9 +201,10 @@ window.onload = function() {
             context.strokeStyle = "rgb(150,0,0)";
             context.beginPath();
             context.rect(selectedSlotX,selectedSlotY, slotWidth, slotHeight);
-            context.stroke();            
+            context.stroke();
             context.drawImage(gameInterface.icons.hatchet, inventoryX, inventoryY, slotWidth, slotHeight);
-            },
+          },
+          
         drawPlayerCoords: function() {
             context.fillStyle = "yellow";
             context.font = "14px Arial";
