@@ -113,36 +113,47 @@ window.onload = function() {
             context.stroke();
         },
         drawPlayer: function() {
-            var animationClips = [
-                [8,7], //north 1
-                [55,2], //north 2
-                [102,2], //north 3
-                [153,2], //north 4
-                [8,150],
-                [51,150],
-                [104,150],
-                [155,150],
-                [8,76],
-                [51,76],
-                [104,76],
-                [155,76],
-                [8,220],
-                [51,220],
-                [104,220],
-                [155,220]
+            const animationClips = [    [8, 7],
+              [55, 2],
+              [102, 2],
+              [153, 2],
+              [8, 150],
+              [51, 150],
+              [104, 150],
+              [155, 150],
+              [8, 76],
+              [51, 76],
+              [104, 76],
+              [155, 76],
+              [8, 220],
+              [51, 220],
+              [104, 220],
+              [155, 220],
             ];
-            var xClip = animationClips[player.animationFrame][0];
-            var yClip = animationClips[player.animationFrame][1];
+          
             context.font = "40px Comic Sans MS";
             context.strokeStyle = "yellow";
             context.lineWidth = 2;
             context.strokeText(player.name, player.pixelX - player.imgWidth / 10, player.pixelY);
+          
             if (map.tileMap[Math.floor(player.worldX)][Math.floor(player.worldY)] === 1) {
-                context.drawImage(boat, player.pixelX, player.pixelY, player.imgWidth, player.imgHeight);
+              context.drawImage(boat, player.pixelX, player.pixelY, player.imgWidth, player.imgHeight);
             } else {
-                context.drawImage(player.img, xClip, yClip, 32, 64, player.pixelX, player.pixelY, player.imgWidth, player.imgHeight);
+              const [xClip, yClip] = animationClips[player.animationFrame];
+              context.drawImage(
+                player.img,
+                xClip,
+                yClip,
+                32,
+                64,
+                player.pixelX,
+                player.pixelY,
+                player.imgWidth,
+                player.imgHeight
+              );
             }
-        },
+          },
+          
         drawEnemy: function() {
             enemy.pixelX = (enemy.worldX - player.offsetX) * screen.tileWidth;
             enemy.pixelY = (enemy.worldY - player.offsetY) * screen.tileHeight;
@@ -366,16 +377,14 @@ window.onload = function() {
             numTiles = tilesList.length;
         },
         generateTrees: function() {
-            for (var i = 0; i < map.tileMap.length; i++) {
-              for (var j = 0; j < map.tileMap[i].length; j++) {
+            for (let i = 0; i < map.tileMap.length; i++) {
+              for (let j = 0; j < map.tileMap[i].length; j++) {
                 if (map.tileMap[i][j] === 0 && !map.treeMap[i][j]) {
-                  if (Math.random() < 0.01) {
-                    map.treeMap[i][j] = Math.random() < 0.5 ? 1 : 2;
-                  }
+                  map.treeMap[i][j] = Math.random() < 0.01 ? 1 : 0;
                 }
               }
             }
-        }
+        }          
     };
     var waterAnimationFrame = 0;
     setInterval(function() {
