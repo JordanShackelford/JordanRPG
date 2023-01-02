@@ -22,11 +22,11 @@ window.onload = function() {
         selectionBoxCoords: [0, 0],
         tileX: 0,
         tileY: 0,
-        notificationX: a_canvas.width * 0.02,
-        notificationY: a_canvas.height * 0.045,
+        notificationX: 0.02 * a_canvas.width,
+        notificationY: 0.045 * a_canvas.height,
         notificationSpacing: 30,
         numOfInventorySlots: 4
-      };      
+      };        
     screen.tileWidth = a_canvas.width / screen.numColumns, screen.tileHeight = a_canvas.height / screen.numRows;
     var sounds = {
       walking: new Audio("res/walking.mp3"),
