@@ -4,12 +4,11 @@ window.onload = function() {
     cursor.src = "res/swordicon.png";
     boat.src = "res/boat.png";
     function Tile({ size = [1, 1], image } = {}) {
-      var width, height;
-      [width, height] = size;
-      this.width = screen.tileWidth * width;
-      this.height = screen.tileHeight * height;
-      this.image = new Image();
-      this.image.src = image;
+        const [width, height] = size;
+        this.width = screen.tileWidth * width;
+        this.height = screen.tileHeight * height;
+        this.image = new Image();
+        this.image.src = image;
     }
     var notifications = ["Move with W,A,S,D keys or by clicking/tapping", "Press Esc to open options menu", "Use number keys to select inventory slot"];
     var map = {};
