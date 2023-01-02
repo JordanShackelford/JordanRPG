@@ -236,7 +236,7 @@ window.onload = function() {
               }
             }
         },
-          
+
         drawMouseCoords: function() {
             var tileX = Math.floor(screen.mouseCanvasCoords[0] / screen.tileWidth);
             var tileY = Math.floor(screen.mouseCanvasCoords[1] / screen.tileHeight);
@@ -399,146 +399,72 @@ window.onload = function() {
     }, 300);
     generator.generateChunk();
     generator.generateTrees();
-    var processPlayerMovement = setInterval(function() {
+    function processPlayerMovement() {
         if (player.movementQueue.length > 0) {
-            var direction = player.movementQueue.shift();
-            switch (direction) {
-                case "west":
-                    moveWest();
-                    break;
-                case "east":
-                    moveEast();
-                    break;
-                case "north":
-                    moveNorth();
-                    break;
-                case "south":
-                    moveSouth();
-                    break;
-                case "northwest":
-                    moveNorthWest();
-                    break;
-                case "northeast":
-                    moveNorthEast();
-                    break;
-                case "southwest":
-                    moveSouthWest();
-                    break;
-                case "southeast":
-                    moveSouthEast();
-                    break;
-            }
-        }
-    }, 1000 / player.moveSpeed);
-    function moveNorth() {
-        sounds.walking.play();
-        if(player.animationFrame == 12){
-            player.animationFrame = 13;
-        } else if (player.animationFrame == 13){
-            player.animationFrame = 14;
-        } else if (player.animationFrame == 14){
-            player.animationFrame = 15;
-        } else {
-            player.animationFrame = 12;
-        }
-        if (map.treeMap[player.worldX][player.worldY + 1] === 3) {
-            notifications.push("There is a rock right there!");
-        } else {
-            player.isMoving ? null : (() => {
-                player.isMoving = true;
-                const moveUp = setInterval(() => screen.offsetY += screen.tileHeight / 15, 250 / 15);
-                setTimeout(() => {
-                    player.worldY -= 1;
-                    clearInterval(moveUp);
-                    player.isMoving = false;
-                    screen.offsetY = 0;
-                }, 250);
-            })();
+          var direction = player.movementQueue.shift();
+          move(direction);
         }
     }
-    function moveSouth() {
-        sounds.walking.play();
-        if(player.animationFrame == 0){
-            player.animationFrame = 1;
-        } else if (player.animationFrame == 1){
-            player.animationFrame = 2;
-        } else if (player.animationFrame == 2){
-            player.animationFrame = 3;
-        } else {
-            player.animationFrame = 0;
+    setInterval(processPlayerMovement, 1000 / player.moveSpeed);     
+
+    function move(direction) {
+        const directions = {
+          north: {
+            sound: sounds.walking,
+            animationFrame: [12, 13, 14, 15],
+            x: 0,
+            y: -1,
+            offsetX: 0,
+            offsetY: screen.tileHeight / 15,
+          },
+          south: {
+            sound: sounds.walking,
+            animationFrame: [0, 1, 2, 3],
+            x: 0,
+            y: 1,
+            offsetX: 0,
+            offsetY: -screen.tileHeight / 15,
+          },
+          east: {
+            sound: sounds.walking,
+            animationFrame: [4, 5, 6, 7],
+            x: 1,
+            y: 0,
+            offsetX: -screen.tileWidth / 15,
+            offsetY: 0,
+          },
+          west: {
+            sound: sounds.walking,
+            animationFrame: [8, 9, 10, 11],
+            x: -1,
+            y: 0,
+            offsetX: screen.tileWidth / 15,
+            offsetY: 0,
+          }
+        };
+      
+        const dir = directions[direction];
+        if (map.treeMap[player.worldX + dir.x][player.worldY + dir.y] === 3) {
+          notifications.push("There is a rock right there!");
+        } else if (!player.isMoving) {
+          dir.sound.play();
+          player.isMoving = true;
+          player.animationFrame = (player.animationFrame + 1) % 4;
+          let moveInterval = setInterval(() => {
+            screen.offsetX += dir.offsetX;
+            screen.offsetY += dir.offsetY;
+          }, 250 / 15);
+          setTimeout(() => {
+            player.worldX += dir.x;
+            player.worldY += dir.y;
+            clearInterval(moveInterval);
+            player.isMoving = false;
+            screen.offsetX = 0;
+            screen.offsetY = 0;
+          }, 250);
         }
-        if (map.treeMap[player.worldX][player.worldY + 1] === 3) {
-            notifications.push("There is a rock right there!");
-        } else {
-            if (!player.IsMoving) {
-                player.isMoving = true;
-                var moveDown = setInterval(function() {
-                    screen.offsetY -= screen.tileHeight / 15;
-                }, 250 / 15);
-                setTimeout(function() {
-                    player.worldY += 1;
-                    clearInterval(moveDown);
-                    player.isMoving = false;
-                    screen.offsetY = 0;
-                }, 250);
-            }
-        }
-    }
-    function moveEast() {
-        sounds.walking.play();
-        if(player.animationFrame == 4){
-            player.animationFrame = 5;
-        } else if (player.animationFrame == 5){
-            player.animationFrame = 6;
-        } else if (player.animationFrame == 6){
-            player.animationFrame = 7;
-        } else {
-            player.animationFrame = 4;
-        }
-        if (map.treeMap[player.worldX + 1][player.worldY] === 3) {
-            notifications.push("There is a rock right there!");
-        } else {
-            if (!player.IsMoving)
-                player.isMoving = true;
-            var moveRight = setInterval(function() {
-                screen.offsetX -= screen.tileWidth / 15;
-            }, 250 / 15);
-            setTimeout(function() {
-                player.worldX += 1;
-                clearInterval(moveRight);
-                player.isMoving = false;
-                screen.offsetX = 0;
-            }, 250);
-        }
-    }
-    function moveWest() {
-        sounds.walking.play();
-        if(player.animationFrame == 8){
-            player.animationFrame = 9;
-        } else if (player.animationFrame == 9){
-            player.animationFrame = 10;
-        } else if (player.animationFrame == 10){
-            player.animationFrame = 11;
-        } else {
-            player.animationFrame = 8;
-        }
-        if (map.treeMap[player.worldX - 1][player.worldY] === 3) {
-            notifications.push("There is a rock right there!");
-        } else {
-            if (!player.IsMoving) {
-                player.isMoving = true;
-                var moveLeft = setInterval(function() {
-                    screen.offsetX += screen.tileWidth / 15;
-                }, 250 / 15);
-                setTimeout(function() {
-                    player.worldX -= 1;
-                    clearInterval(moveLeft);
-                    player.isMoving = false;
-                    screen.offsetX = 0;
-                }, 250);
-            }
-        }
-    }
+      }
+      
     a_canvas.addEventListener('mousemove', function(evt) {
         screen.mouseCanvasCoords = math.calculateCanvasCoordsFromWindowCoords(evt.clientX, evt.clientY);
         screen.oldSelectionBoxCoords = screen.selectionBoxCoords;
