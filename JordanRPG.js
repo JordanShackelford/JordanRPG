@@ -214,14 +214,14 @@ window.onload = function() {
             context.fillText(`Chunk Coords: (${chunkX},${chunkY})`, player.pixelX, player.pixelY + player.imgHeight + 40);
         },
         drawTrees: function() {
-            var distLeftRight = (screen.numColumns - 1) / 2 + 6;
-            var distTopBot = (screen.numRows - 1) / 2 + 6;
-            var leftEdge = player.worldX - distLeftRight;
-            var topEdge = player.worldY - distTopBot;
-            for (var i = -6; i < screen.numColumns + 6; i++) {
-              for (var j = -6; j < screen.numRows + 6; j++) {
-                var treeX = screen.tileWidth * i - screen.tileWidth / 2 + screen.offsetX;
-                var treeY = screen.tileHeight * j + screen.offsetY;
+            const distLeftRight = (screen.numColumns - 1) / 2 + 6;
+            const distTopBot = (screen.numRows - 1) / 2 + 6;
+            const leftEdge = player.worldX - distLeftRight;
+            const topEdge = player.worldY - distTopBot;
+            for (let i = -6; i < screen.numColumns + 6; i++) {
+              for (let j = -6; j < screen.numRows + 6; j++) {
+                const treeX = screen.tileWidth * i - screen.tileWidth / 2 + screen.offsetX;
+                const treeY = screen.tileHeight * j + screen.offsetY;
                 switch (map.treeMap[Math.floor(leftEdge + i)][Math.floor(topEdge + j)]) {
                   case 1:
                     context.drawImage(tiles.tree1.image, treeX, treeY, tiles.tree1.width, tiles.tree1.height);
@@ -235,7 +235,8 @@ window.onload = function() {
                 }
               }
             }
-          },
+        },
+          
         drawMouseCoords: function() {
             var tileX = Math.floor(screen.mouseCanvasCoords[0] / screen.tileWidth);
             var tileY = Math.floor(screen.mouseCanvasCoords[1] / screen.tileHeight);
