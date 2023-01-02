@@ -26,12 +26,9 @@ window.onload = function() {
         notificationY: 0.045 * a_canvas.height,
         notificationSpacing: 30,
         numOfInventorySlots: 4
-      };        
+    };            
     screen.tileWidth = a_canvas.width / screen.numColumns, screen.tileHeight = a_canvas.height / screen.numRows;
-    var sounds = {
-      walking: new Audio("res/walking.mp3"),
-      music: new Audio("res/backgroundmusic.mp3")
-    };
+    var sounds = {walking: new Audio("res/walking.mp3"),music: new Audio("res/backgroundmusic.mp3")};
     var player = {
       name: "Jordan",
       screenTileX: Math.floor(screen.numRows / 2),
