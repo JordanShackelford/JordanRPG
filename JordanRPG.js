@@ -394,75 +394,75 @@ window.onload = function() {
         }
     }, 300);
     generator.generateChunk();
-    generator.generateTrees();       
+    generator.generateTrees();   
+    const directions = {
+      north: {
+        sound: sounds.walking,
+        animationFrame: [12, 13, 14, 15],
+        x: 0,
+        y: -1,
+        offsetX: 0,
+        offsetY: screen.tileHeight / 15,
+      },
+      south: {
+        sound: sounds.walking,
+        animationFrame: [0, 1, 2, 3],
+        x: 0,
+        y: 1,
+        offsetX: 0,
+        offsetY: -screen.tileHeight / 15,
+      },
+      east: {
+        sound: sounds.walking,
+        animationFrame: [4, 5, 6, 7],
+        x: 1,
+        y: 0,
+        offsetX: -screen.tileWidth / 15,
+        offsetY: 0,
+      },
+      west: {
+        sound: sounds.walking,
+        animationFrame: [8, 9, 10, 11],
+        x: -1,
+        y: 0,
+        offsetX: screen.tileWidth / 15,
+        offsetY: 0,
+      },
+      northeast: {
+        sound: sounds.walking,
+        animationFrame: [16, 17, 18, 19],
+        x: 1,
+        y: -1,
+        offsetX: -screen.tileWidth / 15,
+        offsetY: screen.tileHeight / 15,
+      },
+      northwest: {
+        sound: sounds.walking,
+        animationFrame: [20, 21, 22, 23],
+        x: -1,
+        y: -1,
+        offsetX: screen.tileWidth / 15,
+        offsetY: screen.tileHeight / 15,
+      },
+      southeast: {
+        sound: sounds.walking,
+        animationFrame: [24, 25, 26, 27],
+        x: 1,
+        y: 1,
+        offsetX: -screen.tileWidth / 15,
+        offsetY: -screen.tileHeight / 15,
+      },
+      southwest: {
+        sound: sounds.walking,
+        animationFrame: [28, 29, 30, 31],
+        x: -1,
+        y: 1,
+        offsetX: screen.tileWidth / 15,
+        offsetY: -screen.tileHeight / 15,
+      },
+    };    
     function move(direction) {
-      const directions = {
-        north: {
-          sound: sounds.walking,
-          animationFrame: [12, 13, 14, 15],
-          x: 0,
-          y: -1,
-          offsetX: 0,
-          offsetY: screen.tileHeight / 15,
-        },
-        south: {
-          sound: sounds.walking,
-          animationFrame: [0, 1, 2, 3],
-          x: 0,
-          y: 1,
-          offsetX: 0,
-          offsetY: -screen.tileHeight / 15,
-        },
-        east: {
-          sound: sounds.walking,
-          animationFrame: [4, 5, 6, 7],
-          x: 1,
-          y: 0,
-          offsetX: -screen.tileWidth / 15,
-          offsetY: 0,
-        },
-        west: {
-          sound: sounds.walking,
-          animationFrame: [8, 9, 10, 11],
-          x: -1,
-          y: 0,
-          offsetX: screen.tileWidth / 15,
-          offsetY: 0,
-        },
-        // Add new directions for diagonal movement
-        northeast: {
-          sound: sounds.walking,
-          animationFrame: [16, 17, 18, 19],
-          x: 1,
-          y: -1,
-          offsetX: -screen.tileWidth / 15,
-          offsetY: screen.tileHeight / 15,
-        },
-        northwest: {
-          sound: sounds.walking,
-          animationFrame: [20, 21, 22, 23],
-          x: -1,
-          y: -1,
-          offsetX: screen.tileWidth / 15,
-          offsetY: screen.tileHeight / 15,
-        },
-        southeast: {
-          sound: sounds.walking,
-          animationFrame: [24, 25, 26, 27],
-          x: 1,
-          y: 1,
-          offsetX: -screen.tileWidth / 15,
-          offsetY: -screen.tileHeight / 15,
-        },
-        southwest: {
-          sound: sounds.walking,
-          animationFrame: [28, 29, 30, 31],
-          x: -1,
-          y: 1,
-          offsetX: screen.tileWidth / 15,
-          offsetY: -screen.tileHeight / 15,
-        },
-      };
+      
     
       const dir = directions[direction];
       if (map.treeMap[player.worldX + dir.x][player.worldY + dir.y] === 3) {
@@ -565,9 +565,9 @@ window.onload = function() {
             break;
         }
       }
-    function processPlayerMovement(){
+      function processPlayerMovement(){
         if (player.movementQueue.length > 0 && !player.isMoving) {
-          move(player.movementQueue.shift());
+            move(player.movementQueue.shift());
         }
     }
     window.addEventListener("keydown", handleKeyDown, false)
@@ -587,6 +587,7 @@ window.onload = function() {
         graphics.drawNotifications();
         graphics.drawInterface();
         graphics.drawOptionsMenu();
+        graphics.drawPlayerCoords();
         notifications.push(`${enemy.pixelX} ${enemy.pixelY}`);
         processPlayerMovement();
       }      
