@@ -394,74 +394,100 @@ window.onload = function() {
         }
     }, 300);
     generator.generateChunk();
-    generator.generateTrees();
-    function processPlayerMovement() {
-        if (player.movementQueue.length > 0) {
-          var direction = player.movementQueue.shift();
-          move(direction);
-        }
-    }
-    setInterval(processPlayerMovement, 1000 / player.moveSpeed);     
-
+    generator.generateTrees();       
     function move(direction) {
-        const directions = {
-          north: {
-            sound: sounds.walking,
-            animationFrame: [12, 13, 14, 15],
-            x: 0,
-            y: -1,
-            offsetX: 0,
-            offsetY: screen.tileHeight / 15,
-          },
-          south: {
-            sound: sounds.walking,
-            animationFrame: [0, 1, 2, 3],
-            x: 0,
-            y: 1,
-            offsetX: 0,
-            offsetY: -screen.tileHeight / 15,
-          },
-          east: {
-            sound: sounds.walking,
-            animationFrame: [4, 5, 6, 7],
-            x: 1,
-            y: 0,
-            offsetX: -screen.tileWidth / 15,
-            offsetY: 0,
-          },
-          west: {
-            sound: sounds.walking,
-            animationFrame: [8, 9, 10, 11],
-            x: -1,
-            y: 0,
-            offsetX: screen.tileWidth / 15,
-            offsetY: 0,
-          }
-        };
+      const directions = {
+        north: {
+          sound: sounds.walking,
+          animationFrame: [12, 13, 14, 15],
+          x: 0,
+          y: -1,
+          offsetX: 0,
+          offsetY: screen.tileHeight / 15,
+        },
+        south: {
+          sound: sounds.walking,
+          animationFrame: [0, 1, 2, 3],
+          x: 0,
+          y: 1,
+          offsetX: 0,
+          offsetY: -screen.tileHeight / 15,
+        },
+        east: {
+          sound: sounds.walking,
+          animationFrame: [4, 5, 6, 7],
+          x: 1,
+          y: 0,
+          offsetX: -screen.tileWidth / 15,
+          offsetY: 0,
+        },
+        west: {
+          sound: sounds.walking,
+          animationFrame: [8, 9, 10, 11],
+          x: -1,
+          y: 0,
+          offsetX: screen.tileWidth / 15,
+          offsetY: 0,
+        },
+        // Add new directions for diagonal movement
+        northeast: {
+          sound: sounds.walking,
+          animationFrame: [16, 17, 18, 19],
+          x: 1,
+          y: -1,
+          offsetX: -screen.tileWidth / 15,
+          offsetY: screen.tileHeight / 15,
+        },
+        northwest: {
+          sound: sounds.walking,
+          animationFrame: [20, 21, 22, 23],
+          x: -1,
+          y: -1,
+          offsetX: screen.tileWidth / 15,
+          offsetY: screen.tileHeight / 15,
+        },
+        southeast: {
+          sound: sounds.walking,
+          animationFrame: [24, 25, 26, 27],
+          x: 1,
+          y: 1,
+          offsetX: -screen.tileWidth / 15,
+          offsetY: -screen.tileHeight / 15,
+        },
+        southwest: {
+          sound: sounds.walking,
+          animationFrame: [28, 29, 30, 31],
+          x: -1,
+          y: 1,
+          offsetX: screen.tileWidth / 15,
+          offsetY: -screen.tileHeight / 15,
+        },
+      };
+    
+      const dir = directions[direction];
+      if (map.treeMap[player.worldX + dir.x][player.worldY + dir.y] === 3) {
+        notifications.push("There is a rock right there!");
+      } else if (!player.isMoving) {
+        dir.sound.play();
+        player.isMoving = true;
+        player.animationFrame = dir.animationFrame[(player.animationFrame + 1) % 4];
+        let moveInterval = setInterval(() => {
+          screen.offsetX += dir.offsetX;
+          screen.offsetY += dir.offsetY;
+        }, 250 / 15);
+        const distance = Math.abs(dir.x) + Math.abs(dir.y);
+        const duration = 250 * distance;
+        setTimeout(() => {
+          player.worldX += dir.x;
+          player.worldY += dir.y;
+          clearInterval(moveInterval);
+          player.isMoving = false;
+          screen.offsetX = 0;
+          screen.offsetY = 0;
+        }, duration);
+      }
+    }
       
-        const dir = directions[direction];
-        if (map.treeMap[player.worldX + dir.x][player.worldY + dir.y] === 3) {
-          notifications.push("There is a rock right there!");
-        } else if (!player.isMoving) {
-          dir.sound.play();
-          player.isMoving = true;
-          player.animationFrame = dir.animationFrame[(player.animationFrame + 1) % 4];
-          let moveInterval = setInterval(() => {
-            screen.offsetX += dir.offsetX;
-            screen.offsetY += dir.offsetY;
-          }, 250 / 15);
-          const distance = Math.abs(dir.x) + Math.abs(dir.y);
-          const duration = 250 * distance;
-          setTimeout(() => {
-            player.worldX += dir.x;
-            player.worldY += dir.y;
-            clearInterval(moveInterval);
-            player.isMoving = false;
-            screen.offsetX = 0;
-            screen.offsetY = 0;
-          }, duration);
-        }
-      }        
     a_canvas.addEventListener('mousemove', function(evt) {
         screen.mouseCanvasCoords = math.calculateCanvasCoordsFromWindowCoords(evt.clientX, evt.clientY);
         screen.oldSelectionBoxCoords = screen.selectionBoxCoords;
@@ -539,7 +565,11 @@ window.onload = function() {
             break;
         }
       }
-      
+    function processPlayerMovement(){
+        if (player.movementQueue.length > 0 && !player.isMoving) {
+          move(player.movementQueue.shift());
+        }
+    }
     window.addEventListener("keydown", handleKeyDown, false)
     sounds.music.play();
     function updateEnemyPosition() {
@@ -558,6 +588,7 @@ window.onload = function() {
         graphics.drawInterface();
         graphics.drawOptionsMenu();
         notifications.push(`${enemy.pixelX} ${enemy.pixelY}`);
+        processPlayerMovement();
       }      
     setInterval((gameLoop), 1000 / config.fps);
 }
