@@ -38,7 +38,7 @@ window.onload = function() {
       img: document.getElementById("player"),
       imgWidth: screen.tileWidth,
       imgHeight: screen.tileHeight * 2,
-      moveSpeed: 5,
+      moveSpeed: 20,
       isMoving: false,
       animationFrame: 0,
       movementQueue: [],
@@ -487,22 +487,22 @@ window.onload = function() {
         }, duration);
       }
     }
-      
     a_canvas.addEventListener('mousemove', function(evt) {
         screen.mouseCanvasCoords = math.calculateCanvasCoordsFromWindowCoords(evt.clientX, evt.clientY);
         screen.oldSelectionBoxCoords = screen.selectionBoxCoords;
         screen.selectionBoxCoords = math.calculateTileClicked(screen.mouseCanvasCoords);
     }, false);
     a_canvas.addEventListener('click', function(evt) {
-        var canvasCoords = math.calculateCanvasCoordsFromWindowCoords(evt.clientX, evt.clientY);
-        var tileCoords = [Math.floor(canvasCoords[0] / screen.tileWidth), Math.floor(canvasCoords[1] / screen.tileHeight)];
-        for (var i = 0; i < 2; i++) {
-            var direction = tileCoords[i] < player["screenTile" + ["X", "Y"][i]] ? ["west", "north"][i] : ["east", "south"][i];
-            var distance = Math.abs(tileCoords[i] - player["screenTile" + ["X", "Y"][i]]);
-            for (var j = 0; j < distance; j++) {
-                player.movementQueue.push(direction);
-            }
-        }
+      player.movementQueue = [];
+      var canvasCoords = math.calculateCanvasCoordsFromWindowCoords(evt.clientX, evt.clientY);
+      var tileCoords = [Math.floor(canvasCoords[0] / screen.tileWidth), Math.floor(canvasCoords[1] / screen.tileHeight)];
+      for (var i = 0; i < 2; i++) {
+          var direction = tileCoords[i] < player["screenTile" + ["X", "Y"][i]] ? ["west", "north"][i] : ["east", "south"][i];
+          var distance = Math.abs(tileCoords[i] - player["screenTile" + ["X", "Y"][i]]);
+          for (var j = 0; j < distance; j++) {
+              player.movementQueue.push(direction);
+          }
+      }
     }, false);    
     a_canvas.addEventListener('contextmenu', function(evt) {
         evt.preventDefault();
