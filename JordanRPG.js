@@ -12,21 +12,7 @@ window.onload = function() {
     }
     var notifications = ["Move with W,A,S,D keys or by clicking/tapping", "Press Esc to open options menu", "Use number keys to select inventory slot"];
     var map = {};
-    const screen = {
-        offsetX: 0,
-        offsetY: 0,
-        numRows: 15,
-        numColumns: 15,
-        mouseCanvasCoords: [0, 0],
-        oldSelectionBoxCoords: [0, 0],
-        selectionBoxCoords: [0, 0],
-        tileX: 0,
-        tileY: 0,
-        notificationX: 0.02 * a_canvas.width,
-        notificationY: 0.045 * a_canvas.height,
-        notificationSpacing: 30,
-        numOfInventorySlots: 4
-    };            
+    const screen={offsetX:0,offsetY:0,numRows:15,numColumns:15,mouseCanvasCoords:[0,0],oldSelectionBoxCoords:[0,0],selectionBoxCoords:[0,0],tileX:0,tileY:0,notificationX:.02*a_canvas.width,notificationY:.045*a_canvas.height,notificationSpacing:30,numOfInventorySlots:4};      
     screen.tileWidth = a_canvas.width / screen.numColumns, screen.tileHeight = a_canvas.height / screen.numRows;
     var sounds = {walking: new Audio("res/walking.mp3"),music: new Audio("res/backgroundmusic.mp3")};
     var player = {
@@ -462,8 +448,6 @@ window.onload = function() {
       },
     };    
     function move(direction) {
-      
-    
       const dir = directions[direction];
       if (map.treeMap[player.worldX + dir.x][player.worldY + dir.y] === 3) {
         notifications.push("There is a rock right there!");
