@@ -1,41 +1,47 @@
-<!DOCTYPE HTML>
-<html>
-   <head>
-      <title>Jordan RPG</title>
-      <style>
-		*{
-         margin:0;
-         padding:0;
-         /*floatleft removes margin somehow */
-         float:left;
-         box-sizing:border-box;
-         }
-         body{
-         text-align:center;
-         }
-         img{
-         display:none;
-         }
-         canvas{
-         image-rendering:default;
-         width:100vw;
-         height:100vh;
-         cursor:none;
-         }
-      </style>
-   </head>
-   <body id="mainContainer">
-      <img id="player" src="res/chrono.png" border="5"></img>
-      <img id="enemy" src="res/enemy.png" border="5"></img>
-      <img id="water" src="res/water.jpg" border="5"></img>
-      <img id="grass" src="res/grass.jpg" border="5"></img>
-      <img id="hatchet" src="res/hatchet.jpg" border="5"></img>
-      <img id="tree1" src="res/tree1.png" border="5"></img>
-      <img id="tree2" src="res/tree2.png" border="5"></img>
-      <img id="appletreesapling" src="res/appletreesapling.png" border="5"></img>
-      <canvas width="1920px" height="1080px" id="a">
-         This text is displayed if your browser does not support HTML5 Canvas.
-      </canvas>
-      <script type="text/javascript" src="JordanRPG.js"></script>
-   </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Jordan RPG</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      float: left;
+      box-sizing: border-box;
+    }
+    body {
+      text-align: center;
+    }
+    img {
+      display: none;
+    }
+    canvas {
+      image-rendering: pixelated;
+      width: 100vw;
+      height: 100vh;
+      cursor: none;
+    }
+  </style>
+</head>
+<body id="mainContainer">
+  <img id="player" src="res/chrono.png" alt="Player Image">
+  <img id="enemy" src="res/enemy.png" alt="Enemy Image">
+  <img id="grass" src="res/grass.jpg" alt="Grass Image">
+  <img id="hatchet" src="res/enemy.png" alt="Hatchet Image">
+  <img id="potion" src="res/potion.png" alt="Potion Image">
+  <img id="shield" src="res/shield.png" alt="Shield Image">
+  <img id="sword" src="res/sword.png" alt="Sword Image">
+  <img id="scroll" src="res/scroll.png" alt="Scroll Image">
+  <img id="bow" src="res/bow.png" alt="Bow Image">
+  <img id="appletreesapling" src="res/appletreesapling.png" alt="Apple Tree Sapling Image">
+  
+  <canvas width="1920" height="1080" id="a">
+    This text is displayed if your browser does not support HTML5 Canvas.
+  </canvas>
+  
+  <script src="https://threejs.org/build/three.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/simplex-noise/2.4.0/simplex-noise.min.js"></script>
+  <script src="JordanRPG.js"></script>
+</body>
 </html>
