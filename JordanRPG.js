@@ -311,18 +311,6 @@ for (let i = 0; i < 200; i++) {
     };
 
     let fade = 0;
-    let lastMaxLines = 0;
-    const MENU_WIDTH = 0.9,
-        MENU_HEIGHT = 0.8,
-        LINE_HEIGHT = 60;
-    let hoveredIcon = null;
-    const iconCache = {};
-
-    let isPremiumSkin = false; // Let's assume this is fetched from user settings
-    let accessibilityMode = false; // Assume this comes from user settings
-    let playerMood = 'normal'; // Could be 'fatigued', 'energized', etc.
-    let isResourcesLoaded = false;
-
     var graphics = {
         drawMinimap: () => {
             const scale = 0.2; // scale factor for the minimap
@@ -349,10 +337,9 @@ for (let i = 0; i < 200; i++) {
                 }
             }
         },
-
-
         drawMap: () => {
             context.save();
+        
             const {
                 tileWidth: tileW,
                 tileHeight: tileH,
@@ -361,57 +348,59 @@ for (let i = 0; i < 200; i++) {
                 numColumns: num_Cols,
                 numRows: num_Rows
             } = screen;
+        
             const { tileMap } = map;
             const { worldX, worldY } = player;
         
             const leftEdge = worldX - (num_Cols - 1) / 2;
             const topEdge = worldY - (num_Rows - 1) / 2;
         
-            //context.clearRect(0, 0, a_canvas.width, a_canvas.height);
-        
             const min_X_Index = Math.max(0, leftEdge - 6);
             const max_X_Index = Math.min(tileMap.length, leftEdge + num_Cols + 6);
             const min_Y_Index = Math.max(0, topEdge - 6);
             const max_Y_Index = Math.min(tileMap[0].length, topEdge + num_Rows + 6);
         
-            if (Math.random() < 0.001) {
-                // Handle game event logic separately
-                //emitQuicksandEvent(worldX, worldY);
-            }
-        
+            // Defined once and reused
             const tileTypes = ['grass', 'water', 'dirt', 'wood_wall', 'treasure', 'event_tile', 'NPC_tile', 'story_tile'];
-        
             const tileImages = {};
+        
             tileTypes.forEach((tileKey) => {
                 tileImages[tileKey] = tiles[tileKey]?.image;
             });
         
-            // Set shadow properties once before the loop
+            // Set shadow properties once
             context.shadowColor = 'rgba(0, 0, 0, 0.2)';
             context.shadowBlur = 5;
         
             for (let x_Index = min_X_Index; x_Index < max_X_Index; x_Index++) {
                 for (let y_Index = min_Y_Index; y_Index < max_Y_Index; y_Index++) {
-                    const [i, j, tileValue] = [x_Index - leftEdge, y_Index - topEdge, tileMap[x_Index][y_Index]];
-                    const tileKey = tileTypes[tileValue] || 'skip';
-        
-                    if (tileKey === 'skip') continue;
-        
-                    const [x, y] = [tileW * i + offset_X, tileH * j + offset_Y];
-                    const tileImage = tileImages[tileKey];
-                    if (tileImage) {
-                        context.drawImage(tileImage, x, y, tileW, tileH);
-                    }
+                    drawTile(x_Index, y_Index, leftEdge, topEdge, tileW, tileH, offset_X, offset_Y, tileMap, tileImages, tileTypes);
                 }
             }
         
-            // Reset the shadow properties
+            // Reset shadow properties
             context.shadowColor = 'transparent';
             context.shadowBlur = 0;
             context.restore();
-        },
-        
 
+            function drawTile(x_Index, y_Index, leftEdge, topEdge, tileW, tileH, offset_X, offset_Y, tileMap, tileImages, tileTypes) {
+                const [i, j, tileValue] = [x_Index - leftEdge, y_Index - topEdge, tileMap[x_Index][y_Index]];
+                const tileKey = tileTypes[tileValue] || 'skip';
+            
+                if (tileKey === 'skip') return;
+            
+                const [x, y] = [tileW * i + offset_X, tileH * j + offset_Y];
+                const tileImage = tileImages[tileKey];
+                
+                if (tileImage) {
+                    try {
+                        context.drawImage(tileImage, x, y, tileW, tileH);
+                    } catch (e) {
+                        console.error(`Failed to draw image for tile type ${tileKey}: ${e.message}`);
+                    }
+                }
+            }
+        },
         drawSelectionBox: function(nC, playerAction) {
             function setGradient(tN, pF, x, y, w, h) {
                 const gS = context.createLinearGradient(x, y, x + w, y + h);
