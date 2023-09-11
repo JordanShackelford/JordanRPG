@@ -146,7 +146,7 @@ window.onload = function() {
     let tileProperties = {};
     const enemies = [];
 
-for (let i = 0; i < 200; i++) {
+for (let i = 0; i < 500; i++) {
     enemies.push({
         worldX: Math.floor(Math.random() * 250),
         worldY: Math.floor(Math.random() * 250),
@@ -375,7 +375,7 @@ for (let i = 0; i < 200; i++) {
                     const [x, y] = [tileW * i + offset_X, tileH * j + offset_Y];
                     const tileImage = tileImages[tileKey];
                     if (tileImage) {
-                        if (tileKey === 'treasure') {
+                        if (tileKey === 'treasure' || 'portal') {
                             context.globalAlpha = 0.5; // Make it slightly transparent for the glow
                             context.drawImage(tileImage, x - 5, y - 5, tileW + 10, tileH + 10); // Draw a larger, transparent image behind
                             context.globalAlpha = 1.0; // Reset alpha
@@ -539,56 +539,31 @@ for (let i = 0; i < 200; i++) {
             drawAdditionalAnimations();
         },
         drawEnemies: () => {
-            console.log("Draw Enemies Called");
-            console.log("Enemies Array: ", enemies);
-        
-            // Debug: Log global objects that should exist
-            console.log("Context:", typeof context);
-            console.log("Player: ", player);
-            console.log("Screen: ", screen);
-        
-            enemies.forEach((enemy, index) => {
-                console.log("Drawing enemy: ", enemy);
-        
-                if (enemy.worldX == null || enemy.worldY == null) {
-                    console.error(`Enemy at index ${index} is missing essential properties.`, enemy);
-                    return;
-                }
-        
-                const x = enemy.worldX;
-                const y = enemy.worldY;
-        
-                console.log(`Calculated drawing coords - x: ${x}, y: ${y}`);
-        
-                if (typeof context === "undefined" || !context) {
-                    console.error("Context is not defined.");
-                    return;
-                }
-        
-                if (x >= 0 && x < screen.width && y >= 0 && y < screen.height) {
-                    console.log(`Drawing enemy at x: ${x}, y: ${y}`);
-                    context.fillStyle = "red";
-                    context.fillRect(x, y, 50, 50);
-                } else {
-                    console.log(`Enemy out of screen bounds at x: ${x}, y: ${y}`);
-                }
-            });
-        },
-        
-        
-        drawSingleEnemy: (context, enemy, x, y, tileWidth, tileHeight) => {
-            const health = enemy.health,
-                  max = enemy.maxHealth;
-            const animatedWidth = Math.floor(tileWidth * (health / max));
-        
-            context.drawImage(enemyImg, x, y, tileWidth, tileHeight);
-            context.fillStyle = enemyGlossyGradient;
-            context.fillRect(x, y - 10, animatedWidth, 5);
-        
-            context.fillStyle = enemyHealthBarGradient;
-            context.fillRect(x, y - 10, animatedWidth, 10);
-        },
-        
+            // The logic you used to calculate the world coordinates of clicked trees
+            const lR = Math.floor(screen.numColumns / 2);
+            const tB = Math.floor(screen.numRows / 2);
+          
+            // Iterate through all enemies
+            for (const enemy of enemies) {
+              // Calculate relative coordinates
+              const i = enemy.worldX - player.worldX;
+              const j = enemy.worldY - player.worldY;
+              
+              // Only draw if the enemy is within the visible window
+              if (Math.abs(i) <= lR && Math.abs(j) <= tB) {
+                // Calculate the drawing coordinates
+                const drawX = (i + lR) * screen.tileWidth + screen.offsetX;
+                const drawY = (j + tB) * screen.tileHeight + screen.offsetY;
+                
+                context.drawImage(enemyImg, drawX, drawY, screen.tileWidth, screen.tileHeight);
+              }
+            }
+          },
+          
+          
+          
+          
+              
         drawCursor: function() {
             const [mX, mY] = screen.mouseCanvasCoords;
             const tX = Math.floor((mX - screen.offsetX) / screen.tileWidth),
@@ -1006,7 +981,7 @@ for (let i = 0; i < 200; i++) {
     var config = {
         fps: 60
     };
-    let c = 300; // Move this to a higher scope to make it accessible by both functions
+    let c = 500; // Move this to a higher scope to make it accessible by both functions
     var generator = {
         generateChunk: () => {
             const initMapTiles = () => {
@@ -1179,9 +1154,6 @@ for (let i = 0; i < 200; i++) {
             });
 
             // Adding these to the function would expand the variety and intentionality behind tile placement, thereby offering a rich user experience that takes cues from top industry names.
-            map.specialTileMap = sT; // Assuming map.specialTileMap is where you store these
-
-
             map.specialTileMap = sT; // Assuming map.specialTileMap is where you store these
         },
         generateTrees: () => {
@@ -1619,7 +1591,7 @@ for (let i = 0; i < 200; i++) {
             graphics.drawSelectionBox(screen.oldSelectionBoxCoords, screen.selectionBoxCoords);
             graphics.drawPlayer();
             graphics.drawTrees();
-            
+            graphics.drawEnemies();
             graphics.drawNotifications();
             //graphics.drawMiniMap();
             graphics.drawInterface();
@@ -1637,6 +1609,7 @@ for (let i = 0; i < 200; i++) {
             player.worldY = selectedPortal[1];
             sounds.teleport.play();
         }
+        map.tileMap[player.worldX][player.worldY] = 0;
         requestAnimationFrame(gameLoop);
     }
 
