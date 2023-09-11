@@ -339,7 +339,7 @@ for (let i = 0; i < 200; i++) {
         },
         drawMap: () => {
             context.save();
-        
+          
             const {
                 tileWidth: tileW,
                 tileHeight: tileH,
@@ -348,45 +348,55 @@ for (let i = 0; i < 200; i++) {
                 numColumns: num_Cols,
                 numRows: num_Rows
             } = screen;
-        
+          
             const { tileMap } = map;
             const { worldX, worldY } = player;
-        
+          
             const leftEdge = worldX - (num_Cols - 1) / 2;
             const topEdge = worldY - (num_Rows - 1) / 2;
-        
+          
             const min_X_Index = Math.max(0, leftEdge - 6);
             const max_X_Index = Math.min(tileMap.length, leftEdge + num_Cols + 6);
             const min_Y_Index = Math.max(0, topEdge - 6);
             const max_Y_Index = Math.min(tileMap[0].length, topEdge + num_Rows + 6);
-        
-            // Defined once and reused
+          
             const tileTypes = ['grass', 'water', 'dirt', 'wood_wall', 'treasure', 'event_tile', 'NPC_tile', 'story_tile'];
             const tileImages = {};
-        
+          
             tileTypes.forEach((tileKey) => {
                 tileImages[tileKey] = tiles[tileKey]?.image;
             });
-        
-            // Set shadow properties once
+          
             context.shadowColor = 'rgba(0, 0, 0, 0.2)';
             context.shadowBlur = 5;
-        
+          
             for (let x_Index = min_X_Index; x_Index < max_X_Index; x_Index++) {
                 for (let y_Index = min_Y_Index; y_Index < max_Y_Index; y_Index++) {
-                    drawTile(x_Index, y_Index, leftEdge, topEdge, tileW, tileH, offset_X, offset_Y, tileMap, tileImages, tileTypes);
+                    const [i, j, tileValue] = [x_Index - leftEdge, y_Index - topEdge, tileMap[x_Index][y_Index]];
+                    const tileKey = tileTypes[tileValue] || 'skip';
+          
+                    if (tileKey === 'skip') continue;
+          
+                    const [x, y] = [tileW * i + offset_X, tileH * j + offset_Y];
+                    const tileImage = tileImages[tileKey];
+                    if (tileImage) {
+                        if (tileKey === 'treasure') {
+                            context.globalAlpha = 0.5; // Make it slightly transparent for the glow
+                            context.drawImage(tileImage, x - 5, y - 5, tileW + 10, tileH + 10); // Draw a larger, transparent image behind
+                            context.globalAlpha = 1.0; // Reset alpha
+                        }
+                        context.drawImage(tileImage, x, y, tileW, tileH);
+                    }
                 }
             }
-        
-            // Reset shadow properties
+          
             context.shadowColor = 'transparent';
             context.shadowBlur = 0;
             context.restore();
-
             function drawTile(x_Index, y_Index, leftEdge, topEdge, tileW, tileH, offset_X, offset_Y, tileMap, tileImages, tileTypes) {
                 const [i, j, tileValue] = [x_Index - leftEdge, y_Index - topEdge, tileMap[x_Index][y_Index]];
                 const tileKey = tileTypes[tileValue] || 'skip';
-            
+        
                 if (tileKey === 'skip') return;
             
                 const [x, y] = [tileW * i + offset_X, tileH * j + offset_Y];
@@ -399,7 +409,7 @@ for (let i = 0; i < 200; i++) {
                         console.error(`Failed to draw image for tile type ${tileKey}: ${e.message}`);
                     }
                 }
-            }
+            }  
         },
         drawSelectionBox: function(nC, playerAction) {
             function setGradient(tN, pF, x, y, w, h) {
