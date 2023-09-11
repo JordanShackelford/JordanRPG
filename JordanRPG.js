@@ -157,6 +157,7 @@ for (let i = 0; i < 200; i++) {
     enemies[0].worldY = 151;
 }
 
+    let portals = [];
     let showOptionsMenu = !1,
         a_canvas = document.getElementById("a"),
         context = a_canvas.getContext("2d"),
@@ -215,7 +216,8 @@ for (let i = 0; i < 200; i++) {
         enemyDefeated: new Audio("res/enemyDefeated.mp3"),
         openOptions: new Audio("res/openOptions.mp3"),
         closeOptions: new Audio("res/closeOptions.mp3"),
-        changeItem: new Audio("res/changeitem.mp3")
+        changeItem: new Audio("res/changeitem.mp3"),
+        teleport: new Audio("res/teleport.mp3")
         /*inventoryOpen: new Audio("res/inventoryOpen.wav"),
         /*inventoryClose: new Audio("res/inventoryClose.wav"),
         pickupItem: new Audio("res/pickupItem.wav"),
@@ -1059,10 +1061,12 @@ for (let i = 0; i < 200; i++) {
             };
         
             const addPortalTiles = () => {
-                //let x = (Math.random() * (c - 10) + 5) | 0;
-                //let y = (Math.random() * (c - 10) + 5) | 0;
-                mT[150][150] = 6;
-                mT[153][153] = 6;
+                for(var i = 0; i < 1000; i++){
+                    let x = (Math.random() * (c - 10) + 5) | 0;
+                    let y = (Math.random() * (c - 10) + 5) | 0;
+                    portals.push([x,y]);
+                    mT[x][y] = 6;
+                }
             };
 
             initMapTiles();
@@ -1256,7 +1260,7 @@ for (let i = 0; i < 200; i++) {
 
     function move(direction) {
         function canMoveToTile(x, y) {
-            return !(x < 0 || y < 0 || x >= 200 || y >= 200 || map.tileMap[x][y] === 1 || map.treeMap[x][y] === 3);
+            return !(x < 0 || y < 0 || x >= c || y >= c || map.tileMap[x][y] === 1 || map.treeMap[x][y] === 3);
         }
     
         function initialChecks() {
@@ -1624,6 +1628,15 @@ for (let i = 0; i < 200; i++) {
         }
         graphics.drawCursor();
         graphics.drawEnemies();
+        notifications.push(player.worldX + "," + player.worldY);
+        notifications.push("player is standing on: " + map.tileMap[player.worldX][player.worldY]);
+        if(map.tileMap[player.worldX][player.worldY] == 6){
+            const randomIndex = Math.floor(Math.random() * portals.length);
+            const selectedPortal = portals[randomIndex];
+            player.worldX = selectedPortal[0] + 1;
+            player.worldY = selectedPortal[1];
+            sounds.teleport.play();
+        }
         requestAnimationFrame(gameLoop);
     }
 
