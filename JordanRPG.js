@@ -296,7 +296,6 @@ for (let i = 0; i < 200; i++) {
         enemyImg = new Image();
         enemyImg.src = "res/enemy.png";
     }
-    let glowToggle = true;
     let trailFrames = [];
 
     let enemyHealthBarGradient = null,
@@ -351,25 +350,19 @@ for (let i = 0; i < 200; i++) {
           
             const { tileMap } = map;
             const { worldX, worldY } = player;
-          
             const leftEdge = worldX - (num_Cols - 1) / 2;
             const topEdge = worldY - (num_Rows - 1) / 2;
-          
             const min_X_Index = Math.max(0, leftEdge - 6);
             const max_X_Index = Math.min(tileMap.length, leftEdge + num_Cols + 6);
             const min_Y_Index = Math.max(0, topEdge - 6);
             const max_Y_Index = Math.min(tileMap[0].length, topEdge + num_Rows + 6);
-          
-            const tileTypes = ['grass', 'water', 'dirt', 'wood_wall', 'treasure', 'event_tile', 'NPC_tile', 'story_tile'];
+            const tileTypes = ['grass', 'water', 'dirt', 'wood_wall', 'treasure', 'event_tile', 'portal', 'NPC_tile', 'story_tile'];
             const tileImages = {};
-          
             tileTypes.forEach((tileKey) => {
                 tileImages[tileKey] = tiles[tileKey]?.image;
             });
-          
             context.shadowColor = 'rgba(0, 0, 0, 0.2)';
             context.shadowBlur = 5;
-          
             for (let x_Index = min_X_Index; x_Index < max_X_Index; x_Index++) {
                 for (let y_Index = min_Y_Index; y_Index < max_Y_Index; y_Index++) {
                     const [i, j, tileValue] = [x_Index - leftEdge, y_Index - topEdge, tileMap[x_Index][y_Index]];
@@ -997,6 +990,7 @@ for (let i = 0; i < 200; i++) {
             wood_wall: [1, 1, "res/wood_wall.png"],
             treasure: [1, 1, "res/treasure.jpg"],
             stump: [2, 5, "res/stump.png"],
+            portal: [1,1,"res/portal.png"]
         },
         tiles = {};
 
@@ -1064,16 +1058,17 @@ for (let i = 0; i < 200; i++) {
                 }
             };
         
-            const addPortalTile = () => {
-                const x = (Math.random() * (c - 10) + 5) | 0;
-                const y = (Math.random() * (c - 10) + 5) | 0;
-                mT[x][y] = 6;
+            const addPortalTiles = () => {
+                //let x = (Math.random() * (c - 10) + 5) | 0;
+                //let y = (Math.random() * (c - 10) + 5) | 0;
+                mT[150][150] = 6;
+                mT[153][153] = 6;
             };
 
             initMapTiles();
             updateTiles();
             addSpecialTiles();
-            addPortalTile();
+            addPortalTiles();
         
             map.tileMap = mT;
             map.treeMap = Array.from({
