@@ -393,23 +393,6 @@ for (let i = 0; i < 200; i++) {
             context.shadowColor = 'transparent';
             context.shadowBlur = 0;
             context.restore();
-            function drawTile(x_Index, y_Index, leftEdge, topEdge, tileW, tileH, offset_X, offset_Y, tileMap, tileImages, tileTypes) {
-                const [i, j, tileValue] = [x_Index - leftEdge, y_Index - topEdge, tileMap[x_Index][y_Index]];
-                const tileKey = tileTypes[tileValue] || 'skip';
-        
-                if (tileKey === 'skip') return;
-            
-                const [x, y] = [tileW * i + offset_X, tileH * j + offset_Y];
-                const tileImage = tileImages[tileKey];
-                
-                if (tileImage) {
-                    try {
-                        context.drawImage(tileImage, x, y, tileW, tileH);
-                    } catch (e) {
-                        console.error(`Failed to draw image for tile type ${tileKey}: ${e.message}`);
-                    }
-                }
-            }  
         },
         drawSelectionBox: function(nC, playerAction) {
             function setGradient(tN, pF, x, y, w, h) {
