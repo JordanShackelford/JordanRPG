@@ -1064,9 +1064,16 @@ for (let i = 0; i < 200; i++) {
                 }
             };
         
+            const addPortalTile = () => {
+                const x = (Math.random() * (c - 10) + 5) | 0;
+                const y = (Math.random() * (c - 10) + 5) | 0;
+                mT[x][y] = 6;
+            };
+
             initMapTiles();
             updateTiles();
             addSpecialTiles();
+            addPortalTile();
         
             map.tileMap = mT;
             map.treeMap = Array.from({
