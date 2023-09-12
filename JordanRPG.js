@@ -519,21 +519,15 @@ for (let i = 0; i < 50; i++) {
                 context.shadowOffsetY = 0;
             }
         
-            function applyMovingEffects() {
-                const glowGradient = context.createRadialGradient(player.pixelX + player.imgWidth / 2, player.pixelY + player.imgHeight / 2, 50, player.pixelX + player.imgWidth / 2, player.pixelY + player.imgHeight / 2, 60);
-                glowGradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
-                glowGradient.addColorStop(0.5, 'rgba(0, 255, 255, 0.3)');
-                glowGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
-                context.fillStyle = glowGradient;
+            function drawDustCloud() {
+                const dustX = player.pixelX + (Math.random() - 0.5) * 20;
+                const dustY = player.pixelY + player.imgHeight + (Math.random() - 0.5) * 10;
         
+                const dustSize = Math.random() * 25 + 2;
+                context.fillStyle = "rgba(155, 118, 83, 0.5)";
                 context.beginPath();
-                context.arc(player.pixelX + player.imgWidth / 2, player.pixelY + player.imgHeight / 2, 60, 0, 2 * Math.PI);
+                context.arc(dustX, dustY, dustSize, 0, Math.PI * 2);
                 context.fill();
-        
-                context.shadowColor = 'rgba(0, 0, 0, 0.2)';
-                context.shadowBlur = 5;
-                context.shadowOffsetX = 2;
-                context.shadowOffsetY = 2;
             }
         
             function drawCombatIcon() {
@@ -561,7 +555,7 @@ for (let i = 0; i < 50; i++) {
             clearShadowSettings();
         
             if (player.isMoving) {
-                applyMovingEffects();
+                drawDustCloud();  // New feature
             }
         
             if (player.inCombat) {
@@ -572,6 +566,7 @@ for (let i = 0; i < 50; i++) {
         
             drawAdditionalAnimations();
         },
+        
         drawEnemies: () => {
             // The logic you used to calculate the world coordinates of clicked trees
             const lR = Math.floor(screen.numColumns / 2);
