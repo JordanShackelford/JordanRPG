@@ -1657,32 +1657,42 @@ startAnimation();
     window.addEventListener("keydown", handleKeyDown, false);
     sounds.music.play();
 
-   const updateEnemyPosition = () => {
-  for (const enemy of enemies) {
-    // Check if the enemy is on a portal
-    const isOnPortal = portals.some(portal => portal[0] === enemy.worldX && portal[1] === enemy.worldY);
-    
-    if (isOnPortal) {
-      // Teleport to a random portal
-      const randomPortal = portals[Math.floor(Math.random() * portals.length)];
-      enemy.worldX = randomPortal[0] + 1; // Add one to avoid infinite loop
-      enemy.worldY = randomPortal[1];
-    } else {
-      // Calculate the distance to the player in both dimensions
-      const distX = enemy.worldX - player.worldX;
-      const distY = enemy.worldY - player.worldY;
-
-      // Determine the axis on which to move
-      if (Math.abs(distX) > Math.abs(distY)) {
-        // Move horizontally towards the player
-        enemy.worldX += distX > 0 ? -1 : 1;
-      } else {
-        // Move vertically towards the player
-        enemy.worldY += distY > 0 ? -1 : 1;
-      }
-    }
-  }
-};
+    const updateEnemyPosition = () => {
+        // A variable to store whether the enemy is under a power-up effect
+        let isPoweredUp = false;
+      
+        for (const enemy of enemies) {
+          // Trigger power-up at random intervals
+          if (Math.random() < 0.1 && !isPoweredUp) {
+            isPoweredUp = true;
+            setTimeout(() => isPoweredUp = false, 5000);  // Reset after 5 seconds
+          }
+      
+          // Check if the enemy is on a portal
+          const isOnPortal = portals.some(portal => portal[0] === enemy.worldX && portal[1] === enemy.worldY);
+          
+          if (isOnPortal) {
+            // Teleport to a random portal
+            const randomPortal = portals[Math.floor(Math.random() * portals.length)];
+            enemy.worldX = randomPortal[0] + 1; // Add one to avoid infinite loop
+            enemy.worldY = randomPortal[1];
+          } else {
+            // Calculate the distance to the player in both dimensions
+            const distX = enemy.worldX - player.worldX;
+            const distY = enemy.worldY - player.worldY;
+      
+            // Determine the axis on which to move
+            if (Math.abs(distX) > Math.abs(distY)) {
+              // Move horizontally towards the player
+              enemy.worldX += distX > 0 ? (isPoweredUp ? -2 : -1) : (isPoweredUp ? 2 : 1);
+            } else {
+              // Move vertically towards the player
+              enemy.worldY += distY > 0 ? (isPoweredUp ? -2 : -1) : (isPoweredUp ? 2 : 1);
+            }
+          }
+        }
+      };
+      
 
 // Run the function every second
 setInterval(updateEnemyPosition, 500);
