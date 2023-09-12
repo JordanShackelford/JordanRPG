@@ -1578,6 +1578,21 @@ for (let i = 0; i < 500; i++) {
     }
     window.addEventListener("keydown", handleKeyDown, false);
     sounds.music.play();
+
+    // Add this inside your enemy object, initialize with 0
+// enemy.fracX = 0; 
+// enemy.fracY = 0;
+
+const updateEnemyPosition = () => {
+    for (const enemy of enemies) {
+      enemy.worldX += 1;
+      enemy.worldY += 1;
+    }
+  };
+      
+      // Run the function every second
+      setInterval(updateEnemyPosition, 1000);
+      
     function gameLoop() {
         if(!showOptionsMenu){
             graphics.drawMap();
@@ -1615,5 +1630,7 @@ for (let i = 0; i < 500; i++) {
 
     // Start the game loop
     requestAnimationFrame(gameLoop);
+
+    
 
 }
