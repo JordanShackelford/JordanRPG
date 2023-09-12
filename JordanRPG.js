@@ -642,10 +642,16 @@ if (tileImage) {
         },
         drawInterface: function() {
             const drawInterfaceBackground = (context, iX, iY, iW, iH, r) => {
+                // Pre-calculate constant values
+                const iWMinusR = iX + iW - r;
+                const iHMinusR = iY + iH - r;
+                const iXPlusR = iX + r;
+                const iYPlusR = iY + r;
+                
                 const g = context.createLinearGradient(iX, iY, iX + iW, iY);
                 g.addColorStop(0, "rgba(46, 43, 95, 0.6)");
                 g.addColorStop(1, "rgba(0, 12, 36, 0.8)");
-
+            
                 context.fillStyle = g;
                 context.strokeStyle = "#5F9EA0";
                 context.lineWidth = 5;
@@ -653,36 +659,41 @@ if (tileImage) {
                 context.shadowBlur = 20;
                 context.shadowOffsetX = 10;
                 context.shadowOffsetY = 10;
-
+            
                 context.beginPath();
-                context.moveTo(iX + r, iY);
-                context.lineTo(iX + iW - r, iY);
+                context.moveTo(iXPlusR, iY);
+                context.lineTo(iWMinusR, iY);
                 context.arcTo(iX + iW, iY, iX + iW, iY + r, r);
-                context.lineTo(iX + iW, iY + iH - r);
-                context.arcTo(iX + iW, iY + iH, iX + iW - r, iY + iH, r);
-                context.lineTo(iX + r, iY + iH);
-                context.arcTo(iX, iY + iH, iX, iY + iH - r, r);
-                context.lineTo(iX, iY + r);
-                context.arcTo(iX, iY, iX + r, iY, r);
+                context.lineTo(iX + iW, iHMinusR);
+                context.arcTo(iX + iW, iY + iH, iWMinusR, iY + iH, r);
+                context.lineTo(iXPlusR, iY + iH);
+                context.arcTo(iX, iY + iH, iX, iHMinusR, r);
+                context.lineTo(iX, iYPlusR);
+                context.arcTo(iX, iY, iXPlusR, iY, r);
                 context.closePath();
                 context.fill();
                 context.stroke();
             };
+            
             const drawItemSlots = (context, iX, iY, sW, sH, sp, icons, qtys) => {
-                for (let i = 0, x, y, w, h; i < qtys.length; i++) {
-                    x = iX + sW * i + sp;
-                    y = iY + sp;
-                    w = sW - 2 * sp;
-                    h = sH - 2 * sp;
-                    context.shadowColor = "black";
-                    context.drawImage(icons[["hatchet", "potion", "sword", "shield", "bow", "scroll"][i]], x, y, w, h);
-                    context.fillStyle = "black";
-                    context.font = "20px 'Times New Roman'";
+                const w = sW - 2 * sp;
+                const h = sH - 2 * sp;
+                context.shadowColor = "black";
+                context.fillStyle = "black";
+                context.font = "20px 'Times New Roman'";
+            
+                const items = ["hatchet", "potion", "sword", "shield", "bow", "scroll"];
+              
+                for (let i = 0; i < qtys.length; i++) {
+                    const x = iX + sW * i + sp;
+                    const y = iY + sp;
+                    context.drawImage(icons[items[i]], x, y, w, h);
                     context.fillText(qtys[i], x + w - 30, y + h - 10);
                 }
             };
+            
             function renderInventorySlots(context, tG, slots, iX, iY, sW, sH, gameInterface) {
-                context.fillStyle = tG;
+                // Move common context settings outside of the loop
                 context.font = "50px 'Impact'";
                 context.textAlign = "center";
                 context.textBaseline = "middle";
@@ -691,21 +702,29 @@ if (tileImage) {
                 context.lineWidth = 6;
                 context.textShadowColor = 'rgba(0, 0, 0, 0.3)';
                 context.textShadowBlur = 2;
-              
+            
+                const halfSW = sW / 2;
+                const halfSH = sH / 2;
+            
                 for (let i = 0, x, y; i < slots; i++) {
-                  x = iX + sW * i + sW / 2;
-                  y = iY + sH / 2;
-                  if (i === gameInterface.inventorySlotSelected) {
-                    context.fillStyle = "#FF4500";
-                  }
-                  context.strokeText(i + 1, x, y);
-                  context.fillText(i + 1, x, y);
-                  context.fillStyle = tG;
+                    x = iX + sW * i + halfSW;
+                    y = iY + halfSH;
+            
+                    if (i === gameInterface.inventorySlotSelected) {
+                        context.fillStyle = "#FF4500";
+                    } else {
+                        context.fillStyle = tG;
+                    }
+            
+                    context.strokeText(i + 1, x, y);
+                    context.fillText(i + 1, x, y);
                 }
-              
+            
+                // Reset shadow properties
                 context.shadowColor = "transparent";
                 context.textShadowBlur = 0;
-              }
+            }
+            
 
             const [iW, iH, iX, iY] = [a_canvas.width * 0.7, a_canvas.height * 0.15, (a_canvas.width - a_canvas.width * 0.7) / 2, a_canvas.height * 0.85];
             const slots = 6,
