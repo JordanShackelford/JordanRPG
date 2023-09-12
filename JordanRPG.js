@@ -511,7 +511,7 @@ for (let i = 0; i < 50; i++) {
         drawPlayer: () => {
             const animationFrames = [8, 7, 55, 2, 102, 2, 153, 2, 8, 150, 51, 150, 104, 150, 155, 150, 8, 76, 51, 76, 104, 76, 155, 76, 8, 220, 51, 220, 104, 220, 155, 220];
             const currentFrameIndex = player.animationFrame << 1;
-        
+            let dustParticles = [];
             function clearShadowSettings() {
                 context.shadowColor = 'transparent';
                 context.shadowBlur = 0;
@@ -520,14 +520,29 @@ for (let i = 0; i < 50; i++) {
             }
         
             function drawDustCloud() {
-                const dustX = player.pixelX + (Math.random() - 0.5) * 20;
-                const dustY = player.pixelY + player.imgHeight + (Math.random() - 0.5) * 10;
+                // Generate 10 dust particles with random attributes
+                for (let i = 0; i < 10; i++) {
+                    let dustX = player.pixelX + (Math.random() - 0.5) * 40;
+                    let dustY = player.pixelY + player.imgHeight + (Math.random() - 0.5) * 20;
+                    let dustSize = Math.random() * 8 + 2;
+                    let dustOpacity = Math.random() * 0.6 + 0.2;
         
-                const dustSize = Math.random() * 25 + 2;
-                context.fillStyle = "rgba(155, 118, 83, 0.5)";
-                context.beginPath();
-                context.arc(dustX, dustY, dustSize, 0, Math.PI * 2);
-                context.fill();
+                    dustParticles.push({
+                        x: dustX,
+                        y: dustY,
+                        size: dustSize,
+                        opacity: dustOpacity
+                    });
+                }
+        
+                // Draw dust particles
+                context.globalAlpha = 1;
+                dustParticles.forEach(particle => {
+                    context.fillStyle = `rgba(255, 255, 255, ${particle.opacity})`;
+                    context.beginPath();
+                    context.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    context.fill();
+                });
             }
         
             function drawCombatIcon() {
