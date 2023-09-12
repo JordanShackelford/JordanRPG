@@ -743,60 +743,49 @@ if (tileImage) {
         },
 
         drawTrees: () => {
-            const calculateVariables = () => {
-              const cT = Date.now();
-              const windStrength = Math.sin((cT - startTime) * 0.001);
-              const lR = (screen.numColumns - 1) / 2 + 6;
-              const tB = (screen.numRows - 1) / 2 + 6;
-              const m = [null, tiles.tree1.image, tiles.tree2.image];
-              const focalPoint = {
-                x: screen.tileWidth * lR,
-                y: screen.tileHeight * tB
-              };
-              const windAngle = windStrength * Math.PI / 4;
-              const cosWindAngle = Math.cos(windAngle) * 10;
+            // Calculate time and wind-related variables
+            const cT = Date.now();
+            const windStrength = Math.sin((cT - startTime) * 0.001);
+            const windAngle = windStrength * Math.PI / 4;
+            const cosWindAngle = Math.cos(windAngle) * 10;
           
-              return {
-                cT,
-                windStrength,
-                lR,
-                tB,
-                m,
-                focalPoint,
-                windAngle,
-                cosWindAngle
-              };
+            // Screen related variables
+            const lR = (screen.numColumns - 1) / 2 + 6;
+            const tB = (screen.numRows - 1) / 2 + 6;
+            const focalPoint = {
+              x: screen.tileWidth * lR,
+              y: screen.tileHeight * tB
             };
+            const m = [null, tiles.tree1.image, tiles.tree2.image];
           
-            const drawTreeImages = (vars) => {
-              const { lR, tB, m, focalPoint, cosWindAngle } = vars;
+            for (let i = -lR, mI = screen.numColumns + 6; i < mI; i++) {
+              for (let j = -tB, mJ = screen.numRows + 6; j < mJ; j++) {
+                const xI = Math.floor(player.worldX + i - lR);
+                const yI = Math.floor(player.worldY + j - tB);
+                const tV = map.treeMap[xI][yI];
+                const tI = m[tV];
           
-              for (let i = -lR, mI = screen.numColumns + 6; i < mI; i++) {
-                for (let j = -tB, mJ = screen.numRows + 6; j < mJ; j++) {
-                  const xI = Math.floor(player.worldX + i - lR);
-                  const yI = Math.floor(player.worldY + j - tB);
-                  const tV = map.treeMap[xI][yI];
-                  const tI = m[tV];
+                if (tI) {
+                  const tX = screen.tileWidth * i - screen.tileWidth / 2 + screen.offsetX;
+                  const tY = screen.tileHeight * j + screen.offsetY;
           
-                  if (tI) {
-                    const tX = screen.tileWidth * i - screen.tileWidth / 2 + screen.offsetX;
-                    const tY = screen.tileHeight * j + screen.offsetY;
-                    const distance = Math.sqrt(Math.pow(focalPoint.x - tX, 2) + Math.pow(focalPoint.y - tY, 2));
-                    const scale = Math.max(1.5, Math.min(2, 1 - distance / 1000));
+                  // Use Manhattan Distance for a faster distance calculation
+                  const distance = Math.abs(focalPoint.x - tX) + Math.abs(focalPoint.y - tY);
+                  const scale = Math.max(1.5, Math.min(2, 1 - distance / 1000));
           
-                    context.globalAlpha = (yI % 3 === 0 && xI % 3 === 0) ? 0.7 : 1;
-                    const bottomY = tY + tI.height * scale;
-                    context.drawImage(tI, tX, bottomY, tI.width * scale, tI.height * scale);
-                    context.drawImage(tI, tX, tY + cosWindAngle, tI.width * scale, tI.height * scale);
-                    context.globalAlpha = 1;
-                  }
+                  context.globalAlpha = (yI % 3 === 0 && xI % 3 === 0) ? 0.7 : 1;
+          
+                  // Draw the tree image with wind effect
+                  const bottomY = tY + tI.height * scale;
+                  context.drawImage(tI, tX, bottomY, tI.width * scale, tI.height * scale);
+                  context.drawImage(tI, tX, tY + cosWindAngle, tI.width * scale, tI.height * scale);
+          
+                  context.globalAlpha = 1;
                 }
               }
-            };
-          
-            const vars = calculateVariables();
-            drawTreeImages(vars);
+            }
           },
+          
           
           drawNotifications: () => {
             const drawBackground = () => {
