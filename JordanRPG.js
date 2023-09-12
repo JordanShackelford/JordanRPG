@@ -377,13 +377,45 @@ for (let i = 0; i < 50; i++) {
                     const [x, y] = [tileW * i + offset_X, tileH * j + offset_Y];
                     const tileImage = tileImages[tileKey];
                     if (tileImage) {
-                        if (tileKey === 'treasure' || 'portal') {
-                            context.globalAlpha = 0.5; // Make it slightly transparent for the glow
-                            context.drawImage(tileImage, x - 5, y - 5, tileW + 10, tileH + 10); // Draw a larger, transparent image behind
-                            context.globalAlpha = 1.0; // Reset alpha
+                        // Draw grass tile first as background
+                        context.drawImage(tileImages['grass'], x, y, tileW, tileH);
+                    
+                        if (tileKey === 'portal') {
+                            // Save the current context state
+                            context.save();
+                    
+                            // Draw a circular region filled with a color (replace 'blue' with your portal's dominant color)
+                            context.beginPath();
+                            context.arc(x + tileW / 2, y + tileH / 2, tileW / 2, 0, Math.PI * 2);
+                            context.fillStyle = 'purple';
+                            context.fill();
+                    
+                            // Clip to a rounded region
+                            context.beginPath();
+                            context.arc(x + tileW / 2, y + tileH / 2, tileW / 2, 0, Math.PI * 2);
+                            context.clip();
+                    
+                            // Translate and rotate as before
+                            context.translate(x + tileW / 2, y + tileH / 2);
+                            const randomAngle = Math.random() * Math.PI * 2;
+                            context.rotate(randomAngle);
+                    
+                            // Draw the portal image, but offset it so that it's centered
+                            context.drawImage(tileImage, -tileW / 2, -tileH / 2, tileW, tileH);
+                    
+                            // Restore the original context state
+                            context.restore();
+                        } else {
+                            // Draw normally for other tiles
+                            context.drawImage(tileImage, x, y, tileW, tileH);
                         }
-                        context.drawImage(tileImage, x, y, tileW, tileH);
                     }
+                    
+                    
+                    
+                    
+                    
+                    
                 }
             }
           
@@ -1682,7 +1714,7 @@ setInterval(fireAtNearestEnemy, 250);
             player.worldY = selectedPortal[1];
             sounds.teleport.play();
         }
-        map.tileMap[player.worldX][player.worldY] = 0;
+        if(1 == 2) map.tileMap[player.worldX][player.worldY] = 0; // we could leave a trail of any tile type
         requestAnimationFrame(gameLoop);
     }
 
