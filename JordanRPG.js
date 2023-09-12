@@ -387,7 +387,7 @@ if (tileImage) {
         // Draw a circular gradient effect as a background
         const grd = context.createRadialGradient(x + tileW / 2, y + tileH / 2, tileW / 4, x + tileW / 2, y + tileH / 2, tileW / 2);
         grd.addColorStop(0, 'purple');
-        grd.addColorStop(0.5, 'violet');
+        grd.addColorStop(0.5, 'pink');
         grd.addColorStop(1, 'black');
         context.fillStyle = grd;
         context.beginPath();
@@ -598,31 +598,32 @@ if (tileImage) {
         },
         
         drawEnemies: () => {
-            // The logic you used to calculate the world coordinates of clicked trees
+            // Pre-calculate these values which are constants within the function scope
             const lR = Math.floor(screen.numColumns / 2);
             const tB = Math.floor(screen.numRows / 2);
-          
+            const offsetXPluslRTileWidth = screen.offsetX + lR * screen.tileWidth;
+            const offsetYPluslRTileHeight = screen.offsetY + tB * screen.tileHeight;
+            
+            // Limits for checking if an enemy should be drawn
+            const xLowerLimit = player.worldX - lR;
+            const xUpperLimit = player.worldX + lR;
+            const yLowerLimit = player.worldY - tB;
+            const yUpperLimit = player.worldY + tB;
+        
             // Iterate through all enemies
             for (const enemy of enemies) {
-              // Calculate relative coordinates
-              const i = enemy.worldX - player.worldX;
-              const j = enemy.worldY - player.worldY;
-              
-              // Only draw if the enemy is within the visible window
-              if (Math.abs(i) <= lR && Math.abs(j) <= tB) {
-                // Calculate the drawing coordinates
-                const drawX = (i + lR) * screen.tileWidth + screen.offsetX;
-                const drawY = (j + tB) * screen.tileHeight + screen.offsetY;
-                
-                context.drawImage(enemyImg, drawX, drawY, screen.tileWidth, screen.tileHeight);
-              }
+                // Use bounding box check for better performance
+                if (enemy.worldX >= xLowerLimit && enemy.worldX <= xUpperLimit && 
+                    enemy.worldY >= yLowerLimit && enemy.worldY <= yUpperLimit) {
+                    
+                    // Calculate the drawing coordinates
+                    const drawX = (enemy.worldX - player.worldX + lR) * screen.tileWidth + screen.offsetX;
+                    const drawY = (enemy.worldY - player.worldY + tB) * screen.tileHeight + screen.offsetY;
+        
+                    context.drawImage(enemyImg, drawX, drawY, screen.tileWidth, screen.tileHeight);
+                }
             }
-          },
-          
-          
-          
-          
-              
+        },
         drawCursor: function() {
             const [mX, mY] = screen.mouseCanvasCoords;
             const tX = Math.floor((mX - screen.offsetX) / screen.tileWidth),
