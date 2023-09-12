@@ -788,40 +788,41 @@ if (tileImage) {
           
           
           drawNotifications: () => {
-            const drawBackground = () => {
-              const w = a_canvas.width * 0.6,
-                  h = 260;
-              const x = (a_canvas.width - w) / 2,
-                  y = a_canvas.height * 0.07;
-              fade = Math.min(1, fade + 0.01);
-              
-              context.fillStyle = `rgba(0, 0, 0, ${0.7 * fade})`;
-              context.roundRect(x, y, w, h, 15);
-              context.fill();
-              return {x, w};
-            };
-            const drawText = (drawBgVars) => {
-              const textX = drawBgVars.x + drawBgVars.w / 2,
-                  fixedY = a_canvas.height * 0.07 + 260 - 20;
-              const lineHeight = 40;
-              const maxLines = 6;
+            // Constants
+            const h = 260;
+            const fadeIncrement = 0.01;
+            const lineHeight = 40;
+            const maxLines = 6;
+            const fixedY = a_canvas.height * 0.07 + h - 20;
           
-              context.font = "bold 30px 'Lucida Console'";
-              context.fillStyle = "#fff";
-              context.textAlign = 'center';
-              context.textBaseline = 'middle';
+            // Update fade
+            fade = Math.min(1, fade + fadeIncrement);
           
-              const startIndex = Math.max(0, notifications.length - maxLines);
-              for (let n = startIndex; n < notifications.length; n++) {
-                const tY = fixedY - ((n - startIndex + 0.5) * lineHeight);
-                context.fillText(`• ${notifications[n]}`, textX, tY);
-              }
+            // Draw background
+            const w = a_canvas.width * 0.6;
+            const x = (a_canvas.width - w) / 2;
+            const y = a_canvas.height * 0.07;
+            context.fillStyle = `rgba(0, 0, 0, ${0.7 * fade})`;
+            context.roundRect(x, y, w, h, 15);
+            context.fill();
           
-              context.shadowColor = "transparent";
-            };
-            const drawBgVars = drawBackground();
-            drawText(drawBgVars);
+            // Set text properties
+            const textX = x + w / 2;
+            context.font = "bold 30px 'Lucida Console'";
+            context.fillStyle = "#fff";
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            
+            // Draw text
+            const startIndex = Math.max(0, notifications.length - maxLines);
+            for (let n = startIndex; n < notifications.length; n++) {
+              const tY = fixedY - ((n - startIndex + 0.5) * lineHeight);
+              context.fillText(`• ${notifications[n]}`, textX, tY);
+            }
+          
+            context.shadowColor = "transparent";
           },
+          
           
         drawOptionsMenu: () => {
             const drawOptionsMenuLayout = (x, y, w, h, options = {}) => {
