@@ -376,46 +376,61 @@ for (let i = 0; i < 50; i++) {
           
                     const [x, y] = [tileW * i + offset_X, tileH * j + offset_Y];
                     const tileImage = tileImages[tileKey];
-                    if (tileImage) {
-                        // Draw grass tile first as background
-                        context.drawImage(tileImages['grass'], x, y, tileW, tileH);
-                    
-                        if (tileKey === 'portal') {
-                            // Save the current context state
-                            context.save();
-                    
-                            // Draw a circular region filled with a color (replace 'blue' with your portal's dominant color)
-                            context.beginPath();
-                            context.arc(x + tileW / 2, y + tileH / 2, tileW / 2, 0, Math.PI * 2);
-                            context.fillStyle = 'purple';
-                            context.fill();
-                    
-                            // Clip to a rounded region
-                            context.beginPath();
-                            context.arc(x + tileW / 2, y + tileH / 2, tileW / 2, 0, Math.PI * 2);
-                            context.clip();
-                    
-                            // Translate and rotate as before
-                            context.translate(x + tileW / 2, y + tileH / 2);
-                            const randomAngle = Math.random() * Math.PI * 2;
-                            context.rotate(randomAngle);
-                    
-                            // Draw the portal image, but offset it so that it's centered
-                            context.drawImage(tileImage, -tileW / 2, -tileH / 2, tileW, tileH);
-                    
-                            // Restore the original context state
-                            context.restore();
-                        } else {
-                            // Draw normally for other tiles
-                            context.drawImage(tileImage, x, y, tileW, tileH);
-                        }
-                    }
-                    
-                    
-                    
-                    
-                    
-                    
+if (tileImage) {
+    // Draw grass tile first as background
+    context.drawImage(tileImages['grass'], x, y, tileW, tileH);
+
+    if (tileKey === 'portal') {
+        // Save the current context state
+        context.save();
+
+        // Draw a circular gradient effect as a background
+        const grd = context.createRadialGradient(x + tileW / 2, y + tileH / 2, tileW / 4, x + tileW / 2, y + tileH / 2, tileW / 2);
+        grd.addColorStop(0, 'purple');
+        grd.addColorStop(0.5, 'violet');
+        grd.addColorStop(1, 'black');
+        context.fillStyle = grd;
+        context.beginPath();
+        context.arc(x + tileW / 2, y + tileH / 2, tileW / 2, 0, Math.PI * 2);
+        context.fill();
+
+        // Clip to a rounded region
+        context.beginPath();
+        context.arc(x + tileW / 2, y + tileH / 2, tileW / 2, 0, Math.PI * 2);
+        context.clip();
+
+        const time = Date.now() * 0.005;  // Increased time multiplier for faster rotation
+        const numLayers = 4;  // Increased to 4 layers
+
+        for (let i = 0; i < numLayers; i++) {
+            const rotationAngle = Math.sin(time + i) * Math.PI;
+            const layerOpacity = (i + 1) / numLayers;
+
+            // Translate and rotate
+            context.translate(x + tileW / 2, y + tileH / 2);
+            context.rotate(rotationAngle);
+
+            // Apply opacity
+            context.globalAlpha = layerOpacity;
+
+            // Draw the portal image, but offset it so that it's centered
+            context.drawImage(tileImage, -tileW / 2, -tileH / 2, tileW, tileH);
+
+            // Reverse transformations for the next iteration
+            context.rotate(-rotationAngle);
+            context.translate(-(x + tileW / 2), -(y + tileH / 2));
+        }
+
+        // Restore the original context state
+        context.restore();
+        context.globalAlpha = 1;  // Reset opacity
+    } else {
+        // Draw normally for other tiles
+        context.drawImage(tileImage, x, y, tileW, tileH);
+    }
+}
+
+
                 }
             }
           
