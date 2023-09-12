@@ -429,8 +429,6 @@ if (tileImage) {
         context.drawImage(tileImage, x, y, tileW, tileH);
     }
 }
-
-
                 }
             }
           
@@ -438,7 +436,25 @@ if (tileImage) {
             context.shadowBlur = 0;
             context.restore();
         },
-        drawSelectionBox: function(nC, playerAction) {
+        drawSelectionBox: function(nC, playerAction, animationSpeed = 1, shapeType = 'box', eventTrigger) {
+            function drawTriangle(x, y, w, h) {
+                context.beginPath();
+                context.moveTo(x, y);
+                context.lineTo(x + w, y);
+                context.lineTo(x + w / 2, y + h);
+                context.closePath();
+                context.stroke();
+            }
+        
+            function drawHexagon(x, y, w, h) {
+                let sideLength = w / 2;
+                context.beginPath();
+                for (let j = 0; j < 2 * Math.PI; j += Math.PI / 3) {
+                    context.lineTo(x + w / 2 + sideLength * Math.cos(j), y + h / 2 + sideLength * Math.sin(j));
+                }
+                context.closePath();
+                context.stroke();
+            }
             function setGradient(tN, pF, x, y, w, h) {
                 const gS = context.createLinearGradient(x, y, x + w, y + h);
                 gS.addColorStop(0, `hsla(${tN*360},100%,50%,${.5+.5*pF})`);
@@ -517,9 +533,18 @@ if (tileImage) {
                 setRotation(Math.PI / 4, x, y, w, h);
             }
 
-            drawBox(x, y, w, h, 5 + Math.sin((t % 5000 / 5000) * Math.PI) * 10);
+            if (shapeType === 'triangle') {
+                drawTriangle(x, y, w, h);
+            } else if (shapeType === 'hexagon') {
+                drawHexagon(x, y, w, h);
+            } else {
+                drawBox(x, y, w, h, 5 + Math.sin((t % (5000 / animationSpeed) / (5000 / animationSpeed)) * Math.PI) * 10);
+            }
+        
+            if (eventTrigger) {
+                eventTrigger();
+            }
             drawCircle(x + w / 2, y + h / 2, w / 4, pF);
-
             context.restore();
         },
 
@@ -1746,6 +1771,8 @@ setInterval(fireAtNearestEnemy, 250);
                 e.screenTileY = e.worldY - player.worldY + distTopBot;
             });
             processPlayerMovement();
+            graphics.drawSelectionBox(screen.oldSelectionBoxCoords, screen.selectionBoxCoords, 1, 'hexagon');
+            graphics.drawSelectionBox(screen.oldSelectionBoxCoords, screen.selectionBoxCoords, 1, 'triangle');
             graphics.drawSelectionBox(screen.oldSelectionBoxCoords, screen.selectionBoxCoords);
             graphics.drawPlayer();
             graphics.drawTrees();
