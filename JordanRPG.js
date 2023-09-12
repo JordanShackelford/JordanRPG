@@ -1261,19 +1261,27 @@ if (tileImage) {
         img.src = src;
         return img;
     });
-
+    
     let frameIndex = 0,
         intervalTime = 300,
-        intervalId;
-
+        lastUpdateTime = 0;
+    
     function startAnimation() {
-        if (intervalId) clearInterval(intervalId);
-
-        intervalId = setInterval(() => {
+        if (lastUpdateTime === 0) lastUpdateTime = Date.now();
+        const currentTime = Date.now();
+    
+        if (currentTime - lastUpdateTime >= intervalTime) {
+            lastUpdateTime = currentTime;
             tiles.water.image = waterFrames[frameIndex];
             frameIndex = (frameIndex + 1) % waterFrames.length;
-        }, intervalTime);
+        }
+    
+        requestAnimationFrame(startAnimation);
     }
+    
+    // To start the animation
+    startAnimation();
+    
 
 
     generator.generateChunk(), generator.generateTrees();
