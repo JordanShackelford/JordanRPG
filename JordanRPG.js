@@ -146,7 +146,7 @@ window.onload = function() {
     let tileProperties = {};
     const enemies = [];
 
-for (let i = 0; i < 500; i++) {
+for (let i = 0; i < 50; i++) {
     enemies.push({
         worldX: Math.floor(Math.random() * 250),
         worldY: Math.floor(Math.random() * 250),
@@ -158,6 +158,8 @@ for (let i = 0; i < 500; i++) {
 }
 
     let portals = [];
+    let towers = [];
+    towers.push[150,150];
     let showOptionsMenu = !1,
         a_canvas = document.getElementById("a"),
         context = a_canvas.getContext("2d"),
@@ -967,7 +969,8 @@ for (let i = 0; i < 500; i++) {
             wood_wall: [1, 1, "res/wood_wall.png"],
             treasure: [1, 1, "res/treasure.jpg"],
             stump: [2, 5, "res/stump.png"],
-            portal: [1,1,"res/portal.png"]
+            portal: [1,1,"res/portal.png"],
+            tower: [1,1,"res/tower.png"]
         },
         tiles = {};
 
@@ -1579,20 +1582,75 @@ for (let i = 0; i < 500; i++) {
     window.addEventListener("keydown", handleKeyDown, false);
     sounds.music.play();
 
-    // Add this inside your enemy object, initialize with 0
-// enemy.fracX = 0; 
-// enemy.fracY = 0;
+   const updateEnemyPosition = () => {
+  for (const enemy of enemies) {
+    // Check if the enemy is on a portal
+    const isOnPortal = portals.some(portal => portal[0] === enemy.worldX && portal[1] === enemy.worldY);
+    
+    if (isOnPortal) {
+      // Teleport to a random portal
+      const randomPortal = portals[Math.floor(Math.random() * portals.length)];
+      enemy.worldX = randomPortal[0] + 1; // Add one to avoid infinite loop
+      enemy.worldY = randomPortal[1];
+    } else {
+      // Calculate the distance to the player in both dimensions
+      const distX = enemy.worldX - player.worldX;
+      const distY = enemy.worldY - player.worldY;
 
-const updateEnemyPosition = () => {
-    for (const enemy of enemies) {
-      enemy.worldX += 1;
-      enemy.worldY += 1;
+      // Determine the axis on which to move
+      if (Math.abs(distX) > Math.abs(distY)) {
+        // Move horizontally towards the player
+        enemy.worldX += distX > 0 ? -1 : 1;
+      } else {
+        // Move vertically towards the player
+        enemy.worldY += distY > 0 ? -1 : 1;
+      }
     }
-  };
-      
-      // Run the function every second
-      setInterval(updateEnemyPosition, 1000);
-      
+  }
+};
+
+// Run the function every second
+setInterval(updateEnemyPosition, 500);
+
+function fireAtNearestEnemy() {
+    // Find the nearest enemy within a 10-tile radius
+    let nearestEnemy = null;
+    let nearestDistance = Infinity;
+    const radius = 10;
+
+    for (const enemy of enemies) {
+        const distance = Math.sqrt(Math.pow(enemy.worldX - player.worldX, 2) + Math.pow(enemy.worldY - player.worldY, 2));
+        
+        if (distance < nearestDistance && distance <= radius) {
+            nearestEnemy = enemy;
+            nearestDistance = distance;
+        }
+    }
+
+    if (nearestEnemy) {
+        player.currentAction = 'attack';
+
+        // Lower the enemy's health
+        nearestEnemy.health -= 25;  // Adjust the amount as needed
+
+        // Play the attack animation (animate fireball)
+        animateFireball(player.worldX, player.worldY, nearestEnemy.worldX, nearestEnemy.worldY);
+
+        // Check if the enemy is defeated
+        if (nearestEnemy.health <= 0) {
+            const index = enemies.indexOf(nearestEnemy);
+            if (index > -1) {
+                // Remove the defeated enemy from the array
+                enemies.splice(index, 1);
+            }
+        }
+    }
+}
+
+
+// Call fireAtNearestEnemy every 0.25 seconds
+setInterval(fireAtNearestEnemy, 250);
+
     function gameLoop() {
         if(!showOptionsMenu){
             graphics.drawMap();
