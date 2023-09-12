@@ -1257,31 +1257,31 @@ if (tileImage) {
     };
 
     const waterFrames = ["res/water1.png", "res/water2.png"].map(src => {
-        const img = new Image();
-        img.src = src;
-        return img;
-    });
-    
-    let frameIndex = 0,
-        intervalTime = 300,
-        lastUpdateTime = 0;
-    
-    function startAnimation() {
-        if (lastUpdateTime === 0) lastUpdateTime = Date.now();
-        const currentTime = Date.now();
-    
-        if (currentTime - lastUpdateTime >= intervalTime) {
-            lastUpdateTime = currentTime;
-            tiles.water.image = waterFrames[frameIndex];
-            frameIndex = (frameIndex + 1) % waterFrames.length;
-        }
-    
-        requestAnimationFrame(startAnimation);
+    const img = new Image();
+    img.src = src;
+    return img;
+});
+
+let frameIndex = 0,
+    intervalTime = 300,
+    lastUpdateTime = 0;
+
+function startAnimation() {
+    if (lastUpdateTime === 0) lastUpdateTime = Date.now();
+    const currentTime = Date.now();
+
+    if (currentTime - lastUpdateTime >= intervalTime) {
+        lastUpdateTime = currentTime;
+        tiles.water.image = waterFrames[frameIndex];
+        frameIndex = (frameIndex + 1) % waterFrames.length;
     }
-    
-    // To start the animation
-    startAnimation();
-    
+
+    requestAnimationFrame(startAnimation);
+}
+
+// To start the animation
+startAnimation();
+
 
 
     generator.generateChunk(), generator.generateTrees();
