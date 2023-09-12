@@ -1551,7 +1551,9 @@ startAnimation();
         123: "keybinding reset",
         77: "toggle map",
         78: "toggle minimap",
-        66: "hide map"
+        66: "hide map",
+        32: "random teleport",
+
     };
 
     function handleKeyDown(e) {
@@ -1645,6 +1647,11 @@ startAnimation();
                 console.log('Hiding map'); // Debug log
                 // Logic for hiding both maps here
                 break;
+            case 'random teleport':  // Added this case
+                console.log('randomly teleporting');  // Debug log
+                sounds.teleport.play();
+                player.worldX = Math.floor(Math.random() * 400);
+                player.worldY = Math.floor(Math.random() * 400);
             default:
                 console.log('Unhandled action:', action); // Debug log
                 break;
@@ -1756,10 +1763,8 @@ function fireAtNearestEnemy() {
         }
     }
 }
-
-
-// Call fireAtNearestEnemy every 0.25 seconds
-setInterval(fireAtNearestEnemy, 250);
+// Call fireAtNearestEnemy every 0.5 seconds
+setInterval(fireAtNearestEnemy, 500);
 
     function gameLoop() {
         if(!showOptionsMenu){
