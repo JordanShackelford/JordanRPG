@@ -260,7 +260,8 @@ for (let i = 0; i < 50; i++) {
         skills: [], // Skills or abilities the player has
         inventory: [], // Items the player is carrying
         gold: 0, // Currency
-        statusEffects: [] // Any status effects applied to the player, like "poisoned" or "stunned"
+        statusEffects: [], // Any status effects applied to the player, like "poisoned" or "stunned"
+        direction:'none'
     };
     player.pixelX = player.screenTileX * screen.tileWidth, player.pixelY = player.screenTileY * screen.tileHeight - screen.tileHeight;
     var gameInterface = {
@@ -562,13 +563,21 @@ if (tileImage) {
             }
         
             function drawDustCloud() {
+                // Determine the offset based on player's moving direction and image width
+                let xOffset = 0;
+                if (player.direction === 'east') {
+                    xOffset = -player.imgWidth * 0.1; // 60% of image width as offset for east
+                } else if (player.direction === 'west') {
+                    xOffset = player.imgWidth * 1;  // 120% of image width as offset for west
+                }
+            
                 // Generate 10 dust particles with random attributes
                 for (let i = 0; i < 10; i++) {
-                    let dustX = player.pixelX + (Math.random() - 0.5) * 40;
+                    let dustX = player.pixelX + xOffset + (Math.random() - 0.5) * 40; // Use xOffset
                     let dustY = player.pixelY + player.imgHeight + (Math.random() - 0.5) * 20;
                     let dustSize = Math.random() * 8 + 2;
                     let dustOpacity = Math.random() * 0.6 + 0.2;
-        
+            
                     dustParticles.push({
                         x: dustX,
                         y: dustY,
@@ -576,7 +585,7 @@ if (tileImage) {
                         opacity: dustOpacity
                     });
                 }
-        
+            
                 // Draw dust particles
                 context.globalAlpha = 1;
                 dustParticles.forEach(particle => {
@@ -586,6 +595,8 @@ if (tileImage) {
                     context.fill();
                 });
             }
+            
+            
         
             function drawCombatIcon() {
                 context.drawImage(sweatDropImg, player.pixelX, player.pixelY - 10, 8, 8);
@@ -1417,6 +1428,9 @@ startAnimation();
             return notifications.push("You can't walk there!");
         }
     
+        // Update the global player.direction with the direction being moved to
+        player.direction = direction;
+    
         handleAnimationAndSound(dir);
     
         let offsetX = dir.offsetX * moveSpeed;
@@ -1424,6 +1438,7 @@ startAnimation();
     
         updateFunction(nx, ny, offsetX, offsetY, moveSpeed);
     }
+    
     
 
 
