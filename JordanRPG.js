@@ -3,6 +3,10 @@ window.onload = function() {
         x: 0,
         y: 0
     }
+    let gameState = {
+        offsetX: 0,
+        offsetY: 0,
+    };
 
     // Simulated in-app purchase data
     const purchasedSkins = {
@@ -29,9 +33,6 @@ window.onload = function() {
             }
         }
     };
-
-
-
     // Simulating a chosen skin from in-app purchases
     let activeSkin = purchasedSkins["Modern"];
 
@@ -140,10 +141,7 @@ window.onload = function() {
     // Call this function at a set interval to update tree-related variables
     setInterval(updateGlobalTreeVariables, 200);
 
-    let gameState = {
-        offsetX: 0,
-        offsetY: 0,
-    };
+    
 
     // Set the image source for the quicksand tile
     specialTiles['quicksand'].image.src = 'res/sand.jpg';
@@ -162,8 +160,6 @@ for (let i = 0; i < 10; i++) {
 }
 
     let portals = [];
-    let towers = [];
-    towers.push[150,150];
     let showOptionsMenu = !1,
         a_canvas = document.getElementById("a"),
         context = a_canvas.getContext("2d"),
@@ -1213,11 +1209,6 @@ if (tileImage) {
                 addTiles(5, 10, 2);  // Others
             };
         
-            // Add water bodies
-            const addWaterBodies = () => {
-                addTiles(7, 5, 3); // Water
-            };
-        
             // Initialize array and constants
             const mT = Array.from({ length: c }, () => new Array(c).fill(0));
             const maxValTiles = [0, 1, 2];
@@ -1254,7 +1245,6 @@ if (tileImage) {
             initMapTiles();
             updateTiles();
             addSpecialTiles();
-            addWaterBodies();
             addPortalTiles();
         
             map.tileMap = mT;
@@ -1362,7 +1352,7 @@ if (tileImage) {
             map.specialTileMap = sT; // Assuming map.specialTileMap is where you store these
         },
         generateTrees: () => {
-            const WATER_TILE = 3;
+            const WATER_TILE = 1; // Changed from 3 to 1 to match your water tile code
             const ROCKY_TILE = 4; // Assuming rocky tiles are represented by the value 4
             const totalCells = c * c,
                 sampleSize = totalCells / 2 | 0;
@@ -1390,12 +1380,12 @@ if (tileImage) {
         
                     if (tm !== WATER_TILE && tm !== ROCKY_TILE && !trm) {
                         let randomPercent = Math.random() * 100 | 0;
-                        
+        
                         if (randomPercent < 1) {
                             treeMap[i][j] = TREE_TYPE_RARE;
                         } else if (randomPercent < 3) {
                             treeMap[i][j] = TREE_TYPE_1;
-                        } else if (randomPercent < 5) { // Changed from 3 to 5 for additional variety
+                        } else if (randomPercent < 5) {
                             treeMap[i][j] = TREE_TYPE_2;
                         } else {
                             treeMap[i][j] = 0;
@@ -1404,6 +1394,7 @@ if (tileImage) {
                 }
             }
         }
+        
         
 
     };
