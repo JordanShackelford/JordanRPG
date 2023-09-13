@@ -1237,13 +1237,18 @@ if (tileImage) {
             };
         
             const addPortalTiles = () => {
-                for (let i = 0; i < 1000; i++) {
+                for (let i = 0; i < 100; i++) {
                     let x = (Math.random() * (c - 10) + 5) | 0;
                     let y = (Math.random() * (c - 10) + 5) | 0;
-                    portals.push([x, y]);
-                    mT[x][y] = 6;
+            
+                    // Check if the tile is not a water tile (water tiles have value 1)
+                    if (mT[x][y] !== 1) {
+                        portals.push([x, y]);
+                        mT[x][y] = 6;
+                    }
                 }
             };
+            
         
             // Main Function Body
             initMapTiles();
