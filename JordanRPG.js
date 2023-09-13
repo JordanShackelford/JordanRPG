@@ -434,6 +434,8 @@ if (tileImage) {
           
             context.shadowColor = 'transparent';
             context.shadowBlur = 0;
+
+            
             context.restore();
         },
         drawSelectionBox: function(nC, playerAction, animationSpeed = 1, shapeType = 'box', eventTrigger) {
@@ -819,17 +821,26 @@ if (tileImage) {
             const lineHeight = 40;
             const maxLines = 6;
             const fixedY = a_canvas.height * 0.07 + h - 20;
-          
+            
             // Update fade
             fade = Math.min(1, fade + fadeIncrement);
-          
-            // Draw background
+            
+            // Draw gradient background
             const w = a_canvas.width * 0.6;
             const x = (a_canvas.width - w) / 2;
             const y = a_canvas.height * 0.07;
-            context.fillStyle = `rgba(0, 0, 0, ${0.7 * fade})`;
+            const gradient = context.createLinearGradient(x, y, x + w, y + h);
+            gradient.addColorStop(0, 'rgba(0, 0, 0, 0.7)');
+            gradient.addColorStop(1, 'rgba(50, 50, 50, 0.7)');
+            context.fillStyle = gradient;
             context.roundRect(x, y, w, h, 15);
             context.fill();
+            
+            // Draw border
+            context.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            context.lineWidth = 2;
+            context.roundRect(x, y, w, h, 15);
+            context.stroke();
           
             // Set text properties
             const textX = x + w / 2;
@@ -837,16 +848,23 @@ if (tileImage) {
             context.fillStyle = "#fff";
             context.textAlign = 'center';
             context.textBaseline = 'middle';
-            
-            // Draw text
+            context.shadowColor = "rgba(0, 0, 0, 0.5)";
+            context.shadowBlur = 5;
+            context.shadowOffsetX = 3;
+            context.shadowOffsetY = 3;
+          
+            // Draw text with animation
             const startIndex = Math.max(0, notifications.length - maxLines);
             for (let n = startIndex; n < notifications.length; n++) {
               const tY = fixedY - ((n - startIndex + 0.5) * lineHeight);
+              const textFade = 1 - ((notifications.length - 1 - n) * 0.1);
+              context.globalAlpha = textFade;
               context.fillText(`• ${notifications[n]}`, textX, tY);
             }
-          
-            context.shadowColor = "transparent";
+            context.globalAlpha = 1; // Reset alpha
+            context.shadowColor = "transparent"; // Reset shadow
           },
+          
           
           
         drawOptionsMenu: () => {
@@ -1252,18 +1270,24 @@ if (tileImage) {
             map.specialTileMap = sT; // Assuming map.specialTileMap is where you store these
         },
         generateTrees: () => {
-            const WATER_TILE = 3; // Assuming water tiles are represented by the value 2
+            const WATER_TILE = 3;
+            const ROCKY_TILE = 4; // Assuming rocky tiles are represented by the value 4
             const totalCells = c * c,
                 sampleSize = totalCells / 2 | 0;
             const sampledIndices = new Uint32Array(sampleSize);
             const tileMap = map.tileMap,
                 treeMap = map.treeMap;
-
+        
+            // Different tree types
+            const TREE_TYPE_1 = 1;
+            const TREE_TYPE_2 = 2;
+            const TREE_TYPE_RARE = 3;
+        
             for (let index = 0; index < sampleSize; ++index) {
                 sampledIndices[index] = Math.random() * totalCells | 0;
             }
-
-            let i, j, idx, tm, trm, calc;
+        
+            let i, j, idx, tm, trm;
             for (let index = 0; index < sampleSize; index += 32) {
                 for (let subIndex = 0; subIndex < 32; ++subIndex) {
                     idx = sampledIndices[index + subIndex];
@@ -1271,13 +1295,24 @@ if (tileImage) {
                     j = idx % c;
                     tm = tileMap[i][j];
                     trm = treeMap[i][j];
-
-                    if (tm !== WATER_TILE && !trm) {
-                        treeMap[i][j] = (((Math.random() * 100 | 0) < 1 ? 2 : (Math.random() * 100 | 0) < 3 ? 1 : 0) | 0);
+        
+                    if (tm !== WATER_TILE && tm !== ROCKY_TILE && !trm) {
+                        let randomPercent = Math.random() * 100 | 0;
+                        
+                        if (randomPercent < 1) {
+                            treeMap[i][j] = TREE_TYPE_RARE;
+                        } else if (randomPercent < 3) {
+                            treeMap[i][j] = TREE_TYPE_1;
+                        } else if (randomPercent < 5) { // Changed from 3 to 5 for additional variety
+                            treeMap[i][j] = TREE_TYPE_2;
+                        } else {
+                            treeMap[i][j] = 0;
+                        }
                     }
                 }
             }
         }
+        
 
     };
 

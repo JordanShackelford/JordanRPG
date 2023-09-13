@@ -1,46 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Jordan RPG</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      float: left;
-      box-sizing: border-box;
-    }
-    body {
-      text-align: center;
-    }
-    img {
-      display: none;
-    }
-    canvas {
-      width: 100vw;
-      height: 100vh;
-      cursor: none;
-    }
-  </style>
+  <title>Simple Chat App</title>
 </head>
-<body id="mainContainer">
-  <img id="player" src="res/chrono.png" alt="Player Image">
-  <img id="enemy" src="res/enemy.png" alt="Enemy Image">
-  <img id="grass" src="res/grass.jpg" alt="Grass Image">
-  <img id="hatchet" src="res/enemy.png" alt="Hatchet Image">
-  <img id="potion" src="res/potion.png" alt="Potion Image">
-  <img id="shield" src="res/shield.png" alt="Shield Image">
-  <img id="sword" src="res/sword.png" alt="Sword Image">
-  <img id="scroll" src="res/scroll.png" alt="Scroll Image">
-  <img id="bow" src="res/bow.png" alt="Bow Image">
-  <img id="appletreesapling" src="res/appletreesapling.png" alt="Apple Tree Sapling Image">
-  
-  <canvas width="1920" height="1080" id="a">
-    This text is displayed if your browser does not support HTML5 Canvas.
-  </canvas>
-  
-  <script src="https://threejs.org/build/three.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/simplex-noise/2.4.0/simplex-noise.min.js"></script>
-  <script src="JordanRPG.js"></script>
+<body>
+  <ul id="messages"></ul>
+  <input id="message" autocomplete="off">
+  <button onclick="sendMessage()">Send</button>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const messageList = document.getElementById('messages');
+    const messageInput = document.getElementById('message');
+
+    socket.on('message', function(message) {
+      const li = document.createElement('li');
+      li.appendChild(document.createTextNode(message));
+      messageList.appendChild(li);
+    });
+
+    function sendMessage() {
+      const message = messageInput.value;
+      socket.emit('message', message);
+      messageInput.value = '';
+    }
+  </script>
 </body>
 </html>
