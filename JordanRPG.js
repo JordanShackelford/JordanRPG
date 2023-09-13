@@ -261,7 +261,8 @@ for (let i = 0; i < 50; i++) {
         inventory: [], // Items the player is carrying
         gold: 0, // Currency
         statusEffects: [], // Any status effects applied to the player, like "poisoned" or "stunned"
-        direction:'none'
+        direction:'none',
+        stamina:100
     };
     player.pixelX = player.screenTileX * screen.tileWidth, player.pixelY = player.screenTileY * screen.tileHeight - screen.tileHeight;
     var gameInterface = {
@@ -563,41 +564,39 @@ if (tileImage) {
             }
         
             function drawDustCloud() {
-                // Determine the offset based on player's moving direction and image width
-                let xOffset = 0;
-                if (player.direction === 'east') {
-                    xOffset = -player.imgWidth * 0.1; // 60% of image width as offset for east
-                } else if (player.direction === 'west') {
-                    xOffset = player.imgWidth * 1;  // 120% of image width as offset for west
-                }
+                const DUST_PARTICLE_COUNT = 10;
+                const MIN_SIZE = 2;
+                const MAX_SIZE = 8;
+                const MIN_OPACITY = 0.2;
+                const MAX_OPACITY = 0.6;
+                
+                // Determine the xOffset based on the player's moving direction and image width
+                const xOffsetFactors = {
+                    'east': -0.1,
+                    'west': 1.2
+                };
             
-                // Generate 10 dust particles with random attributes
-                for (let i = 0; i < 10; i++) {
-                    let dustX = player.pixelX + xOffset + (Math.random() - 0.5) * 40; // Use xOffset
-                    let dustY = player.pixelY + player.imgHeight + (Math.random() - 0.5) * 20;
-                    let dustSize = Math.random() * 8 + 2;
-                    let dustOpacity = Math.random() * 0.6 + 0.2;
+                const xOffset = player.imgWidth * (xOffsetFactors[player.direction] || 0);
             
-                    dustParticles.push({
-                        x: dustX,
-                        y: dustY,
-                        size: dustSize,
-                        opacity: dustOpacity
-                    });
-                }
+                // Create a function to generate a random number within a range
+                const getRandom = (min, max) => Math.random() * (max - min) + min;
             
-                // Draw dust particles
+                // Generate and draw dust particles
                 context.globalAlpha = 1;
-                dustParticles.forEach(particle => {
+                for (let i = 0; i < DUST_PARTICLE_COUNT; i++) {
+                    const particle = {
+                        x: player.pixelX + xOffset + getRandom(-20, 20),
+                        y: player.pixelY + player.imgHeight + getRandom(-10, 10),
+                        size: getRandom(MIN_SIZE, MAX_SIZE),
+                        opacity: getRandom(MIN_OPACITY, MAX_OPACITY)
+                    };
+            
                     context.fillStyle = `rgba(255, 255, 255, ${particle.opacity})`;
                     context.beginPath();
                     context.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
                     context.fill();
-                });
+                }
             }
-            
-            
-        
             function drawCombatIcon() {
                 context.drawImage(sweatDropImg, player.pixelX, player.pixelY - 10, 8, 8);
             }
@@ -618,6 +617,46 @@ if (tileImage) {
                     context.drawImage(cloakImg, player.pixelX, player.pixelY, 32, 64);
                 }
             }
+
+            function drawHealthBar() {
+                const x = player.pixelX;
+                const y = player.pixelY - 20;
+                const width = player.hp;
+                const height = 10;
+            
+                const gradient = context.createLinearGradient(x, y, x, y + height);
+                gradient.addColorStop(0, 'darkred');
+                gradient.addColorStop(1, 'red');
+            
+                context.fillStyle = gradient;
+                context.strokeStyle = 'black';
+                context.lineWidth = 2;
+            
+                context.beginPath();
+                context.roundRect(x, y, width, height, 5);
+                context.fill();
+                context.stroke();
+            }
+            function drawStaminaBar() {
+                const x = player.pixelX;
+                const y = player.pixelY - 10;
+                const width = player.stamina;
+                const height = 10;
+            
+                const gradient = context.createLinearGradient(x, y, x, y + height);
+                gradient.addColorStop(0, 'darkgreen');
+                gradient.addColorStop(1, 'green');
+            
+                context.fillStyle = gradient;
+                context.strokeStyle = 'black';
+                context.lineWidth = 2;
+            
+                context.beginPath();
+                context.roundRect(x, y, width, height, 5);
+                context.fill();
+                context.stroke();
+            }
+        
         
             // Function Body
             clearShadowSettings();
@@ -631,8 +670,10 @@ if (tileImage) {
             }
         
             drawPlayerAndTrail();
-        
             drawAdditionalAnimations();
+            
+            drawStaminaBar();
+            drawHealthBar();
         },
         
         drawEnemies: () => {
@@ -1416,6 +1457,13 @@ startAnimation();
                 player.isMoving = false;
                 screen.offsetX = screen.offsetY = 0;
             };
+            if (player.stamina >= 0){
+                player.moveSpeed = 1;
+                player.stamina -= 5;
+            } 
+            else {
+                player.moveSpeed = 0.25;
+            }
             requestAnimationFrame(upd);
         }
     
@@ -1850,6 +1898,11 @@ setInterval(fireAtNearestEnemy, 500);
             sounds.teleport.play();
         }
         if(1 == 2) map.tileMap[player.worldX][player.worldY] = 0; // we could leave a trail of any tile type
+        if (!player.isMoving){
+            if(player.stamina < 100){
+                player.stamina += 1;
+            }
+        }
         requestAnimationFrame(gameLoop);
     }
 
