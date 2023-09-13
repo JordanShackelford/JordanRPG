@@ -1,4 +1,8 @@
 window.onload = function() {
+    let contextMenuVars = {
+        x: 0,
+        y: 0
+    }
 
     // Simulated in-app purchase data
     const purchasedSkins = {
@@ -146,7 +150,7 @@ window.onload = function() {
     let tileProperties = {};
     const enemies = [];
 
-for (let i = 0; i < 50; i++) {
+for (let i = 0; i < 10; i++) {
     enemies.push({
         worldX: Math.floor(Math.random() * 250),
         worldY: Math.floor(Math.random() * 250),
@@ -317,6 +321,28 @@ for (let i = 0; i < 50; i++) {
 
     let fade = 0;
     var graphics = {
+        drawContextMenu:(x, y) => {
+            // Draw the context menu background
+            context.fillStyle = 'rgba(0, 0, 0, 0.8)';
+            context.fillRect(x, y, 100, 80);  // Increased the height to fit two options
+          
+            // Draw the "Walk Here" button
+            context.fillStyle = 'white';
+            context.font = '16px Arial';
+            context.fillText('Walk Here', x + 55, y + 20);
+          
+            // Optional: Draw a border around the "Walk Here" button for better visibility
+            context.strokeStyle = 'white';
+            context.lineWidth = 1;
+            context.strokeRect(x + 5, y + 5, 90, 30);
+          
+            // Draw the "Inspect" button
+            context.fillText('Inspect', x + 55, y + 60);
+          
+            // Optional: Draw a border around the "Inspect" button for better visibility
+            context.strokeRect(x + 5, y + 45, 90, 30);
+          },
+          
         drawMinimap: () => {
             const scale = 0.2; // scale factor for the minimap
             const offsetX = a_canvas.width - a_canvas.width * scale; // position the minimap at the right corner
@@ -624,44 +650,56 @@ if (tileImage) {
                 const width = player.hp;
                 const height = 10;
             
-                const gradient = context.createLinearGradient(x, y, x, y + height);
+                // Draw background bar
+                context.fillStyle = 'black';
+                context.fillRect(x, y, 100, height);
+            
+                // Create gradient
+                const gradient = context.createLinearGradient(x, y, x + width, y);
                 gradient.addColorStop(0, 'darkred');
                 gradient.addColorStop(1, 'red');
             
+                // Draw health bar
                 context.fillStyle = gradient;
+                context.fillRect(x, y, width, height);
+            
+                // Border
                 context.strokeStyle = 'black';
                 context.lineWidth = 2;
-            
-                context.beginPath();
-                context.roundRect(x, y, width, height, 5);
-                context.fill();
-                context.stroke();
+                context.strokeRect(x, y, 100, height);
             }
+            
             function drawStaminaBar() {
                 const x = player.pixelX;
                 const y = player.pixelY - 10;
                 const width = player.stamina;
                 const height = 10;
             
-                const gradient = context.createLinearGradient(x, y, x, y + height);
+                // Draw background bar
+                context.fillStyle = 'black';
+                context.fillRect(x, y, 100, height);
+            
+                // Create gradient
+                const gradient = context.createLinearGradient(x, y, x + width, y);
                 gradient.addColorStop(0, 'darkgreen');
                 gradient.addColorStop(1, 'green');
             
+                // Draw stamina bar
                 context.fillStyle = gradient;
+                context.fillRect(x, y, width, height);
+            
+                // Border
                 context.strokeStyle = 'black';
                 context.lineWidth = 2;
-            
-                context.beginPath();
-                context.roundRect(x, y, width, height, 5);
-                context.fill();
-                context.stroke();
+                context.strokeRect(x, y, 100, height);
             }
+            
         
         
             // Function Body
             clearShadowSettings();
         
-            if (player.isMoving) {
+            if (player.isMoving && player.stamina > 50) {
                 drawDustCloud();  // New feature
             }
         
@@ -707,17 +745,7 @@ if (tileImage) {
             const [mX, mY] = screen.mouseCanvasCoords;
             const tX = Math.floor((mX - screen.offsetX) / screen.tileWidth),
                 tY = Math.floor((mY - screen.offsetY) / screen.tileHeight);
-
-            const tileValue = map.tileMap?.[tY]?.[tX];
-            if (tileValue !== undefined) {
-                const tileNames = ['Grass', 'Water', 'Dirt', 'Unknown'];
                 context.drawImage(cursor, mX, mY, 100, 100);
-                if(!showOptionsMenu){
-                    context.font = "18px Arial";
-                    context.fillStyle = 'white';
-                    context.fillText(tileNames[tileValue] || 'Unknown', mX + 10, mY - 10);
-                }
-            }
         },
         drawInterface: function() {
             const drawInterfaceBackground = (context, iX, iY, iW, iH, r) => {
@@ -1147,8 +1175,10 @@ if (tileImage) {
         fps: 60
     };
     let c = 500; // Move this to a higher scope to make it accessible by both functions
+    let drawContextMenu = false;
     var generator = {
         generateChunk: () => {
+            // Initialize map tiles with random terrain (0, 1, or 2)
             const initMapTiles = () => {
                 for (let r = 0; r < c; r++) {
                     for (let j = 0; j < c; j++) {
@@ -1157,6 +1187,7 @@ if (tileImage) {
                 }
             };
         
+            // Update tiles based on neighboring tiles
             const updateTiles = () => {
                 for (let i = 0; i < 150; i++) {
                     for (let r = 1; r < c - 1; r++) {
@@ -1175,15 +1206,20 @@ if (tileImage) {
                 }
             };
         
+            // Add special tiles: mountains, forests, and others
             const addSpecialTiles = () => {
-                addTiles(4, 3, 2);
-                addTiles(3, 100, 2);
-                addTiles(5, 10, 2);
+                addTiles(4, 3, 2);  // Mountains
+                addTiles(3, 100, 2);  // Forests
+                addTiles(5, 10, 2);  // Others
             };
         
-            const mT = Array.from({
-                length: c
-            }, () => new Array(c).fill(0));
+            // Add water bodies
+            const addWaterBodies = () => {
+                addTiles(7, 5, 3); // Water
+            };
+        
+            // Initialize array and constants
+            const mT = Array.from({ length: c }, () => new Array(c).fill(0));
             const maxValTiles = [0, 1, 2];
             const neighborhood = new Array(3).fill(0);
         
@@ -1201,27 +1237,26 @@ if (tileImage) {
             };
         
             const addPortalTiles = () => {
-                for(var i = 0; i < 1000; i++){
+                for (let i = 0; i < 1000; i++) {
                     let x = (Math.random() * (c - 10) + 5) | 0;
                     let y = (Math.random() * (c - 10) + 5) | 0;
-                    portals.push([x,y]);
+                    portals.push([x, y]);
                     mT[x][y] = 6;
                 }
             };
-
+        
+            // Main Function Body
             initMapTiles();
             updateTiles();
             addSpecialTiles();
+            addWaterBodies();
             addPortalTiles();
         
             map.tileMap = mT;
-            map.treeMap = Array.from({
-                length: c
-            }, () => new Array(c).fill(0));
+            map.treeMap = Array.from({ length: c }, () => new Array(c).fill(0));
             numTiles = mT.length * mT[0].length;
         },
-        
-
+          
         generateSpecial: () => {
             const sT = Array.from({
                 length: c
@@ -1457,7 +1492,7 @@ startAnimation();
                 player.isMoving = false;
                 screen.offsetX = screen.offsetY = 0;
             };
-            if (player.stamina >= 0){
+            if (player.stamina > 5){
                 player.moveSpeed = 1;
                 player.stamina -= 5;
             } 
@@ -1523,6 +1558,12 @@ startAnimation();
         screen.selectionBoxCoords = math.calculateTileClicked(screen.mouseCanvasCoords)
     }, false);
 
+    a_canvas.addEventListener('contextmenu', function(e) {
+        e.preventDefault();  // Prevent the default right-click menu from showing
+        contextMenuVars.x = screen.mouseCanvasCoords[0];
+        contextMenuVars.y = screen.mouseCanvasCoords[1];
+        drawContextMenu = !drawContextMenu;  // Toggle the state
+      });
 
     a_canvas.addEventListener('click', e => {
         const [x, y] = math.calculateCanvasCoordsFromWindowCoords(e.clientX, e.clientY);
@@ -1886,6 +1927,9 @@ setInterval(fireAtNearestEnemy, 500);
         } else {
             graphics.drawOptionsMenu();
         }
+        if(drawContextMenu){
+            graphics.drawContextMenu(contextMenuVars.x,contextMenuVars.y);
+        }
         graphics.drawCursor();
         graphics.drawEnemies();
         notifications.push(player.worldX + "," + player.worldY);
@@ -1903,6 +1947,8 @@ setInterval(fireAtNearestEnemy, 500);
                 player.stamina += 1;
             }
         }
+        
+        player.moveSpeed = (player.stamina / 100) + 0.4;
         requestAnimationFrame(gameLoop);
     }
 
