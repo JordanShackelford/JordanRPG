@@ -17,7 +17,7 @@ window.onload = function() {
             highlightSub: 'blue',
             background: "#000",
             textShadow: "2px 2px #000",
-            clickSound: new Audio('classic_click.mp3'),
+            //clickSound: new Audio('classic_click.mp3'),
             tooltips: ["Start", "Settings", "Credits"]
         },
         "Modern": {
@@ -27,7 +27,7 @@ window.onload = function() {
             highlightSub: 'orange',
             background: "linear-gradient(to bottom, #00f, #f00)",
             hoverAnimation: "bounce",
-            clickSound: new Audio('modern_click.mp3'),
+            //clickSound: new Audio('modern_click.mp3'),
             accessibility: {
                 textToSpeech: true
             }
@@ -179,6 +179,8 @@ for (let i = 0; i < 10; i++) {
                 if (onLoad) onLoad(this);
             });
         };
+    a_canvas.width = window.innerWidth;
+    a_canvas.height = window.innerHeight;
     cursor.src = "res/swordicon.png";
     boat.src = "res/boat.png";
     var notifications = ["Move with W,A,S,D keys or by clicking/tapping", "Press Esc to open options menu", "Use number keys to select inventory slot"];
@@ -233,7 +235,8 @@ for (let i = 0; i < 10; i++) {
         ambientCave: new Audio("res/ambientCave.mp3")
         */
     };
-    sounds.music.volume = 0.07; // 1% volume      
+    sounds.music.volume = 0.07; // 1% volume
+
     var player = {
         name: "Jordan",
         screenTileX: Math.floor(screen.numRows / 2),
@@ -241,7 +244,7 @@ for (let i = 0; i < 10; i++) {
         worldX: 150,
         worldY: 150,
         currentAction: "none",
-        img: document.getElementById("player"),
+        img:'none',
         imgWidth: screen.tileWidth,
         imgHeight: screen.tileHeight * 2,
         moveSpeed: 1,
@@ -264,6 +267,8 @@ for (let i = 0; i < 10; i++) {
         direction:'none',
         stamina:100
     };
+    player.img = new Image();
+    player.img.src="res/chrono.png";
     player.pixelX = player.screenTileX * screen.tileWidth, player.pixelY = player.screenTileY * screen.tileHeight - screen.tileHeight;
     var gameInterface = {
         inventorySlotSelected: 0,
@@ -438,7 +443,12 @@ if (tileImage) {
             context.globalAlpha = layerOpacity;
 
             // Draw the portal image, but offset it so that it's centered
-            context.drawImage(tileImage, -tileW / 2, -tileH / 2, tileW, tileH);
+            try{
+                context.drawImage(tileImage, -tileW / 2, -tileH / 2, tileW, tileH);
+            } catch (e) {
+                notifications.push('Failed to draw image:'  );
+            }
+            
 
             // Reverse transformations for the next iteration
             context.rotate(-rotationAngle);
@@ -586,13 +596,12 @@ if (tileImage) {
             }
         
             function drawDustCloud() {
-                const DUST_PARTICLE_COUNT = 10;
+                const PARTICLE_COUNT = 10;
                 const MIN_SIZE = 2;
-                const MAX_SIZE = 8;
-                const MIN_OPACITY = 0.2;
-                const MAX_OPACITY = 0.6;
-                
-                // Determine the xOffset based on the player's moving direction and image width
+                const MAX_SIZE = 12;
+                const MIN_OPACITY = 0.4;
+                const MAX_OPACITY = 0.4;
+            
                 const xOffsetFactors = {
                     'east': -0.1,
                     'west': 1.2
@@ -600,12 +609,11 @@ if (tileImage) {
             
                 const xOffset = player.imgWidth * (xOffsetFactors[player.direction] || 0);
             
-                // Create a function to generate a random number within a range
                 const getRandom = (min, max) => Math.random() * (max - min) + min;
             
-                // Generate and draw dust particles
                 context.globalAlpha = 1;
-                for (let i = 0; i < DUST_PARTICLE_COUNT; i++) {
+            
+                for (let i = 0; i < PARTICLE_COUNT; i++) {
                     const particle = {
                         x: player.pixelX + xOffset + getRandom(-20, 20),
                         y: player.pixelY + player.imgHeight + getRandom(-10, 10),
@@ -613,12 +621,19 @@ if (tileImage) {
                         opacity: getRandom(MIN_OPACITY, MAX_OPACITY)
                     };
             
-                    context.fillStyle = `rgba(255, 255, 255, ${particle.opacity})`;
+                    // Check tilemap to determine what to draw
+                    if (map.tileMap[player.worldY][player.worldX] === 0) {
+                        context.fillStyle = `rgba(0, 128, 0, ${particle.opacity})`; // Green for grass
+                    } else {
+                        context.fillStyle = `rgba(255, 255, 255, ${particle.opacity})`; // White for dust
+                    }
+            
                     context.beginPath();
                     context.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
                     context.fill();
                 }
             }
+            
             function drawCombatIcon() {
                 context.drawImage(sweatDropImg, player.pixelX, player.pixelY - 10, 8, 8);
             }
@@ -841,7 +856,11 @@ if (tileImage) {
             tG.addColorStop(1, "#aaa");
             const icons = gameInterface.icons,
                 qtys = [5, 2, 1, 3, 4, 7];
-            drawItemSlots(context, iX, iY, sW, sH, sp, icons, qtys);
+            try{
+                drawItemSlots(context, iX, iY, sW, sH, sp, icons, qtys);
+            }catch(e){
+                notifications.push("failed to draw item slots");
+            }
             renderInventorySlots(context, tG, slots, iX, iY, sW, sH, gameInterface);
         },
 
@@ -892,17 +911,17 @@ if (tileImage) {
           
           drawNotifications: () => {
             // Constants
-            const h = 260;
+            const h = 180;
             const fadeIncrement = 0.01;
-            const lineHeight = 40;
+            const lineHeight = a_canvas.width * 0.02;
             const maxLines = 6;
-            const fixedY = a_canvas.height * 0.07 + h - 20;
+            const fixedY = a_canvas.height * 0.07 + h;
             
             // Update fade
             fade = Math.min(1, fade + fadeIncrement);
             
             // Draw gradient background
-            const w = a_canvas.width * 0.6;
+            const w = a_canvas.width * 0.4;
             const x = (a_canvas.width - w) / 2;
             const y = a_canvas.height * 0.07;
             const gradient = context.createLinearGradient(x, y, x + w, y + h);
@@ -1141,13 +1160,13 @@ if (tileImage) {
     };
 
     var tileData = {
-            grass: [1, 1, "res/grass.jpg"],
+            grass: [1, 1, "res/grass.png"],
             water: [1, 1, "res/water1.png"],
             tree1: [2, 5, "res/tree1.png"],
             tree2: [2, 5, "res/tree2.png"],
             flower: [1, 2, "res/flower.png"],
             rock: [1, 1, "res/rock.png"],
-            dirt: [1, 1, "res/dirt.jpg"],
+            dirt: [1, 1, "res/dirt.png"],
             sand: [1, 1, "res/sand.jpg"],
             stone: [1, 1, "res/stone.jpg"],
             wood: [1, 1, "res/wood.jpg"],
@@ -1506,7 +1525,6 @@ startAnimation();
         if (!canMoveToTile(nx, ny)) {
             return notifications.push("You can't walk there!");
         }
-    
         // Update the global player.direction with the direction being moved to
         player.direction = direction;
     
@@ -1711,21 +1729,25 @@ startAnimation();
                     sounds.changeItem.play();
                     console.log('Moving up in menu');
                     gameInterface.optionsMenuSelected = Math.max(gameInterface.optionsMenuSelected - 1, 0);
+                    player.movementQueue = [];
                     return;
                 case 'north':
                     sounds.changeItem.play();
                     console.log('Moving down in menu');
                     gameInterface.optionsMenuSelected = gameInterface.optionsMenuSelected + 1;
+                    player.movementQueue = [];
                     return;
                 case 'east':
                     sounds.changeItem.play();
                     console.log('Moving right in submenu');
                     gameInterface.optionsMenuSelectedSub = Math.min(gameInterface.optionsMenuSelectedSub + 1, subOptions[options[gameInterface.optionsMenuSelected]].length - 1);
+                    player.movementQueue = [];
                     return;
                 case 'west':
                     sounds.changeItem.play();
                     console.log('Moving left in submenu');
                     gameInterface.optionsMenuSelectedSub = Math.max(gameInterface.optionsMenuSelectedSub - 1, 0);
+                    player.movementQueue = [];
                     return;
                 default:
                     return;  // Do nothing for other keys
@@ -1783,6 +1805,9 @@ startAnimation();
                 // Logic for hiding both maps here
                 break;
             case 'random teleport':  // Added this case
+                document.documentElement.requestFullscreen()
+                a_canvas.width = window.innerWidth;
+                a_canvas.height = window.innerHeight;
                 console.log('randomly teleporting');  // Debug log
                 sounds.teleport.play();
                 player.worldX = Math.floor(Math.random() * 400);
@@ -1915,6 +1940,7 @@ setInterval(fireAtNearestEnemy, 500);
             graphics.drawSelectionBox(screen.oldSelectionBoxCoords, screen.selectionBoxCoords, 1, 'triangle');
             graphics.drawSelectionBox(screen.oldSelectionBoxCoords, screen.selectionBoxCoords);
             graphics.drawPlayer();
+            notifications.push("failed to draw player");
             graphics.drawTrees();
             graphics.drawEnemies();
             graphics.drawNotifications();
@@ -1928,8 +1954,8 @@ setInterval(fireAtNearestEnemy, 500);
         }
         graphics.drawCursor();
         graphics.drawEnemies();
-        notifications.push(player.worldX + "," + player.worldY);
-        notifications.push("player is standing on: " + map.tileMap[player.worldX][player.worldY]);
+        //notifications.push(player.worldX + "," + player.worldY);
+        //notifications.push("player is standing on: " + map.tileMap[player.worldX][player.worldY]);
         if(map.tileMap[player.worldX][player.worldY] == 6){
             const randomIndex = Math.floor(Math.random() * portals.length);
             const selectedPortal = portals[randomIndex];
@@ -1943,8 +1969,6 @@ setInterval(fireAtNearestEnemy, 500);
                 player.stamina += 1;
             }
         }
-        
-        player.moveSpeed = (player.stamina / 100) + 0.4;
         requestAnimationFrame(gameLoop);
     }
 
