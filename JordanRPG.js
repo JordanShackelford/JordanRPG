@@ -189,32 +189,40 @@ for (let i = 0; i < 10; i++) {
     var notifications = ["Move with W,A,S,D keys or by clicking/tapping", "Press Esc to open options menu", "Use number keys to select inventory slot"];
     var map = {};
     const screen = {
-        showNotifications:true,
-        offsetX: 0,
-        offsetY: 0,
+        // Display Settings
+        showNotifications: true,
         numRows: 15,
         numColumns: 15,
+        numOfInventorySlots: 4,
+        notificationSpacing: 30,
+    
+        // Coordinates & Offsets
+        offsetX: 0,
+        offsetY: 0,
         mouseCanvasCoords: [0, 0],
         oldSelectionBoxCoords: [0, 0],
         selectionBoxCoords: [0, 0],
         tileX: 0,
         tileY: 0,
-        notificationSpacing: 30,
-        numOfInventorySlots: 4,
+    
+        // Calculated Properties
         get notificationX() {
             return 0.02 * a.width;
         },
         get notificationY() {
             return 0.045 * a.height;
         },
-        updateMouseCoords: function(x, y) {
+    
+        // Methods
+        updateMouseCoords(x, y) {
             this.mouseCanvasCoords = [x, y];
         },
-        updateSelectionBox: function(x, y) {
+        updateSelectionBox(x, y) {
             this.oldSelectionBoxCoords = this.selectionBoxCoords;
             this.selectionBoxCoords = [x, y];
         }
     };
+    
     s = screen;
     s.tileWidth = a.width / s.numColumns, s.tileHeight = a.height / s.numRows;
     var sounds = {
@@ -1136,7 +1144,7 @@ if (tileImage) {
                 return ["Quick Access", "General", "Services", "Graphics & Performance", "Shop", "Advanced Features", "Social & Multiplayer", "Accessibility"];
             }
             function loadSubOptionsFromJSON() {
-                return {
+                const subOptions = {
                     "Quick Access": ["Favorites"],
                     "General": ["Controls", "Audio"],
                     "Services": ["EA Play", "Game Pass"],
@@ -1146,7 +1154,16 @@ if (tileImage) {
                     "Social & Multiplayer": ["Multi-User", "Cross-Play"],
                     "Accessibility": ["Color-blind Mode", "Text-to-Speech", "Speech-to-Text", "Sign Language"]
                 };
+                
+                // Check if sub-options need to be dynamically updated
+                if (someConditionToLoadDynamically) {
+                    const dynamicSubOptions = loadDynamicSubOptionsFromJSON(); // Assume this function fetches dynamic sub-options from JSON
+                    Object.assign(subOptions, dynamicSubOptions);
+                }
+                
+                return subOptions;
             }
+            
             renderMenu();
         }
 
