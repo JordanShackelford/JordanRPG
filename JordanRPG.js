@@ -913,39 +913,57 @@ if (tileImage) {
           },
           
           
-          drawNotifications: () => {
-            // Constants
-            const h = 180;
-            const fadeIncrement = 0.01;
-            const lineHeight = a_canvas.width * 0.02;
-            const maxLines = 6;
-            const fixedY = a_canvas.height * 0.07 + h;
-            const w = a_canvas.width * 0.4;
-            const x = (a_canvas.width - w) / 2;
-            const y = a_canvas.height * 0.07;
-            
+          drawNotifications: function() {
             // Check if notifications are toggled on
             if (!screen.showNotifications) return;
+            
+            const constants = this.initializeConstants();
+            this.updateFade(constants.fadeIncrement);
+            this.drawGradientBackground(constants);
+            this.drawBorder(constants);
+            this.setTextProperties();
+            this.drawAnimatedText(constants);
+            this.resetContextProperties();
+          },
           
-            // Update fade
+          initializeConstants: function() {
+            return {
+              h: 180,
+              fadeIncrement: 0.01,
+              lineHeight: a_canvas.width * 0.02,
+              maxLines: 6,
+              fixedY: a_canvas.height * 0.07 + 180,
+              w: a_canvas.width * 0.4,
+              x: (a_canvas.width - (a_canvas.width * 0.4)) / 2,
+              y: a_canvas.height * 0.07,
+            };
+          },
+          
+          updateFade: function(fadeIncrement) {
+            if (typeof fadeIncrement !== 'number' || fadeIncrement < 0) {
+              console.error('Invalid fade increment value');
+              return;
+            }
             fade = Math.min(1, fade + fadeIncrement);
+          },
           
-            // Draw gradient background
-            const gradient = context.createLinearGradient(x, y, x + w, y + h);
+          drawGradientBackground: function(constants) {
+            const gradient = context.createLinearGradient(constants.x, constants.y, constants.x + constants.w, constants.y + constants.h);
             gradient.addColorStop(0, 'rgba(0, 0, 0, 0.7)');
             gradient.addColorStop(1, 'rgba(50, 50, 50, 0.7)');
             context.fillStyle = gradient;
-            context.roundRect(x, y, w, h, 15);
+            context.roundRect(constants.x, constants.y, constants.w, constants.h, 15);
             context.fill();
+          },
           
-            // Draw border
+          drawBorder: function(constants) {
             context.strokeStyle = 'rgba(255, 255, 255, 0.5)';
             context.lineWidth = 2;
-            context.roundRect(x, y, w, h, 15);
+            context.roundRect(constants.x, constants.y, constants.w, constants.h, 15);
             context.stroke();
+          },
           
-            // Set text properties
-            const textX = x + w / 2;
+          setTextProperties: function() {
             context.font = "bold 30px 'Lucida Console'";
             context.fillStyle = "#fff";
             context.textAlign = 'center';
@@ -954,20 +972,24 @@ if (tileImage) {
             context.shadowBlur = 5;
             context.shadowOffsetX = 3;
             context.shadowOffsetY = 3;
+          },
           
-            // Draw text with animation
-            const startIndex = Math.max(0, notifications.length - maxLines);
+          drawAnimatedText: function(constants) {
+            const startIndex = Math.max(0, notifications.length - constants.maxLines);
+            const textX = constants.x + constants.w / 2;
             for (let n = startIndex; n < notifications.length; n++) {
-              const tY = fixedY - ((n - startIndex + 0.5) * lineHeight);
+              const tY = constants.fixedY - ((n - startIndex + 0.5) * constants.lineHeight);
               const textFade = 1 - ((notifications.length - 1 - n) * 0.1);
               context.globalAlpha = textFade;
               context.fillText(`• ${notifications[n]}`, textX, tY);
             }
-            
-            // Resetting context properties to default
-            context.globalAlpha = 1; 
+          },
+          
+          resetContextProperties: function() {
+            context.globalAlpha = 1;
             context.shadowColor = "transparent";
           },
+          
           
           
           
