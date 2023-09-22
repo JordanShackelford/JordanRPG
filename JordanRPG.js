@@ -1754,31 +1754,55 @@ startAnimation();
         };
         r();
     }
-    const KEY_CODE_ACTIONS = {
-        87: "north",
-        83: "south",
-        65: "west",
-        68: "east",
-        46: "clear notifications",
-        49: "select inventory slot 0",
-        50: "select inventory slot 1",
-        51: "select inventory slot 2",
-        52: "select inventory slot 3",
-        53: "select inventory slot 4",
-        54: "select inventory slot 5",
-        107: "zoom out",
-        109: "zoom in",
-        187: "unused",
-        39: "rotate clockwise",
-        37: "rotate counter-clockwise",
-        27: "toggle options menu",
-        123: "keybinding reset",
-        77: "toggle map",
-        78: "toggle minimap",
-        66: "hide map",
-        32: "random teleport",
-
-    };
+    const KEY_CODES = {
+        W: 87,
+        S: 83,
+        A: 65,
+        D: 68,
+        DELETE: 46,
+        ONE: 49,
+        TWO: 50,
+        THREE: 51,
+        FOUR: 52,
+        FIVE: 53,
+        SIX: 54,
+        PLUS: 107,
+        MINUS: 109,
+        EQUAL: 187,
+        RIGHT_ARROW: 39,
+        LEFT_ARROW: 37,
+        ESC: 27,
+        F12: 123,
+        M: 77,
+        N: 78,
+        B: 66,
+        SPACE: 32
+      };
+      
+      const KEY_CODE_ACTIONS = {
+        [KEY_CODES.W]: "north",
+        [KEY_CODES.S]: "south",
+        [KEY_CODES.A]: "west",
+        [KEY_CODES.D]: "east",
+        [KEY_CODES.DELETE]: "clear notifications",
+        [KEY_CODES.ONE]: "select inventory slot 0",
+        [KEY_CODES.TWO]: "select inventory slot 1",
+        [KEY_CODES.THREE]: "select inventory slot 2",
+        [KEY_CODES.FOUR]: "select inventory slot 3",
+        [KEY_CODES.FIVE]: "select inventory slot 4",
+        [KEY_CODES.SIX]: "select inventory slot 5",
+        [KEY_CODES.PLUS]: "zoom out",
+        [KEY_CODES.MINUS]: "zoom in",
+        [KEY_CODES.EQUAL]: "unused",
+        [KEY_CODES.RIGHT_ARROW]: "rotate clockwise",
+        [KEY_CODES.LEFT_ARROW]: "rotate counter-clockwise",
+        [KEY_CODES.ESC]: "toggle options menu",
+        [KEY_CODES.F12]: "keybinding reset",
+        [KEY_CODES.M]: "toggle map",
+        [KEY_CODES.N]: "toggle minimap",
+        [KEY_CODES.B]: "hide map",
+        [KEY_CODES.SPACE]: "random teleport"
+      };
 
     function handleKeyDown(e) {
         console.log('Key down:', e.keyCode); // Debug log
