@@ -189,6 +189,7 @@ for (let i = 0; i < 10; i++) {
     var notifications = ["Move with W,A,S,D keys or by clicking/tapping", "Press Esc to open options menu", "Use number keys to select inventory slot"];
     var map = {};
     const screen = {
+        showNotifications:true,
         offsetX: 0,
         offsetY: 0,
         numRows: 15,
@@ -919,21 +920,24 @@ if (tileImage) {
             const lineHeight = a_canvas.width * 0.02;
             const maxLines = 6;
             const fixedY = a_canvas.height * 0.07 + h;
-            
-            // Update fade
-            fade = Math.min(1, fade + fadeIncrement);
-            
-            // Draw gradient background
             const w = a_canvas.width * 0.4;
             const x = (a_canvas.width - w) / 2;
             const y = a_canvas.height * 0.07;
+            
+            // Check if notifications are toggled on
+            if (!screen.showNotifications) return;
+          
+            // Update fade
+            fade = Math.min(1, fade + fadeIncrement);
+          
+            // Draw gradient background
             const gradient = context.createLinearGradient(x, y, x + w, y + h);
             gradient.addColorStop(0, 'rgba(0, 0, 0, 0.7)');
             gradient.addColorStop(1, 'rgba(50, 50, 50, 0.7)');
             context.fillStyle = gradient;
             context.roundRect(x, y, w, h, 15);
             context.fill();
-            
+          
             // Draw border
             context.strokeStyle = 'rgba(255, 255, 255, 0.5)';
             context.lineWidth = 2;
@@ -959,9 +963,12 @@ if (tileImage) {
               context.globalAlpha = textFade;
               context.fillText(`• ${notifications[n]}`, textX, tY);
             }
-            context.globalAlpha = 1; // Reset alpha
-            context.shadowColor = "transparent"; // Reset shadow
+            
+            // Resetting context properties to default
+            context.globalAlpha = 1; 
+            context.shadowColor = "transparent";
           },
+          
           
           
           
