@@ -1582,7 +1582,7 @@ startAnimation();
         if (!mousemove_throttleTimer) {
             mousemove_throttleTimer = setTimeout(() => {
                 mousemove_throttleTimer = null;
-            }, 25);
+            }, 50);
             
             const newMouseCanvasCoords = math.calculateCanvasCoordsFromWindowCoords(e.clientX, e.clientY);
             

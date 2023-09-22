@@ -1,7 +1,4 @@
 window.onload = function() {
-    let mousemove_throttleTimer = null;
-    let mousemove_mouseMovedDistance = 0;
-
     let contextMenuVars = {
         x: 0,
         y: 0
@@ -238,8 +235,7 @@ for (let i = 0; i < 10; i++) {
         ambientCave: new Audio("res/ambientCave.mp3")
         */
     };
-    sounds.music.volume = 0.07; // 1% volume
-
+    sounds.music.volume = 0.07; // 1% volume      
     var player = {
         name: "Jordan",
         screenTileX: Math.floor(screen.numRows / 2),
@@ -247,7 +243,7 @@ for (let i = 0; i < 10; i++) {
         worldX: 150,
         worldY: 150,
         currentAction: "none",
-        img:'none',
+        img: document.getElementById("player"),
         imgWidth: screen.tileWidth,
         imgHeight: screen.tileHeight * 2,
         moveSpeed: 1,
@@ -270,8 +266,6 @@ for (let i = 0; i < 10; i++) {
         direction:'none',
         stamina:100
     };
-    player.img = new Image();
-    player.img.src="res/chrono.png";
     player.pixelX = player.screenTileX * screen.tileWidth, player.pixelY = player.screenTileY * screen.tileHeight - screen.tileHeight;
     var gameInterface = {
         inventorySlotSelected: 0,
@@ -449,7 +443,7 @@ if (tileImage) {
             try{
                 context.drawImage(tileImage, -tileW / 2, -tileH / 2, tileW, tileH);
             } catch (e) {
-                notifications.push('Failed to draw image:'  );
+                notifications.push('Failed to draw image:', e);
             }
             
 
@@ -599,12 +593,13 @@ if (tileImage) {
             }
         
             function drawDustCloud() {
-                const PARTICLE_COUNT = 10;
+                const DUST_PARTICLE_COUNT = 10;
                 const MIN_SIZE = 2;
-                const MAX_SIZE = 12;
-                const MIN_OPACITY = 0.4;
-                const MAX_OPACITY = 0.4;
-            
+                const MAX_SIZE = 8;
+                const MIN_OPACITY = 0.2;
+                const MAX_OPACITY = 0.6;
+                
+                // Determine the xOffset based on the player's moving direction and image width
                 const xOffsetFactors = {
                     'east': -0.1,
                     'west': 1.2
@@ -612,11 +607,12 @@ if (tileImage) {
             
                 const xOffset = player.imgWidth * (xOffsetFactors[player.direction] || 0);
             
+                // Create a function to generate a random number within a range
                 const getRandom = (min, max) => Math.random() * (max - min) + min;
             
+                // Generate and draw dust particles
                 context.globalAlpha = 1;
-            
-                for (let i = 0; i < PARTICLE_COUNT; i++) {
+                for (let i = 0; i < DUST_PARTICLE_COUNT; i++) {
                     const particle = {
                         x: player.pixelX + xOffset + getRandom(-20, 20),
                         y: player.pixelY + player.imgHeight + getRandom(-10, 10),
@@ -624,19 +620,12 @@ if (tileImage) {
                         opacity: getRandom(MIN_OPACITY, MAX_OPACITY)
                     };
             
-                    // Check tilemap to determine what to draw
-                    if (map.tileMap[player.worldY][player.worldX] === 0) {
-                        context.fillStyle = `rgba(0, 128, 0, ${particle.opacity})`; // Green for grass
-                    } else {
-                        context.fillStyle = `rgba(255, 255, 255, ${particle.opacity})`; // White for dust
-                    }
-            
+                    context.fillStyle = `rgba(255, 255, 255, ${particle.opacity})`;
                     context.beginPath();
                     context.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
                     context.fill();
                 }
             }
-            
             function drawCombatIcon() {
                 context.drawImage(sweatDropImg, player.pixelX, player.pixelY - 10, 8, 8);
             }
@@ -859,11 +848,7 @@ if (tileImage) {
             tG.addColorStop(1, "#aaa");
             const icons = gameInterface.icons,
                 qtys = [5, 2, 1, 3, 4, 7];
-            try{
-                drawItemSlots(context, iX, iY, sW, sH, sp, icons, qtys);
-            }catch(e){
-                notifications.push("failed to draw item slots");
-            }
+            drawItemSlots(context, iX, iY, sW, sH, sp, icons, qtys);
             renderInventorySlots(context, tG, slots, iX, iY, sW, sH, gameInterface);
         },
 
@@ -914,17 +899,17 @@ if (tileImage) {
           
           drawNotifications: () => {
             // Constants
-            const h = 180;
+            const h = 260;
             const fadeIncrement = 0.01;
-            const lineHeight = a_canvas.width * 0.02;
+            const lineHeight = 40;
             const maxLines = 6;
-            const fixedY = a_canvas.height * 0.07 + h;
+            const fixedY = a_canvas.height * 0.07 + h - 20;
             
             // Update fade
             fade = Math.min(1, fade + fadeIncrement);
             
             // Draw gradient background
-            const w = a_canvas.width * 0.4;
+            const w = a_canvas.width * 0.6;
             const x = (a_canvas.width - w) / 2;
             const y = a_canvas.height * 0.07;
             const gradient = context.createLinearGradient(x, y, x + w, y + h);
@@ -1163,13 +1148,13 @@ if (tileImage) {
     };
 
     var tileData = {
-            grass: [1, 1, "res/grass.png"],
+            grass: [1, 1, "res/grass.jpg"],
             water: [1, 1, "res/water1.png"],
             tree1: [2, 5, "res/tree1.png"],
             tree2: [2, 5, "res/tree2.png"],
             flower: [1, 2, "res/flower.png"],
             rock: [1, 1, "res/rock.png"],
-            dirt: [1, 1, "res/dirt.png"],
+            dirt: [1, 1, "res/dirt.jpg"],
             sand: [1, 1, "res/sand.jpg"],
             stone: [1, 1, "res/stone.jpg"],
             wood: [1, 1, "res/wood.jpg"],
@@ -1474,8 +1459,6 @@ startAnimation();
     };
 
     function move(direction) {
-        const diagonalDirections = ['northwest', 'northeast', 'southwest', 'southeast'];
-    
         function canMoveToTile(x, y) {
             return !(x < 0 || y < 0 || x >= c || y >= c || map.tileMap[x][y] === 1 || map.treeMap[x][y] === 3);
         }
@@ -1531,12 +1514,9 @@ startAnimation();
             return notifications.push("You can't walk there!");
         }
     
-        // For diagonal movements, you might want to handle stamina or animation differently
-        if (diagonalDirections.includes(direction)) {
-            // Implement your special cases for diagonal directions here
-        }
-    
+        // Update the global player.direction with the direction being moved to
         player.direction = direction;
+    
         handleAnimationAndSound(dir);
     
         let offsetX = dir.offsetX * moveSpeed;
@@ -1544,7 +1524,6 @@ startAnimation();
     
         updateFunction(nx, ny, offsetX, offsetY, moveSpeed);
     }
-    
     
     
 
@@ -1575,44 +1554,12 @@ startAnimation();
         this.closePath();
         this.fill();
         this.restore();
-    };  
-
+    };
     a_canvas.addEventListener('mousemove', e => {
-        // Throttling to enhance performance
-        if (!mousemove_throttleTimer) {
-            mousemove_throttleTimer = setTimeout(() => {
-                mousemove_throttleTimer = null;
-            }, 25);
-            
-            const newMouseCanvasCoords = math.calculateCanvasCoordsFromWindowCoords(e.clientX, e.clientY);
-            
-            // Calculate distance mouse has moved
-            if (screen.mouseCanvasCoords) {
-                mousemove_mouseMovedDistance += Math.sqrt(
-                    Math.pow(newMouseCanvasCoords.x - screen.mouseCanvasCoords.x, 2) +
-                    Math.pow(newMouseCanvasCoords.y - screen.mouseCanvasCoords.y, 2)
-                );
-            }
-            
-            // Update the old and new coordinates
-            screen.mouseCanvasCoords = newMouseCanvasCoords;
-            screen.oldSelectionBoxCoords = screen.selectionBoxCoords;
-            screen.selectionBoxCoords = math.calculateTileClicked(screen.mouseCanvasCoords);
-    
-            // Trigger special game event if mouse moved a certain distance
-            if (mousemove_mouseMovedDistance > 1000) {
-                triggerSpecialGameEvent();
-                mousemove_mouseMovedDistance = 0; // Reset distance
-            }
-            
-            // Notify other components if the selection box has changed
-            if (JSON.stringify(screen.oldSelectionBoxCoords) !== JSON.stringify(screen.selectionBoxCoords)) {
-                triggerSelectionBoxChangedEvent();
-            }
-        }
+        screen.mouseCanvasCoords = math.calculateCanvasCoordsFromWindowCoords(e.clientX, e.clientY);
+        screen.oldSelectionBoxCoords = screen.selectionBoxCoords;
+        screen.selectionBoxCoords = math.calculateTileClicked(screen.mouseCanvasCoords)
     }, false);
-    
-
 
     a_canvas.addEventListener('contextmenu', function(e) {
         e.preventDefault();  // Prevent the default right-click menu from showing
@@ -1771,25 +1718,21 @@ startAnimation();
                     sounds.changeItem.play();
                     console.log('Moving up in menu');
                     gameInterface.optionsMenuSelected = Math.max(gameInterface.optionsMenuSelected - 1, 0);
-                    player.movementQueue = [];
                     return;
                 case 'north':
                     sounds.changeItem.play();
                     console.log('Moving down in menu');
                     gameInterface.optionsMenuSelected = gameInterface.optionsMenuSelected + 1;
-                    player.movementQueue = [];
                     return;
                 case 'east':
                     sounds.changeItem.play();
                     console.log('Moving right in submenu');
                     gameInterface.optionsMenuSelectedSub = Math.min(gameInterface.optionsMenuSelectedSub + 1, subOptions[options[gameInterface.optionsMenuSelected]].length - 1);
-                    player.movementQueue = [];
                     return;
                 case 'west':
                     sounds.changeItem.play();
                     console.log('Moving left in submenu');
                     gameInterface.optionsMenuSelectedSub = Math.max(gameInterface.optionsMenuSelectedSub - 1, 0);
-                    player.movementQueue = [];
                     return;
                 default:
                     return;  // Do nothing for other keys
@@ -1978,13 +1921,12 @@ setInterval(fireAtNearestEnemy, 500);
             graphics.drawSelectionBox(screen.oldSelectionBoxCoords, screen.selectionBoxCoords, 1, 'hexagon');
             graphics.drawSelectionBox(screen.oldSelectionBoxCoords, screen.selectionBoxCoords, 1, 'triangle');
             graphics.drawSelectionBox(screen.oldSelectionBoxCoords, screen.selectionBoxCoords);
-            graphics.drawPlayer();
-            notifications.push("failed to draw player");
+            //graphics.drawPlayer();
             graphics.drawTrees();
             graphics.drawEnemies();
             graphics.drawNotifications();
             //graphics.drawMiniMap();
-            graphics.drawInterface();
+            //graphics.drawInterface();
         } else {
             graphics.drawOptionsMenu();
         }
@@ -2008,10 +1950,14 @@ setInterval(fireAtNearestEnemy, 500);
                 player.stamina += 1;
             }
         }
+        
+        player.moveSpeed = (player.stamina / 100) + 0.4;
         requestAnimationFrame(gameLoop);
     }
 
     // Start the game loop
     requestAnimationFrame(gameLoop);
+
+    
 
 }

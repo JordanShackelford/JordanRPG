@@ -1,7 +1,6 @@
 window.onload = function() {
-    let mousemove_throttleTimer = null;
-    let mousemove_mouseMovedDistance = 0;
-
+    a_canvas.width = window.innerWidth;
+    a_canvas.height = window.innerHeight;
     let contextMenuVars = {
         x: 0,
         y: 0
@@ -182,8 +181,6 @@ for (let i = 0; i < 10; i++) {
                 if (onLoad) onLoad(this);
             });
         };
-    a_canvas.width = window.innerWidth;
-    a_canvas.height = window.innerHeight;
     cursor.src = "res/swordicon.png";
     boat.src = "res/boat.png";
     var notifications = ["Move with W,A,S,D keys or by clicking/tapping", "Press Esc to open options menu", "Use number keys to select inventory slot"];
@@ -1474,8 +1471,6 @@ startAnimation();
     };
 
     function move(direction) {
-        const diagonalDirections = ['northwest', 'northeast', 'southwest', 'southeast'];
-    
         function canMoveToTile(x, y) {
             return !(x < 0 || y < 0 || x >= c || y >= c || map.tileMap[x][y] === 1 || map.treeMap[x][y] === 3);
         }
@@ -1530,13 +1525,9 @@ startAnimation();
         if (!canMoveToTile(nx, ny)) {
             return notifications.push("You can't walk there!");
         }
-    
-        // For diagonal movements, you might want to handle stamina or animation differently
-        if (diagonalDirections.includes(direction)) {
-            // Implement your special cases for diagonal directions here
-        }
-    
+        // Update the global player.direction with the direction being moved to
         player.direction = direction;
+    
         handleAnimationAndSound(dir);
     
         let offsetX = dir.offsetX * moveSpeed;
@@ -1544,7 +1535,6 @@ startAnimation();
     
         updateFunction(nx, ny, offsetX, offsetY, moveSpeed);
     }
-    
     
     
 
@@ -1575,44 +1565,12 @@ startAnimation();
         this.closePath();
         this.fill();
         this.restore();
-    };  
-
+    };
     a_canvas.addEventListener('mousemove', e => {
-        // Throttling to enhance performance
-        if (!mousemove_throttleTimer) {
-            mousemove_throttleTimer = setTimeout(() => {
-                mousemove_throttleTimer = null;
-            }, 25);
-            
-            const newMouseCanvasCoords = math.calculateCanvasCoordsFromWindowCoords(e.clientX, e.clientY);
-            
-            // Calculate distance mouse has moved
-            if (screen.mouseCanvasCoords) {
-                mousemove_mouseMovedDistance += Math.sqrt(
-                    Math.pow(newMouseCanvasCoords.x - screen.mouseCanvasCoords.x, 2) +
-                    Math.pow(newMouseCanvasCoords.y - screen.mouseCanvasCoords.y, 2)
-                );
-            }
-            
-            // Update the old and new coordinates
-            screen.mouseCanvasCoords = newMouseCanvasCoords;
-            screen.oldSelectionBoxCoords = screen.selectionBoxCoords;
-            screen.selectionBoxCoords = math.calculateTileClicked(screen.mouseCanvasCoords);
-    
-            // Trigger special game event if mouse moved a certain distance
-            if (mousemove_mouseMovedDistance > 1000) {
-                triggerSpecialGameEvent();
-                mousemove_mouseMovedDistance = 0; // Reset distance
-            }
-            
-            // Notify other components if the selection box has changed
-            if (JSON.stringify(screen.oldSelectionBoxCoords) !== JSON.stringify(screen.selectionBoxCoords)) {
-                triggerSelectionBoxChangedEvent();
-            }
-        }
+        screen.mouseCanvasCoords = math.calculateCanvasCoordsFromWindowCoords(e.clientX, e.clientY);
+        screen.oldSelectionBoxCoords = screen.selectionBoxCoords;
+        screen.selectionBoxCoords = math.calculateTileClicked(screen.mouseCanvasCoords)
     }, false);
-    
-
 
     a_canvas.addEventListener('contextmenu', function(e) {
         e.preventDefault();  // Prevent the default right-click menu from showing
@@ -1847,6 +1805,7 @@ startAnimation();
                 // Logic for hiding both maps here
                 break;
             case 'random teleport':  // Added this case
+                document.documentElement.requestFullscreen()
                 console.log('randomly teleporting');  // Debug log
                 sounds.teleport.play();
                 player.worldX = Math.floor(Math.random() * 400);
@@ -1966,6 +1925,8 @@ function fireAtNearestEnemy() {
 setInterval(fireAtNearestEnemy, 500);
 
     function gameLoop() {
+        a_canvas.width = window.innerWidth;
+        a_canvas.height = window.innerHeight;
         if(!showOptionsMenu){
             graphics.drawMap();
             const start = performance.now();
@@ -2013,5 +1974,7 @@ setInterval(fireAtNearestEnemy, 500);
 
     // Start the game loop
     requestAnimationFrame(gameLoop);
+
+    
 
 }

@@ -1579,16 +1579,16 @@ startAnimation();
 
     a_canvas.addEventListener('mousemove', e => {
         // Throttling to enhance performance
-        if (!mousemove_throttleTimer) {
-            mousemove_throttleTimer = setTimeout(() => {
-                mousemove_throttleTimer = null;
-            }, 25);
+        if (!throttleTimer) {
+            throttleTimer = setTimeout(() => {
+                throttleTimer = null;
+            }, 50);
             
             const newMouseCanvasCoords = math.calculateCanvasCoordsFromWindowCoords(e.clientX, e.clientY);
             
             // Calculate distance mouse has moved
             if (screen.mouseCanvasCoords) {
-                mousemove_mouseMovedDistance += Math.sqrt(
+                mouseMovedDistance += Math.sqrt(
                     Math.pow(newMouseCanvasCoords.x - screen.mouseCanvasCoords.x, 2) +
                     Math.pow(newMouseCanvasCoords.y - screen.mouseCanvasCoords.y, 2)
                 );
@@ -1598,11 +1598,16 @@ startAnimation();
             screen.mouseCanvasCoords = newMouseCanvasCoords;
             screen.oldSelectionBoxCoords = screen.selectionBoxCoords;
             screen.selectionBoxCoords = math.calculateTileClicked(screen.mouseCanvasCoords);
-    
+
+            // Debug logging
+            if (screen.debugMode) {
+                console.log(`Mouse moved to: ${JSON.stringify(screen.mouseCanvasCoords)}`);
+            }
+            
             // Trigger special game event if mouse moved a certain distance
-            if (mousemove_mouseMovedDistance > 1000) {
+            if (mouseMovedDistance > 1000) {
                 triggerSpecialGameEvent();
-                mousemove_mouseMovedDistance = 0; // Reset distance
+                mouseMovedDistance = 0; // Reset distance
             }
             
             // Notify other components if the selection box has changed
@@ -1611,7 +1616,6 @@ startAnimation();
             }
         }
     }, false);
-    
 
 
     a_canvas.addEventListener('contextmenu', function(e) {
