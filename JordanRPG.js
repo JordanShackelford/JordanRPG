@@ -39,97 +39,31 @@ window.onload = function() {
     // Simulating a chosen skin from in-app purchases
     let activeSkin = purchasedSkins["Modern"];
 
+    const createTile = (effect) => ({
+        image: new Image(),
+        width: 64,
+        height: 64,
+        effect
+    });
+    
     const specialTiles = {
-        'quicksand': {
-            image: new Image(),
-            width: 64,
-            height: 64
-        },
-        'lava': {
-            image: new Image(),
-            width: 64,
-            height: 64,
-            effect: 'damageOverTime'
-        },
-        'bonus': {
-            image: new Image(),
-            width: 64,
-            height: 64,
-            effect: 'extraPoints'
-        },
-        'power-up': {
-            image: new Image(),
-            width: 64,
-            height: 64,
-            effect: 'temporaryBoost'
-        },
-        'cutsceneTrigger': {
-            image: new Image(),
-            width: 64,
-            height: 64,
-            effect: 'initiateCutscene'
-        },
-        'boost': {
-            image: new Image(),
-            width: 64,
-            height: 64,
-            effect: 'speedBoost'
-        },
-        'questObjective': {
-            image: new Image(),
-            width: 64,
-            height: 64,
-            effect: 'advanceQuest'
-        },
-        'trap': {
-            image: new Image(),
-            width: 64,
-            height: 64,
-            effect: 'randomNegativeEffect'
-        },
-        'randomizer': {
-            image: new Image(),
-            width: 64,
-            height: 64,
-            effect: 'randomEffect'
-        },
-        'premium': {
-            image: new Image(),
-            width: 64,
-            height: 64,
-            effect: 'unlockViaPurchase'
-        },
-        'PvPZone': {
-            image: new Image(),
-            width: 64,
-            height: 64,
-            effect: 'initiateCombat'
-        },
-        'resource': {
-            image: new Image(),
-            width: 64,
-            height: 64,
-            effect: 'collectResources'
-        },
-        'seasonal': {
-            image: new Image(),
-            width: 64,
-            height: 64,
-            effect: 'seasonalChange'
-        },
-        'arena': {
-            image: new Image(),
-            width: 64,
-            height: 64,
-            effect: 'miniPvPBattle'
-        },
-        'analytics': {
-            image: new Image(),
-            width: 64,
-            height: 64,
-            effect: 'trackInteractions'
-        }
+        'quicksand': createTile(null),
+        'lava': createTile('damageOverTime'),
+        'bonus': createTile('extraPoints'),
+        'power-up': createTile('temporaryBoost'),
+        'cutsceneTrigger': createTile('initiateCutscene'),
+        'boost': createTile('speedBoost'),
+        'questObjective': createTile('advanceQuest'),
+        'trap': createTile('randomNegativeEffect'),
+        'randomizer': createTile('randomEffect'),
+        'premium': createTile('unlockViaPurchase'),
+        'PvPZone': createTile('initiateCombat'),
+        'resource': createTile('collectResources'),
+        'seasonal': createTile('seasonalChange'),
+        'arena': createTile('miniPvPBattle'),
+        'analytics': createTile('trackInteractions')
     };
+    
 
     const distanceLookup = []; // Pre-calculated distances, filled during initialization
     const scaleLookup = []; // Pre-calculated scales, filled during initialization
