@@ -1383,21 +1383,22 @@ if (tileImage) {
                     j = idx % c;
                     tm = tileMap[i][j];
                     trm = treeMap[i][j];
-        
-                    if (tm !== WATER_TILE && tm !== ROCKY_TILE && !trm) {
-                        let randomPercent = Math.random() * 100 | 0;
-        
-                        if (randomPercent < 1) {
-                            treeMap[i][j] = TREE_TYPE_RARE;
-                        } else if (randomPercent < 3) {
-                            treeMap[i][j] = TREE_TYPE_1;
-                        } else if (randomPercent < 5) {
-                            treeMap[i][j] = TREE_TYPE_2;
-                        } else {
-                            treeMap[i][j] = 0;
-                        }
+                
+                    if ([WATER_TILE, ROCKY_TILE].includes(tm) || trm) continue;
+                
+                    let randomPercent = Math.random() * 100 | 0;
+                
+                    if (randomPercent < 1) {
+                        treeMap[i][j] = TREE_TYPE_RARE;
+                    } else if (randomPercent < 3) {
+                        treeMap[i][j] = TREE_TYPE_1;
+                    } else if (randomPercent < 5) {
+                        treeMap[i][j] = TREE_TYPE_2;
+                    } else {
+                        treeMap[i][j] = 0;
                     }
                 }
+                
             }
         }
         
