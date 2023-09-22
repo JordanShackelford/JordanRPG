@@ -120,8 +120,12 @@ for (let i = 0; i < 10; i++) {
     a_canvas.height = window.innerHeight;
     cursor.src = "res/swordicon.png";
     boat.src = "res/boat.png";
-    var notifications = ["Move with W,A,S,D keys or by clicking/tapping", "Press Esc to open options menu", "Use number keys to select inventory slot"];
-    var map = {};
+    var notifications = [
+        "Move: W,A,S,D or Click/Tap",
+        "Options: Press Esc",
+        "Inventory: Use Number Keys"
+      ];
+          var map = {};
     const screen = {
         // Display Settings
         showNotifications: true,
