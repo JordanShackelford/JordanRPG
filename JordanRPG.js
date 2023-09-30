@@ -258,9 +258,6 @@ for (let i = 0; i < 10; i++) {
         enemyImg.src = "res/enemy.png";
     }
     let trailFrames = [];
-
-    let enemyHealthBarGradient = null,
-        enemyGlossyGradient = null;
     const itemMapping = {
         0: "hatchet",
         1: "potion",
@@ -269,7 +266,6 @@ for (let i = 0; i < 10; i++) {
         4: "bow",
         5: "scroll"
     };
-
     let fade = 0;
     var graphics = {
         drawContextMenu:(x, y) => {
@@ -704,8 +700,6 @@ if (tileImage) {
         },
         drawCursor: function() {
             const [mX, mY] = screen.mouseCanvasCoords;
-            const tX = Math.floor((mX - screen.offsetX) / screen.tileWidth),
-                tY = Math.floor((mY - screen.offsetY) / screen.tileHeight);
                 context.drawImage(cursor, mX, mY, 100, 100);
         },
         drawInterface: function() {
@@ -1526,14 +1520,9 @@ startAnimation();
     
         let offsetX = dir.offsetX * moveSpeed;
         let offsetY = dir.offsetY * moveSpeed;
-    
+        
         updateFunction(nx, ny, offsetX, offsetY, moveSpeed);
     }
-    
-    
-    
-
-
     CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
         this.save();
         const g = this.createLinearGradient(x, y, x, y + h);
@@ -1977,7 +1966,6 @@ setInterval(fireAtNearestEnemy, 500);
     function gameLoop() {
         if(!showOptionsMenu){
             graphics.drawMap();
-            const start = performance.now();
             const [distLeftRight, distTopBot] = [(screen.numColumns - 1) / 2 + 6, (screen.numRows - 1) / 2 + 6];
             enemies.forEach(e => {
                 e.screenTileX = e.worldX - player.worldX + distLeftRight;
@@ -1995,7 +1983,12 @@ setInterval(fireAtNearestEnemy, 500);
             //graphics.drawMiniMap();
             graphics.drawInterface();
         } else {
-            graphics.drawOptionsMenu();
+            try{
+                graphics.drawOptionsMenu();
+            } catch(error){
+                notifications.push(error);
+            }
+            
         }
         if(drawContextMenu){
             graphics.drawContextMenu(contextMenuVars.x,contextMenuVars.y);
