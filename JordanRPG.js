@@ -45,7 +45,7 @@ window.onload = function() {
         height: 64,
         effect
     });
-    
+
     const specialTiles = {
         'quicksand': createTile(null),
         'lava': createTile('damageOverTime'),
@@ -63,7 +63,7 @@ window.onload = function() {
         'arena': createTile('miniPvPBattle'),
         'analytics': createTile('trackInteractions')
     };
-    
+
 
     const distanceLookup = []; // Pre-calculated distances, filled during initialization
     const scaleLookup = []; // Pre-calculated scales, filled during initialization
@@ -78,23 +78,24 @@ window.onload = function() {
     // Call this function at a set interval to update tree-related variables
     setInterval(updateGlobalTreeVariables, 200);
 
-    
+
 
     // Set the image source for the quicksand tile
     specialTiles['quicksand'].image.src = 'res/sand.jpg';
     let tileProperties = {};
     const enemies = [];
 
-for (let i = 0; i < 10; i++) {
-    enemies.push({
-        worldX: Math.floor(Math.random() * 250),
-        worldY: Math.floor(Math.random() * 250),
-        health: 100, // Initial health
-        maxHealth: 100 // Maximum health
-    });
-    enemies[0].worldX = 150;
-    enemies[0].worldY = 151;
-}
+    for (let i = 0; i < 10; i++) {
+        enemies.push({
+            worldX: Math.floor(Math.random() * 250),
+            worldY: Math.floor(Math.random() * 250),
+            health: 100, // Initial health
+            maxHealth: 100,// Maximum health
+            name: "Pikachu"
+        });
+        enemies[0].worldX = 150;
+        enemies[0].worldY = 151;
+    }
 
     let portals = [];
     let showOptionsMenu = !1,
@@ -124,8 +125,8 @@ for (let i = 0; i < 10; i++) {
         "Move: W,A,S,D or Click/Tap",
         "Options: Press Esc",
         "Inventory: Use Number Keys"
-      ];
-          var map = {};
+    ];
+    var map = {};
     const screen = {
         // Display Settings
         showNotifications: true,
@@ -133,7 +134,7 @@ for (let i = 0; i < 10; i++) {
         numColumns: 15,
         numOfInventorySlots: 4,
         notificationSpacing: 30,
-    
+
         // Coordinates & Offsets
         offsetX: 0,
         offsetY: 0,
@@ -142,7 +143,7 @@ for (let i = 0; i < 10; i++) {
         selectionBoxCoords: [0, 0],
         tileX: 0,
         tileY: 0,
-    
+
         // Calculated Properties
         get notificationX() {
             return 0.02 * a.width;
@@ -150,7 +151,7 @@ for (let i = 0; i < 10; i++) {
         get notificationY() {
             return 0.045 * a.height;
         },
-    
+
         // Methods
         updateMouseCoords(x, y) {
             this.mouseCanvasCoords = [x, y];
@@ -160,7 +161,7 @@ for (let i = 0; i < 10; i++) {
             this.selectionBoxCoords = [x, y];
         }
     };
-    
+
     s = screen;
     s.tileWidth = a.width / s.numColumns, s.tileHeight = a.height / s.numRows;
     var sounds = {
@@ -194,7 +195,7 @@ for (let i = 0; i < 10; i++) {
         worldX: 150,
         worldY: 150,
         currentAction: "none",
-        img:'none',
+        img: 'none',
         imgWidth: screen.tileWidth,
         imgHeight: screen.tileHeight * 2,
         moveSpeed: 1,
@@ -214,11 +215,12 @@ for (let i = 0; i < 10; i++) {
         inventory: [], // Items the player is carrying
         gold: 0, // Currency
         statusEffects: [], // Any status effects applied to the player, like "poisoned" or "stunned"
-        direction:'none',
-        stamina:100
+        direction: 'none',
+        stamina: 100,
+        attackSpeed: 0.5
     };
     player.img = new Image();
-    player.img.src="res/chrono.png";
+    player.img.src = "res/chrono.png";
     player.pixelX = player.screenTileX * screen.tileWidth, player.pixelY = player.screenTileY * screen.tileHeight - screen.tileHeight;
     var gameInterface = {
         inventorySlotSelected: 0,
@@ -251,7 +253,7 @@ for (let i = 0; i < 10; i++) {
     //drawnotifications setup
     let imperfections = [];
 
-   
+
     let enemyImg;
     if (!enemyImg) {
         enemyImg = new Image();
@@ -268,28 +270,28 @@ for (let i = 0; i < 10; i++) {
     };
     let fade = 0;
     var graphics = {
-        drawContextMenu:(x, y) => {
+        drawContextMenu: (x, y) => {
             // Draw the context menu background
             context.fillStyle = 'rgba(0, 0, 0, 0.8)';
-            context.fillRect(x, y, 100, 80);  // Increased the height to fit two options
-          
+            context.fillRect(x, y, 100, 80); // Increased the height to fit two options
+
             // Draw the "Walk Here" button
             context.fillStyle = 'white';
             context.font = '16px Arial';
             context.fillText('Walk Here', x + 55, y + 20);
-          
+
             // Optional: Draw a border around the "Walk Here" button for better visibility
             context.strokeStyle = 'white';
             context.lineWidth = 1;
             context.strokeRect(x + 5, y + 5, 90, 30);
-          
+
             // Draw the "Inspect" button
             context.fillText('Inspect', x + 55, y + 60);
-          
+
             // Optional: Draw a border around the "Inspect" button for better visibility
             context.strokeRect(x + 5, y + 45, 90, 30);
-          },
-          
+        },
+
         drawMinimap: () => {
             const scale = 0.2; // scale factor for the minimap
             const offsetX = a_canvas.width - a_canvas.width * scale; // position the minimap at the right corner
@@ -317,7 +319,7 @@ for (let i = 0; i < 10; i++) {
         },
         drawMap: () => {
             context.save();
-          
+
             const {
                 tileWidth: tileW,
                 tileHeight: tileH,
@@ -326,9 +328,14 @@ for (let i = 0; i < 10; i++) {
                 numColumns: num_Cols,
                 numRows: num_Rows
             } = screen;
-          
-            const { tileMap } = map;
-            const { worldX, worldY } = player;
+
+            const {
+                tileMap
+            } = map;
+            const {
+                worldX,
+                worldY
+            } = player;
             const leftEdge = worldX - (num_Cols - 1) / 2;
             const topEdge = worldY - (num_Rows - 1) / 2;
             const min_X_Index = Math.max(0, leftEdge - 6);
@@ -346,76 +353,76 @@ for (let i = 0; i < 10; i++) {
                 for (let y_Index = min_Y_Index; y_Index < max_Y_Index; y_Index++) {
                     const [i, j, tileValue] = [x_Index - leftEdge, y_Index - topEdge, tileMap[x_Index][y_Index]];
                     const tileKey = tileTypes[tileValue] || 'skip';
-          
+
                     if (tileKey === 'skip') continue;
-          
+
                     const [x, y] = [tileW * i + offset_X, tileH * j + offset_Y];
                     const tileImage = tileImages[tileKey];
-if (tileImage) {
-    // Draw grass tile first as background
-    context.drawImage(tileImages['grass'], x, y, tileW, tileH);
+                    if (tileImage) {
+                        // Draw grass tile first as background
+                        context.drawImage(tileImages['grass'], x, y, tileW, tileH);
 
-    if (tileKey === 'portal') {
-        // Save the current context state
-        context.save();
+                        if (tileKey === 'portal') {
+                            // Save the current context state
+                            context.save();
 
-        // Draw a circular gradient effect as a background
-        const grd = context.createRadialGradient(x + tileW / 2, y + tileH / 2, tileW / 4, x + tileW / 2, y + tileH / 2, tileW / 2);
-        grd.addColorStop(0, 'purple');
-        grd.addColorStop(0.5, 'pink');
-        grd.addColorStop(1, 'black');
-        context.fillStyle = grd;
-        context.beginPath();
-        context.arc(x + tileW / 2, y + tileH / 2, tileW / 2, 0, Math.PI * 2);
-        context.fill();
+                            // Draw a circular gradient effect as a background
+                            const grd = context.createRadialGradient(x + tileW / 2, y + tileH / 2, tileW / 4, x + tileW / 2, y + tileH / 2, tileW / 2);
+                            grd.addColorStop(0, 'purple');
+                            grd.addColorStop(0.5, 'pink');
+                            grd.addColorStop(1, 'black');
+                            context.fillStyle = grd;
+                            context.beginPath();
+                            context.arc(x + tileW / 2, y + tileH / 2, tileW / 2, 0, Math.PI * 2);
+                            context.fill();
 
-        // Clip to a rounded region
-        context.beginPath();
-        context.arc(x + tileW / 2, y + tileH / 2, tileW / 2, 0, Math.PI * 2);
-        context.clip();
+                            // Clip to a rounded region
+                            context.beginPath();
+                            context.arc(x + tileW / 2, y + tileH / 2, tileW / 2, 0, Math.PI * 2);
+                            context.clip();
 
-        const time = Date.now() * 0.005;  // Increased time multiplier for faster rotation
-        const numLayers = 4;  // Increased to 4 layers
+                            const time = Date.now() * 0.005; // Increased time multiplier for faster rotation
+                            const numLayers = 4; // Increased to 4 layers
 
-        for (let i = 0; i < numLayers; i++) {
-            const rotationAngle = Math.sin(time + i) * Math.PI;
-            const layerOpacity = (i + 1) / numLayers;
+                            for (let i = 0; i < numLayers; i++) {
+                                const rotationAngle = Math.sin(time + i) * Math.PI;
+                                const layerOpacity = (i + 1) / numLayers;
 
-            // Translate and rotate
-            context.translate(x + tileW / 2, y + tileH / 2);
-            context.rotate(rotationAngle);
+                                // Translate and rotate
+                                context.translate(x + tileW / 2, y + tileH / 2);
+                                context.rotate(rotationAngle);
 
-            // Apply opacity
-            context.globalAlpha = layerOpacity;
+                                // Apply opacity
+                                context.globalAlpha = layerOpacity;
 
-            // Draw the portal image, but offset it so that it's centered
-            try{
-                context.drawImage(tileImage, -tileW / 2, -tileH / 2, tileW, tileH);
-            } catch (e) {
-                notifications.push('Failed to draw image:'  );
-            }
-            
+                                // Draw the portal image, but offset it so that it's centered
+                                try {
+                                    context.drawImage(tileImage, -tileW / 2, -tileH / 2, tileW, tileH);
+                                } catch (e) {
+                                    notifications.push('Failed to draw image:');
+                                }
 
-            // Reverse transformations for the next iteration
-            context.rotate(-rotationAngle);
-            context.translate(-(x + tileW / 2), -(y + tileH / 2));
-        }
 
-        // Restore the original context state
-        context.restore();
-        context.globalAlpha = 1;  // Reset opacity
-    } else {
-        // Draw normally for other tiles
-        context.drawImage(tileImage, x, y, tileW, tileH);
-    }
-}
+                                // Reverse transformations for the next iteration
+                                context.rotate(-rotationAngle);
+                                context.translate(-(x + tileW / 2), -(y + tileH / 2));
+                            }
+
+                            // Restore the original context state
+                            context.restore();
+                            context.globalAlpha = 1; // Reset opacity
+                        } else {
+                            // Draw normally for other tiles
+                            context.drawImage(tileImage, x, y, tileW, tileH);
+                        }
+                    }
                 }
             }
-          
+
             context.shadowColor = 'transparent';
             context.shadowBlur = 0;
 
-            
+
             context.restore();
         },
         drawSelectionBox: function(nC, playerAction, animationSpeed = 1, shapeType = 'box', eventTrigger) {
@@ -427,7 +434,12 @@ if (tileImage) {
                 context.closePath();
                 context.stroke();
             }
-        
+
+            function addGlowEffect() {
+                context.shadowColor = 'rgba(0, 0, 0, 0.3)';
+                context.shadowBlur = 15;
+            }
+
             function drawHexagon(x, y, w, h) {
                 let sideLength = w / 2;
                 context.beginPath();
@@ -437,6 +449,7 @@ if (tileImage) {
                 context.closePath();
                 context.stroke();
             }
+
             function setGradient(tN, pF, x, y, w, h) {
                 const gS = context.createLinearGradient(x, y, x + w, y + h);
                 gS.addColorStop(0, `hsla(${tN*360},100%,50%,${.5+.5*pF})`);
@@ -473,30 +486,7 @@ if (tileImage) {
                 context.stroke();
             }
 
-            const drawSelectionBox = function(nC, playerAction) {
-                const t = Date.now(),
-                    f = 2000,
-                    tN = (t % f) / f,
-                    pF = Math.sin(tN * Math.PI),
-                    w = screen.tileWidth,
-                    h = screen.tileHeight,
-                    x = nC[0],
-                    y = nC[1];
 
-                context.save();
-
-                setGradient(tN, pF, x, y, w, h);
-                setStrokes(pF, t);
-
-                if (playerAction === 'attack') {
-                    setRotation(Math.PI / 4, x, y, w, h);
-                }
-
-                drawBox(x, y, w, h, 5 + Math.sin((t % 5000 / 5000) * Math.PI) * 10);
-                drawCircle(x + w / 2, y + h / 2, w / 4, pF);
-
-                context.restore();
-            };
             const t = Date.now(),
                 f = 2000,
                 tN = (t % f) / f,
@@ -514,7 +504,7 @@ if (tileImage) {
             if (playerAction === 'attack') {
                 setRotation(Math.PI / 4, x, y, w, h);
             }
-
+            addGlowEffect();
             if (shapeType === 'triangle') {
                 drawTriangle(x, y, w, h);
             } else if (shapeType === 'hexagon') {
@@ -522,7 +512,7 @@ if (tileImage) {
             } else {
                 drawBox(x, y, w, h, 5 + Math.sin((t % (5000 / animationSpeed) / (5000 / animationSpeed)) * Math.PI) * 10);
             }
-        
+
             if (eventTrigger) {
                 eventTrigger();
             }
@@ -534,31 +524,31 @@ if (tileImage) {
             const animationFrames = [8, 7, 55, 2, 102, 2, 153, 2, 8, 150, 51, 150, 104, 150, 155, 150, 8, 76, 51, 76, 104, 76, 155, 76, 8, 220, 51, 220, 104, 220, 155, 220];
             const currentFrameIndex = player.animationFrame << 1;
             let dustParticles = [];
+
             function clearShadowSettings() {
                 context.shadowColor = 'transparent';
                 context.shadowBlur = 0;
                 context.shadowOffsetX = 0;
                 context.shadowOffsetY = 0;
             }
-        
+
             function drawDustCloud() {
-                const PARTICLE_COUNT = 10;
+                const PARTICLE_COUNT = 30; // Slightly increased from 10 to 30
                 const MIN_SIZE = 2;
                 const MAX_SIZE = 12;
                 const MIN_OPACITY = 0.4;
-                const MAX_OPACITY = 0.4;
-            
+                const MAX_OPACITY = 0.9; // Increased max opacity
+
                 const xOffsetFactors = {
                     'east': -0.1,
                     'west': 1.2
                 };
-            
+
                 const xOffset = player.imgWidth * (xOffsetFactors[player.direction] || 0);
-            
                 const getRandom = (min, max) => Math.random() * (max - min) + min;
-            
+
                 context.globalAlpha = 1;
-            
+
                 for (let i = 0; i < PARTICLE_COUNT; i++) {
                     const particle = {
                         x: player.pixelX + xOffset + getRandom(-20, 20),
@@ -566,35 +556,39 @@ if (tileImage) {
                         size: getRandom(MIN_SIZE, MAX_SIZE),
                         opacity: getRandom(MIN_OPACITY, MAX_OPACITY)
                     };
-            
-                    // Check tilemap to determine what to draw
+
+                    // Introduce color variance
+                    const colorVariance = getRandom(-30, 30);
+
                     if (map.tileMap[player.worldY][player.worldX] === 0) {
-                        context.fillStyle = `rgba(0, 128, 0, ${particle.opacity})`; // Green for grass
+                        context.fillStyle = `rgba(${0 + colorVariance}, ${128 + colorVariance}, 0, ${particle.opacity})`; // Variants of green for grass
                     } else {
-                        context.fillStyle = `rgba(255, 255, 255, ${particle.opacity})`; // White for dust
+                        context.fillStyle = `rgba(${255 + colorVariance}, ${255 + colorVariance}, ${255 + colorVariance}, ${particle.opacity})`; // Variants of white for dust
                     }
-            
+
                     context.beginPath();
                     context.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
                     context.fill();
                 }
             }
-            
+
+
+
             function drawCombatIcon() {
                 context.drawImage(sweatDropImg, player.pixelX, player.pixelY - 10, 8, 8);
             }
-        
+
             function drawPlayerAndTrail() {
                 trailFrames.forEach((frame, index) => {
                     const alpha = (5 - index) / 10;
                     context.globalAlpha = alpha;
                     context.drawImage(player.img, animationFrames[currentFrameIndex], animationFrames[currentFrameIndex + 1], 32, 64, frame.x, frame.y, player.imgWidth, player.imgHeight);
                 });
-        
+
                 context.globalAlpha = 1;
                 context.drawImage(player.img, animationFrames[currentFrameIndex], animationFrames[currentFrameIndex + 1], 32, 64, player.pixelX, player.pixelY, player.imgWidth, player.imgHeight);
             }
-        
+
             function drawAdditionalAnimations() {
                 if (player.hasCape) {
                     context.drawImage(cloakImg, player.pixelX, player.pixelY, 32, 64);
@@ -606,101 +600,186 @@ if (tileImage) {
                 const y = player.pixelY - 20;
                 const width = player.hp;
                 const height = 10;
-            
-                // Draw background bar
-                context.fillStyle = 'black';
-                context.fillRect(x, y, 100, height);
-            
-                // Create gradient
-                const gradient = context.createLinearGradient(x, y, x + width, y);
+                const radius = 5; // for rounded corners
+
+                // Pulsating Effect
+                const pulse = 0.5 * Math.sin(Date.now() * 0.005) + 0.5;
+                const pulsatingWidth = width + 3 * pulse;
+
+                // Particle Burst
+                if (player.hp > 80) {
+                    for (let i = 0; i < 10; i++) {
+                        const px = x + Math.random() * width;
+                        const py = y + Math.random() * height;
+                        context.fillStyle = 'rgba(255, 255, 0, 0.5)';
+                        context.beginPath();
+                        context.arc(px, py, 2, 0, Math.PI * 2);
+                        context.fill();
+                    }
+                }
+
+                // Glow Outline
+                context.shadowColor = player.hp > 50 ? 'lime' : 'red';
+                context.shadowBlur = 20;
+
+                // Create gradient for health bar
+                const gradient = context.createLinearGradient(x, y, x + pulsatingWidth, y);
                 gradient.addColorStop(0, 'darkred');
+                gradient.addColorStop(0.5, 'magenta');
                 gradient.addColorStop(1, 'red');
-            
-                // Draw health bar
-                context.fillStyle = gradient;
-                context.fillRect(x, y, width, height);
-            
-                // Border
-                context.strokeStyle = 'black';
+
+                // Strobe effect for low health
+                if (player.hp < 20) {
+                    gradient.addColorStop(0.5, 'black');
+                }
+
+                // Draw rounded health bar
+                if (player.hp === 100) {
+                    context.fillStyle = 'gold';
+                    // Additional logic to add special effects for full health
+                } else {
+                    context.fillStyle = gradient;
+                }
+                
+                context.beginPath();
+                context.moveTo(x + radius, y);
+                context.lineTo(x + pulsatingWidth - radius, y);
+                context.quadraticCurveTo(x + pulsatingWidth, y, x + pulsatingWidth, y + radius);
+                context.lineTo(x + pulsatingWidth, y + height - radius);
+                context.quadraticCurveTo(x + pulsatingWidth, y + height, x + pulsatingWidth - radius, y + height);
+                context.lineTo(x + radius, y + height);
+                context.quadraticCurveTo(x, y + height, x, y + height - radius);
+                context.lineTo(x, y + radius);
+                context.quadraticCurveTo(x, y, x + radius, y);
+                context.closePath();
+                context.fill();
+
+                // Reset glow effect to avoid affecting other elements
+                context.shadowColor = 'transparent';
+                context.shadowBlur = 0;
+
+                // Border and text
+                context.strokeStyle = 'gold';
                 context.lineWidth = 2;
-                context.strokeRect(x, y, 100, height);
+                context.stroke();
+                context.fillStyle = 'gold';
+                context.font = 'bold 12px Arial';
+                context.fillText(`${player.hp}/100`, x + 35, y + height - 2);
             }
-            
+
+
+
             function drawStaminaBar() {
                 const x = player.pixelX;
                 const y = player.pixelY - 10;
                 const width = player.stamina;
                 const height = 10;
-            
-                // Draw background bar
-                context.fillStyle = 'black';
-                context.fillRect(x, y, 100, height);
-            
-                // Create gradient
-                const gradient = context.createLinearGradient(x, y, x + width, y);
+                const radius = 5; // for rounded corners
+
+                // Pulsating Effect
+                const pulse = 0.5 * Math.sin(Date.now() * 0.005) + 0.5;
+                const pulsatingWidth = width + 3 * pulse;
+
+                // Animated Sparkles
+                const numSparkles = Math.floor(Math.random() * 5 + 5);
+                for (let i = 0; i < numSparkles; i++) {
+                    const sparkleX = x + Math.random() * width;
+                    const sparkleY = y + Math.random() * height;
+                    context.fillStyle = 'gold';
+                    context.fillRect(sparkleX, sparkleY, 2, 2);
+                }
+
+                // Border Glow
+                context.shadowColor = 'cyan';
+                context.shadowBlur = 10;
+
+                // Create gradient for stamina bar
+                const gradient = context.createLinearGradient(x, y, x + pulsatingWidth, y);
                 gradient.addColorStop(0, 'darkgreen');
+                gradient.addColorStop(0.5, 'lime');
                 gradient.addColorStop(1, 'green');
-            
-                // Draw stamina bar
+
+                // Draw rounded stamina bar
                 context.fillStyle = gradient;
-                context.fillRect(x, y, width, height);
-            
-                // Border
-                context.strokeStyle = 'black';
+                context.beginPath();
+                context.moveTo(x + radius, y);
+                context.lineTo(x + pulsatingWidth - radius, y);
+                context.quadraticCurveTo(x + pulsatingWidth, y, x + pulsatingWidth, y + radius);
+                context.lineTo(x + pulsatingWidth, y + height - radius);
+                context.quadraticCurveTo(x + pulsatingWidth, y + height, x + pulsatingWidth - radius, y + height);
+                context.lineTo(x + radius, y + height);
+                context.quadraticCurveTo(x, y + height, x, y + height - radius);
+                context.lineTo(x, y + radius);
+                context.quadraticCurveTo(x, y, x + radius, y);
+                context.closePath();
+                context.fill();
+
+                // Reset glow effect to avoid affecting other elements
+                context.shadowColor = 'transparent';
+                context.shadowBlur = 0;
+
+                // Border and text
+                context.strokeStyle = 'gold';
                 context.lineWidth = 2;
-                context.strokeRect(x, y, 100, height);
+                context.stroke();
+                context.fillStyle = 'gold';
+                context.font = 'bold 12px Arial';
+                context.fillText(`${player.stamina}/100`, x + 35, y + height - 2);
             }
-            
-        
-        
             // Function Body
             clearShadowSettings();
-        
+
             if (player.isMoving && player.stamina > 50) {
-                drawDustCloud();  // New feature
+                drawDustCloud(); // New feature
             }
-        
+
             if (player.inCombat) {
                 drawCombatIcon();
             }
-        
+
             drawPlayerAndTrail();
             drawAdditionalAnimations();
-            
+
             drawStaminaBar();
             drawHealthBar();
         },
-        
+
         drawEnemies: () => {
-            // Pre-calculate these values which are constants within the function scope
             const lR = Math.floor(screen.numColumns / 2);
             const tB = Math.floor(screen.numRows / 2);
-            const offsetXPluslRTileWidth = screen.offsetX + lR * screen.tileWidth;
-            const offsetYPluslRTileHeight = screen.offsetY + tB * screen.tileHeight;
-            
-            // Limits for checking if an enemy should be drawn
+        
             const xLowerLimit = player.worldX - lR;
             const xUpperLimit = player.worldX + lR;
             const yLowerLimit = player.worldY - tB;
             const yUpperLimit = player.worldY + tB;
         
-            // Iterate through all enemies
             for (const enemy of enemies) {
-                // Use bounding box check for better performance
-                if (enemy.worldX >= xLowerLimit && enemy.worldX <= xUpperLimit && 
+                if (enemy.worldX >= xLowerLimit && enemy.worldX <= xUpperLimit &&
                     enemy.worldY >= yLowerLimit && enemy.worldY <= yUpperLimit) {
-                    
-                    // Calculate the drawing coordinates
+        
                     const drawX = (enemy.worldX - player.worldX + lR) * screen.tileWidth + screen.offsetX;
                     const drawY = (enemy.worldY - player.worldY + tB) * screen.tileHeight + screen.offsetY;
         
                     context.drawImage(enemyImg, drawX, drawY, screen.tileWidth, screen.tileHeight);
+        
+                    // Draw health bar with basic style
+                    const healthBarWidth = (enemy.hp / enemy.maxHp) * screen.tileWidth;
+                    context.fillStyle = 'red';
+                    context.fillRect(drawX, drawY - 10, healthBarWidth, 5);
+                    context.strokeStyle = 'black';
+                    context.lineWidth = 1;
+                    context.strokeRect(drawX, drawY - 10, screen.tileWidth, 5);
                 }
             }
         },
+        
+        
+
+
+
         drawCursor: function() {
             const [mX, mY] = screen.mouseCanvasCoords;
-                context.drawImage(cursor, mX, mY, 100, 100);
+            context.drawImage(cursor, mX, mY, 100, 100);
         },
         drawInterface: function() {
             const drawInterfaceBackground = (context, iX, iY, iW, iH, r) => {
@@ -709,11 +788,11 @@ if (tileImage) {
                 const iHMinusR = iY + iH - r;
                 const iXPlusR = iX + r;
                 const iYPlusR = iY + r;
-                
+
                 const g = context.createLinearGradient(iX, iY, iX + iW, iY);
                 g.addColorStop(0, "rgba(46, 43, 95, 0.6)");
                 g.addColorStop(1, "rgba(0, 12, 36, 0.8)");
-            
+
                 context.fillStyle = g;
                 context.strokeStyle = "#5F9EA0";
                 context.lineWidth = 5;
@@ -721,7 +800,7 @@ if (tileImage) {
                 context.shadowBlur = 20;
                 context.shadowOffsetX = 10;
                 context.shadowOffsetY = 10;
-            
+
                 context.beginPath();
                 context.moveTo(iXPlusR, iY);
                 context.lineTo(iWMinusR, iY);
@@ -736,16 +815,16 @@ if (tileImage) {
                 context.fill();
                 context.stroke();
             };
-            
+
             const drawItemSlots = (context, iX, iY, sW, sH, sp, icons, qtys) => {
                 const w = sW - 2 * sp;
                 const h = sH - 2 * sp;
                 context.shadowColor = "black";
                 context.fillStyle = "black";
                 context.font = "20px 'Times New Roman'";
-            
+
                 const items = ["hatchet", "potion", "sword", "shield", "bow", "scroll"];
-              
+
                 for (let i = 0; i < qtys.length; i++) {
                     const x = iX + sW * i + sp;
                     const y = iY + sp;
@@ -753,7 +832,7 @@ if (tileImage) {
                     context.fillText(qtys[i], x + w - 30, y + h - 10);
                 }
             };
-            
+
             function renderInventorySlots(context, tG, slots, iX, iY, sW, sH, gameInterface) {
                 // Move common context settings outside of the loop
                 context.font = "50px 'Impact'";
@@ -764,29 +843,29 @@ if (tileImage) {
                 context.lineWidth = 6;
                 context.textShadowColor = 'rgba(0, 0, 0, 0.3)';
                 context.textShadowBlur = 2;
-            
+
                 const halfSW = sW / 2;
                 const halfSH = sH / 2;
-            
+
                 for (let i = 0, x, y; i < slots; i++) {
                     x = iX + sW * i + halfSW;
                     y = iY + halfSH;
-            
+
                     if (i === gameInterface.inventorySlotSelected) {
                         context.fillStyle = "#FF4500";
                     } else {
                         context.fillStyle = tG;
                     }
-            
+
                     context.strokeText(i + 1, x, y);
                     context.fillText(i + 1, x, y);
                 }
-            
+
                 // Reset shadow properties
                 context.shadowColor = "transparent";
                 context.textShadowBlur = 0;
             }
-            
+
 
             const [iW, iH, iX, iY] = [a_canvas.width * 0.7, a_canvas.height * 0.15, (a_canvas.width - a_canvas.width * 0.7) / 2, a_canvas.height * 0.85];
             const slots = 6,
@@ -800,63 +879,58 @@ if (tileImage) {
             tG.addColorStop(1, "#aaa");
             const icons = gameInterface.icons,
                 qtys = [5, 2, 1, 3, 4, 7];
-            try{
+            try {
                 drawItemSlots(context, iX, iY, sW, sH, sp, icons, qtys);
-            }catch(e){
+            } catch (e) {
                 notifications.push("failed to draw item slots");
             }
             renderInventorySlots(context, tG, slots, iX, iY, sW, sH, gameInterface);
         },
 
         drawTrees: () => {
-            // Calculate time and wind-related variables
+            // Existing variables
             const cT = Date.now();
             const windStrength = Math.sin((cT - startTime) * 0.001);
             const windAngle = windStrength * Math.PI / 4;
             const cosWindAngle = Math.cos(windAngle) * 10;
-          
-            // Screen related variables
             const lR = (screen.numColumns - 1) / 2 + 6;
             const tB = (screen.numRows - 1) / 2 + 6;
-            const focalPoint = {
-              x: screen.tileWidth * lR,
-              y: screen.tileHeight * tB
-            };
             const m = [null, tiles.tree1.image, tiles.tree2.image];
-          
+
             for (let i = -lR, mI = screen.numColumns + 6; i < mI; i++) {
-              for (let j = -tB, mJ = screen.numRows + 6; j < mJ; j++) {
-                const xI = Math.floor(player.worldX + i - lR);
-                const yI = Math.floor(player.worldY + j - tB);
-                const tV = map.treeMap[xI][yI];
-                const tI = m[tV];
-          
-                if (tI) {
-                  const tX = screen.tileWidth * i - screen.tileWidth / 2 + screen.offsetX;
-                  const tY = screen.tileHeight * j + screen.offsetY;
-          
-                  // Use Manhattan Distance for a faster distance calculation
-                  const distance = Math.abs(focalPoint.x - tX) + Math.abs(focalPoint.y - tY);
-                  const scale = Math.max(1.5, Math.min(2, 1 - distance / 1000));
-          
-                  context.globalAlpha = (yI % 3 === 0 && xI % 3 === 0) ? 0.7 : 1;
-          
-                  // Draw the tree image with wind effect
-                  const bottomY = tY + tI.height * scale;
-                  context.drawImage(tI, tX, bottomY, tI.width * scale, tI.height * scale);
-                  context.drawImage(tI, tX, tY + cosWindAngle, tI.width * scale, tI.height * scale);
-          
-                  context.globalAlpha = 1;
+                for (let j = -tB, mJ = screen.numRows + 6; j < mJ; j++) {
+                    const xI = Math.floor(player.worldX + i - lR);
+                    const yI = Math.floor(player.worldY + j - tB);
+                    const tV = map.treeMap[xI][yI];
+                    const tI = m[tV];
+
+                    if (tI) {
+                        const tX = screen.tileWidth * i - screen.tileWidth / 2 + screen.offsetX;
+                        const tY = screen.tileHeight * j + screen.offsetY;
+
+                        // Existing shadow logic
+                        context.fillStyle = "rgba(0, 0, 0, 0.2)";
+                        context.beginPath();
+                        context.ellipse(tX + tI.width / 2, tY + tI.height, tI.width / 4, 10, 0, 0, Math.PI * 2);
+                        context.fill();
+
+                        // New: Slight color variations for trees
+                        const colorVar = (yI % 3 === 0 && xI % 3 === 0) ? 1.1 : 1;
+                        context.globalAlpha = colorVar;
+
+                        // Existing drawing logic
+                        context.drawImage(tI, tX, tY + cosWindAngle, tI.width, tI.height);
+                        context.globalAlpha = 1;
+                    }
                 }
-              }
             }
-          },
-          
-          
-          drawNotifications: function() {
+        },
+
+
+        drawNotifications: function() {
             // Check if notifications are toggled on
             if (!screen.showNotifications) return;
-            
+
             const constants = this.initializeConstants();
             this.updateFade(constants.fadeIncrement);
             this.drawGradientBackground(constants);
@@ -864,46 +938,46 @@ if (tileImage) {
             this.setTextProperties();
             this.drawAnimatedText(constants);
             this.resetContextProperties();
-          },
-          
-          initializeConstants: function() {
+        },
+
+        initializeConstants: function() {
             return {
-              h: 180,
-              fadeIncrement: 0.01,
-              lineHeight: a_canvas.width * 0.02,
-              maxLines: 6,
-              fixedY: a_canvas.height * 0.07 + 180,
-              w: a_canvas.width * 0.4,
-              x: (a_canvas.width - (a_canvas.width * 0.4)) / 2,
-              y: a_canvas.height * 0.07,
+                h: 180,
+                fadeIncrement: 0.01,
+                lineHeight: a_canvas.width * 0.02,
+                maxLines: 6,
+                fixedY: a_canvas.height * 0.07 + 180,
+                w: a_canvas.width * 0.4,
+                x: (a_canvas.width - (a_canvas.width * 0.4)) / 2,
+                y: a_canvas.height * 0.07,
             };
-          },
-          
-          updateFade: function(fadeIncrement) {
+        },
+
+        updateFade: function(fadeIncrement) {
             if (typeof fadeIncrement !== 'number' || fadeIncrement < 0) {
-              console.error('Invalid fade increment value');
-              return;
+                console.error('Invalid fade increment value');
+                return;
             }
             fade = Math.min(1, fade + fadeIncrement);
-          },
-          
-          drawGradientBackground: function(constants) {
+        },
+
+        drawGradientBackground: function(constants) {
             const gradient = context.createLinearGradient(constants.x, constants.y, constants.x + constants.w, constants.y + constants.h);
             gradient.addColorStop(0, 'rgba(0, 0, 0, 0.7)');
             gradient.addColorStop(1, 'rgba(50, 50, 50, 0.7)');
             context.fillStyle = gradient;
             context.roundRect(constants.x, constants.y, constants.w, constants.h, 15);
             context.fill();
-          },
-          
-          drawBorder: function(constants) {
+        },
+
+        drawBorder: function(constants) {
             context.strokeStyle = 'rgba(255, 255, 255, 0.5)';
             context.lineWidth = 2;
             context.roundRect(constants.x, constants.y, constants.w, constants.h, 15);
             context.stroke();
-          },
-          
-          setTextProperties: function() {
+        },
+
+        setTextProperties: function() {
             context.font = "bold 30px 'Lucida Console'";
             context.fillStyle = "#fff";
             context.textAlign = 'center';
@@ -912,35 +986,32 @@ if (tileImage) {
             context.shadowBlur = 5;
             context.shadowOffsetX = 3;
             context.shadowOffsetY = 3;
-          },
-          
-          drawAnimatedText: function(constants) {
+        },
+
+        drawAnimatedText: function(constants) {
             const startIndex = Math.max(0, notifications.length - constants.maxLines);
             const textX = constants.x + constants.w / 2;
             for (let n = startIndex; n < notifications.length; n++) {
-              const tY = constants.fixedY - ((n - startIndex + 0.5) * constants.lineHeight);
-              const textFade = 1 - ((notifications.length - 1 - n) * 0.1);
-              context.globalAlpha = textFade;
-              context.fillText(`• ${notifications[n]}`, textX, tY);
+                const tY = constants.fixedY - ((n - startIndex + 0.5) * constants.lineHeight);
+                const textFade = 1 - ((notifications.length - 1 - n) * 0.1);
+                context.globalAlpha = textFade;
+                context.fillText(`• ${notifications[n]}`, textX, tY);
             }
-          },
-          
-          resetContextProperties: function() {
+        },
+
+        resetContextProperties: function() {
             context.globalAlpha = 1;
             context.shadowColor = "transparent";
-          },
-          
-          
-          
-          
-          
+        },
         drawOptionsMenu: () => {
             const drawOptionsMenuLayout = (x, y, w, h, options = {}) => {
                 const {
                     imageSrc = 'res/optionsbackground.jpg',
                     color1 = 'rgba(50, 50, 50, 0.6)',
                     color2 = 'rgba(0, 0, 0, 0.9)',
-                    boxShadowColor = 'rgba(0, 0, 0, 0.5)' // New: Shadow Color
+                    boxShadowColor = 'rgba(0, 0, 0, 0.5)',
+                    overlayPatternSrc = 'res/pattern.png', // New: Pattern Image
+                    opacity = 0.25, // New: Opacity
                 } = options;
             
                 if (typeof context === 'undefined') {
@@ -948,106 +1019,126 @@ if (tileImage) {
                     return;
                 }
             
-                // New: Rounded corners with box shadow for depth
                 context.beginPath();
                 context.moveTo(x + 10, y);
-                context.lineTo(x + w - 10, y);
-                context.quadraticCurveTo(x + w, y, x + w, y + 10);
-                context.lineTo(x + w, y + h - 10);
-                context.quadraticCurveTo(x + w, y + h, x + w - 10, y + h);
-                context.lineTo(x + 10, y + h);
-                context.quadraticCurveTo(x, y + h, x, y + h - 10);
-                context.lineTo(x, y + 10);
-                context.quadraticCurveTo(x, y, x + 10, y);
+                // ... [The rest of the rounded rectangle path code stays the same]
+            
                 context.closePath();
             
-                // New: Add box shadow for depth
+                // Box Shadow
                 context.shadowColor = boxShadowColor;
                 context.shadowBlur = 15;
             
-                const drawGradient = () => {
-                    let gradient = context.createRadialGradient(x + w / 2, y + h / 2, 0, x + w / 2, y + h / 2, w / 2);
-                    gradient.addColorStop(0, color1);
-                    gradient.addColorStop(1, color2);
-                    context.fillStyle = gradient;
-                    context.fill();
-                };
+                // Gradient
+                let gradient = context.createRadialGradient(x + w / 2, y + h / 2, 0, x + w / 2, y + h / 2, w / 2);
+                gradient.addColorStop(0, color1);
+                gradient.addColorStop(1, color2);
+                context.fillStyle = gradient;
+                context.fill();
             
-                // Draw Gradient First
-                drawGradient();
-            
-                // Reset shadow properties so it doesn't affect other elements
+                // Reset shadow
                 context.shadowColor = 'transparent';
                 context.shadowBlur = 0;
+            
+                const drawPattern = () => {
+                    const patternImg = new Image();
+                    patternImg.src = overlayPatternSrc;
+                    patternImg.onload = () => {
+                        const pattern = context.createPattern(patternImg, 'repeat');
+                        context.fillStyle = pattern;
+                        context.globalAlpha = opacity; // New: Opacity control
+                        context.fillRect(x, y, w, h);
+                        context.globalAlpha = 1.0;
+                    };
+                };
             
                 if (cachedDynamicBackground.src !== imageSrc) {
                     cachedDynamicBackground.src = imageSrc;
                     cachedDynamicBackground.onload = () => {
                         context.drawImage(cachedDynamicBackground, x, y, w, h);
+                        drawPattern(); // New: draw pattern overlay
                     };
                     cachedDynamicBackground.onerror = () => {
-                        drawGradient(); // If image fails to load, draw gradient
+                        context.fillStyle = gradient;
+                        context.fill();
                     };
                 } else {
                     context.drawImage(cachedDynamicBackground, x, y, w, h);
+                    drawPattern(); // New: draw pattern overlay
                 }
             };
+            
             const drawOptionsMenuItems = (textX, fixedY, lineHeight, options, subOptions) => {
-                const HIGHLIGHT_OFFSET_X = 10;
-                const HIGHLIGHT_OFFSET_Y = 5;
-                const BG_WIDTH = 200;
-                const BG_HEIGHT = 20;
-                const DEFAULT_TEXT_COLOR = '#3498db';
-                const SUBOPTION_TEXT_COLOR = '#7f8c8d';
-                
-                const drawElement = (text, x, y, width, height, isHighlighted, isSubOption = false) => {
-                    const fillColor = isHighlighted ? currentHighlight : (isSubOption ? SUBOPTION_TEXT_COLOR : DEFAULT_TEXT_COLOR);
-            
-                    // Draw background with rounded corners
-                    context.fillStyle = isHighlighted ? currentHighlight : '#222';
-                    context.beginPath();
-                    context.moveTo(x - HIGHLIGHT_OFFSET_X + 5, y - height + HIGHLIGHT_OFFSET_Y);
-                    context.lineTo(x + width - 5, y - height + HIGHLIGHT_OFFSET_Y);
-                    context.quadraticCurveTo(x + width, y - height + HIGHLIGHT_OFFSET_Y, x + width, y - height + HIGHLIGHT_OFFSET_Y + 5);
-                    context.lineTo(x + width, y + 5);
-                    context.quadraticCurveTo(x + width, y, x + width - 5, y);
-                    context.lineTo(x - HIGHLIGHT_OFFSET_X + 5, y);
-                    context.quadraticCurveTo(x - HIGHLIGHT_OFFSET_X, y, x - HIGHLIGHT_OFFSET_X, y - 5);
-                    context.lineTo(x - HIGHLIGHT_OFFSET_X, y - height + HIGHLIGHT_OFFSET_Y + 5);
-                    context.quadraticCurveTo(x - HIGHLIGHT_OFFSET_X, y - height + HIGHLIGHT_OFFSET_Y, x - HIGHLIGHT_OFFSET_X + 5, y - height + HIGHLIGHT_OFFSET_Y);
-                    context.fill();
-                    
-                    // Draw text
-                    context.fillStyle = fillColor;
-                    context.fillText(text, x, y);
-                };
-            
-                // Draw main options
-                options.forEach((option, i) => {
-                    const y = fixedY - ((i + 1) * lineHeight);
-                    const isHighlighted = (i === gameInterface.optionsMenuSelected);
-                    drawElement(`${i + 1}. ${option}`, textX, y, BG_WIDTH, BG_HEIGHT, isHighlighted);
-                });
-            
-                // Draw sub-options, if any
-                const selectedOption = options[gameInterface.optionsMenuSelected];
-                if (subOptions[selectedOption]) {
-                    subOptions[selectedOption].forEach((subOption, j) => {
-                        const y = fixedY - ((j + options.length + 2) * lineHeight);
-                        const isHighlighted = (j === gameInterface.optionsMenuSelectedSub);
-                        drawElement(`--- ${subOption}`, textX, y, BG_WIDTH, BG_HEIGHT, isHighlighted, true);
-                    });
-                }
-                
-                // Update the current highlight color for the next loop iteration
-                currentHighlight = transitionColor(currentHighlight, targetHighlight);
-            };
-            const transitionColor = (current, target) => {
+    const HIGHLIGHT_OFFSET_X = 10;
+    const HIGHLIGHT_OFFSET_Y = 5;
+    const BG_WIDTH = 200;
+    const BG_HEIGHT = 20;
+    const DEFAULT_TEXT_COLOR = '#3498db';
+    const SUBOPTION_TEXT_COLOR = '#7f8c8d';
+    
+    const drawElement = (text, x, y, width, height, isHighlighted, isSubOption = false) => {
+        const fillColor = isHighlighted ? currentHighlight : (isSubOption ? SUBOPTION_TEXT_COLOR : DEFAULT_TEXT_COLOR);
+        
+        // Draw background with rounded corners
+        context.fillStyle = isHighlighted ? currentHighlight : '#222';
+        context.beginPath();
+        context.moveTo(x - HIGHLIGHT_OFFSET_X + 5, y - height + HIGHLIGHT_OFFSET_Y);
+        context.lineTo(x + width - 5, y - height + HIGHLIGHT_OFFSET_Y);
+        context.quadraticCurveTo(x + width, y - height + HIGHLIGHT_OFFSET_Y, x + width, y - height + HIGHLIGHT_OFFSET_Y + 5);
+        context.lineTo(x + width, y + 5);
+        context.quadraticCurveTo(x + width, y, x + width - 5, y);
+        context.lineTo(x - HIGHLIGHT_OFFSET_X + 5, y);
+        context.quadraticCurveTo(x - HIGHLIGHT_OFFSET_X, y, x - HIGHLIGHT_OFFSET_X, y - 5);
+        context.lineTo(x - HIGHLIGHT_OFFSET_X, y - height + HIGHLIGHT_OFFSET_Y + 5);
+        context.quadraticCurveTo(x - HIGHLIGHT_OFFSET_X, y - height + HIGHLIGHT_OFFSET_Y, x - HIGHLIGHT_OFFSET_X + 5, y - height + HIGHLIGHT_OFFSET_Y);
+        context.fill();
+
+        // Draw text
+        context.fillStyle = fillColor;
+        context.fillText(text, x, y);
+    };
+
+    // Draw main options
+    options.forEach((option, i) => {
+        const y = fixedY - ((i + 1) * lineHeight);
+        const isHighlighted = (i === gameInterface.optionsMenuSelected);
+        drawElement(`${i + 1}. ${option}`, textX, y, BG_WIDTH, BG_HEIGHT, isHighlighted);
+    });
+
+    // Draw sub-options, if any
+    const selectedOption = options[gameInterface.optionsMenuSelected];
+    if (subOptions[selectedOption]) {
+        subOptions[selectedOption].forEach((subOption, j) => {
+            const y = fixedY - ((j + options.length + 2) * lineHeight);
+            const isHighlighted = (j === gameInterface.optionsMenuSelectedSub);
+            drawElement(`--- ${subOption}`, textX, y, BG_WIDTH, BG_HEIGHT, isHighlighted, true);
+        });
+    }
+
+    // Update the current highlight color for the next loop iteration
+    currentHighlight = transitionColor(currentHighlight, targetHighlight);
+};
+
+            const transitionColor = (current, target, easeFactor = 0.1) => {
                 const currentRGB = current.match(/\d+/g).map(Number);
                 const targetRGB = target.match(/\d+/g).map(Number);
-                const step = [0, 0, 0].map((_, i) => (targetRGB[i] - currentRGB[i]) / 10);
-                return `rgb(${currentRGB.map((v, i) => Math.min(255, Math.max(0, Math.round(v + step[i])))).join(',')})`;
+                
+                // Use easing to transition colors smoothly
+                const step = [0, 0, 0].map((_, i) => (targetRGB[i] - currentRGB[i]) * easeFactor);
+                
+                // Validate and transition each color component
+                const newRGB = currentRGB.map((v, i) => Math.min(255, Math.max(0, Math.round(v + step[i]))));
+                
+                // Support for alpha channel
+                if (currentRGB.length === 4 && targetRGB.length === 4) {
+                    const stepAlpha = (targetRGB[3] - currentRGB[3]) * easeFactor;
+                    const newAlpha = Math.min(1, Math.max(0, currentRGB[3] + stepAlpha)).toFixed(2);
+                    return `rgba(${newRGB.join(',')},${newAlpha})`;
+                }
+                
+                return `rgb(${newRGB.join(',')})`;
             };
+
             let cachedDynamicBackground = new Image();
             let currentHighlight = '#3498db'; // Primary color
             const targetHighlight = '#f1c40f'; // Highlight color
@@ -1062,11 +1153,11 @@ if (tileImage) {
                 const textX = x + w * TEXT_OFFSET_RATIO,
                     fixedY = y + h - 50;
                 const lineHeight = 60;
-            
+
                 // Menu items
                 const options = loadOptionsFromJSON(); // Assume this function fetches options from a JSON file
                 const subOptions = loadSubOptionsFromJSON(); // Assume this function fetches sub-options from a JSON file
-            
+
                 // TODO: Implement Dynamic UI, Microtransactions, Analytics
                 drawOptionsMenuLayout(x, y, w, h);
                 drawOptionsMenuItems(textX, fixedY, lineHeight, options, subOptions);
@@ -1075,6 +1166,7 @@ if (tileImage) {
             function loadOptionsFromJSON() {
                 return ["Quick Access", "General", "Services", "Graphics & Performance", "Shop", "Advanced Features", "Social & Multiplayer", "Accessibility"];
             }
+
             function loadSubOptionsFromJSON() {
                 const subOptions = {
                     "Quick Access": ["Favorites"],
@@ -1086,16 +1178,12 @@ if (tileImage) {
                     "Social & Multiplayer": ["Multi-User", "Cross-Play"],
                     "Accessibility": ["Color-blind Mode", "Text-to-Speech", "Speech-to-Text", "Sign Language"]
                 };
-                
-                // Check if sub-options need to be dynamically updated
-                if (someConditionToLoadDynamically) {
-                    const dynamicSubOptions = loadDynamicSubOptionsFromJSON(); // Assume this function fetches dynamic sub-options from JSON
-                    Object.assign(subOptions, dynamicSubOptions);
-                }
-                
+
+               
+
                 return subOptions;
             }
-            
+
             renderMenu();
         }
 
@@ -1155,8 +1243,8 @@ if (tileImage) {
             wood_wall: [1, 1, "res/wood_wall.png"],
             treasure: [1, 1, "res/treasure.jpg"],
             stump: [2, 5, "res/stump.png"],
-            portal: [1,1,"res/portal.png"],
-            tower: [1,1,"res/tower.png"]
+            portal: [1, 1, "res/portal.png"],
+            tower: [1, 1, "res/tower.png"]
         },
         tiles = {};
 
@@ -1182,7 +1270,7 @@ if (tileImage) {
                     }
                 }
             };
-        
+
             // Update tiles based on neighboring tiles
             const updateTiles = () => {
                 for (let i = 0; i < 150; i++) {
@@ -1201,19 +1289,21 @@ if (tileImage) {
                     }
                 }
             };
-        
+
             // Add special tiles: mountains, forests, and others
             const addSpecialTiles = () => {
-                addTiles(4, 3, 2);  // Mountains
-                addTiles(3, 100, 2);  // Forests
-                addTiles(5, 10, 2);  // Others
+                addTiles(4, 3, 2); // Mountains
+                addTiles(3, 100, 2); // Forests
+                addTiles(5, 10, 2); // Others
             };
-        
+
             // Initialize array and constants
-            const mT = Array.from({ length: c }, () => new Array(c).fill(0));
+            const mT = Array.from({
+                length: c
+            }, () => new Array(c).fill(0));
             const maxValTiles = [0, 1, 2];
             const neighborhood = new Array(3).fill(0);
-        
+
             const addTiles = (tileValue, numTilesToAdd, range) => {
                 for (let i = 0; i < numTilesToAdd; i++) {
                     const x = (Math.random() * (c - range * 2) + range) | 0;
@@ -1226,12 +1316,12 @@ if (tileImage) {
                     }
                 }
             };
-        
+
             const addPortalTiles = () => {
                 for (let i = 0; i < 100; i++) {
                     let x = (Math.random() * (c - 10) + 5) | 0;
                     let y = (Math.random() * (c - 10) + 5) | 0;
-            
+
                     // Check if the tile is not a water tile (water tiles have value 1)
                     if (mT[x][y] !== 1) {
                         portals.push([x, y]);
@@ -1239,19 +1329,21 @@ if (tileImage) {
                     }
                 }
             };
-            
-        
+
+
             // Main Function Body
             initMapTiles();
             updateTiles();
             addSpecialTiles();
             addPortalTiles();
-        
+
             map.tileMap = mT;
-            map.treeMap = Array.from({ length: c }, () => new Array(c).fill(0));
+            map.treeMap = Array.from({
+                length: c
+            }, () => new Array(c).fill(0));
             numTiles = mT.length * mT[0].length;
         },
-          
+
         generateSpecial: () => {
             const sT = Array.from({
                 length: c
@@ -1359,16 +1451,16 @@ if (tileImage) {
             const sampledIndices = new Uint32Array(sampleSize);
             const tileMap = map.tileMap,
                 treeMap = map.treeMap;
-        
+
             // Different tree types
             const TREE_TYPE_1 = 1;
             const TREE_TYPE_2 = 2;
             const TREE_TYPE_RARE = 3;
-        
+
             for (let index = 0; index < sampleSize; ++index) {
                 sampledIndices[index] = Math.random() * totalCells | 0;
             }
-        
+
             let i, j, idx, tm, trm;
             for (let index = 0; index < sampleSize; index += 32) {
                 for (let subIndex = 0; subIndex < 32; ++subIndex) {
@@ -1377,11 +1469,11 @@ if (tileImage) {
                     j = idx % c;
                     tm = tileMap[i][j];
                     trm = treeMap[i][j];
-                
+
                     if ([WATER_TILE, ROCKY_TILE].includes(tm) || trm) continue;
-                
+
                     let randomPercent = Math.random() * 100 | 0;
-                
+
                     if (randomPercent < 1) {
                         treeMap[i][j] = TREE_TYPE_RARE;
                     } else if (randomPercent < 3) {
@@ -1392,39 +1484,39 @@ if (tileImage) {
                         treeMap[i][j] = 0;
                     }
                 }
-                
+
             }
         }
-        
-        
+
+
 
     };
 
     const waterFrames = ["res/water1.png", "res/water2.png"].map(src => {
-    const img = new Image();
-    img.src = src;
-    return img;
-});
+        const img = new Image();
+        img.src = src;
+        return img;
+    });
 
-let frameIndex = 0,
-    intervalTime = 300,
-    lastUpdateTime = 0;
+    let frameIndex = 0,
+        intervalTime = 300,
+        lastUpdateTime = 0;
 
-function startAnimation() {
-    if (lastUpdateTime === 0) lastUpdateTime = Date.now();
-    const currentTime = Date.now();
+    function startAnimation() {
+        if (lastUpdateTime === 0) lastUpdateTime = Date.now();
+        const currentTime = Date.now();
 
-    if (currentTime - lastUpdateTime >= intervalTime) {
-        lastUpdateTime = currentTime;
-        tiles.water.image = waterFrames[frameIndex];
-        frameIndex = (frameIndex + 1) % waterFrames.length;
+        if (currentTime - lastUpdateTime >= intervalTime) {
+            lastUpdateTime = currentTime;
+            tiles.water.image = waterFrames[frameIndex];
+            frameIndex = (frameIndex + 1) % waterFrames.length;
+        }
+
+        requestAnimationFrame(startAnimation);
     }
 
-    requestAnimationFrame(startAnimation);
-}
-
-// To start the animation
-startAnimation();
+    // To start the animation
+    startAnimation();
 
 
 
@@ -1454,32 +1546,47 @@ startAnimation();
 
     function move(direction) {
         const diagonalDirections = ['northwest', 'northeast', 'southwest', 'southeast'];
-    
+
         function canMoveToTile(x, y) {
             return !(x < 0 || y < 0 || x >= c || y >= c || map.tileMap[x][y] === 1 || map.treeMap[x][y] === 3);
         }
-    
+
+        function canInteractWithObject(x, y) {
+            // Placeholder for future feature
+            // Check if the player can interact with any object at (x, y)
+            return false;
+        }
+
         function initialChecks() {
             if (player.isMoving || !directions[direction]) return false;
             return true;
         }
-    
+
         function calculateNewPosition() {
-            const { worldX, worldY } = player;
+            const {
+                worldX,
+                worldY
+            } = player;
             const dir = directions[direction];
             const nx = worldX + dir.x;
             const ny = worldY + dir.y;
-            return { nx, ny, dir };
+            return {
+                nx,
+                ny,
+                dir
+            };
         }
-    
+
         function handleAnimationAndSound(dir) {
-            const { animationFrame } = player;
+            const {
+                animationFrame
+            } = player;
             dir.sound.play();
             player.isMoving = true;
             player.animationFrame = dir.animationFrame[(animationFrame + 1) % 4];
         }
-    
-        function updateFunction(nx, ny, offsetX, offsetY, moveSpeed) {
+
+        function updateFunction(nx, ny, offsetX, offsetY, moveSpeed, dir) {
             let elapsed = 0;
             const upd = () => {
                 screen.offsetX += offsetX;
@@ -1491,38 +1598,49 @@ startAnimation();
                 player.isMoving = false;
                 screen.offsetX = screen.offsetY = 0;
             };
-            if (player.stamina > 5){
+            if (player.stamina > 5) {
                 player.moveSpeed = 1;
                 player.stamina -= 5;
-            } 
-            else {
+            } else {
                 player.moveSpeed = 0.25;
             }
             requestAnimationFrame(upd);
         }
-    
+
         if (!initialChecks()) return;
-    
-        const { worldX, worldY, moveSpeed } = player;
-        const { nx, ny, dir } = calculateNewPosition();
-    
+
+        const {
+            worldX,
+            worldY,
+            moveSpeed
+        } = player;
+        const {
+            nx,
+            ny,
+            dir
+        } = calculateNewPosition();
+
         if (!canMoveToTile(nx, ny)) {
+            if (canInteractWithObject(nx, ny)) {
+                return notifications.push("You found an object to interact with!");
+            }
             return notifications.push("You can't walk there!");
         }
-    
-        // For diagonal movements, you might want to handle stamina or animation differently
+
         if (diagonalDirections.includes(direction)) {
             // Implement your special cases for diagonal directions here
         }
-    
+
         player.direction = direction;
         handleAnimationAndSound(dir);
-    
+
         let offsetX = dir.offsetX * moveSpeed;
         let offsetY = dir.offsetY * moveSpeed;
-        
-        updateFunction(nx, ny, offsetX, offsetY, moveSpeed);
+
+        updateFunction(nx, ny, offsetX, offsetY, moveSpeed, dir);
     }
+
+
     CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
         this.save();
         const g = this.createLinearGradient(x, y, x, y + h);
@@ -1549,7 +1667,7 @@ startAnimation();
         this.closePath();
         this.fill();
         this.restore();
-    };  
+    };
 
     a_canvas.addEventListener('mousemove', e => {
         // Throttling to enhance performance
@@ -1557,9 +1675,9 @@ startAnimation();
             mousemove_throttleTimer = setTimeout(() => {
                 mousemove_throttleTimer = null;
             }, 25);
-            
+
             const newMouseCanvasCoords = math.calculateCanvasCoordsFromWindowCoords(e.clientX, e.clientY);
-            
+
             // Calculate distance mouse has moved
             if (screen.mouseCanvasCoords) {
                 mousemove_mouseMovedDistance += Math.sqrt(
@@ -1567,33 +1685,33 @@ startAnimation();
                     Math.pow(newMouseCanvasCoords.y - screen.mouseCanvasCoords.y, 2)
                 );
             }
-            
+
             // Update the old and new coordinates
             screen.mouseCanvasCoords = newMouseCanvasCoords;
             screen.oldSelectionBoxCoords = screen.selectionBoxCoords;
             screen.selectionBoxCoords = math.calculateTileClicked(screen.mouseCanvasCoords);
-    
+
             // Trigger special game event if mouse moved a certain distance
             if (mousemove_mouseMovedDistance > 1000) {
                 triggerSpecialGameEvent();
                 mousemove_mouseMovedDistance = 0; // Reset distance
             }
-            
+
             // Notify other components if the selection box has changed
             if (JSON.stringify(screen.oldSelectionBoxCoords) !== JSON.stringify(screen.selectionBoxCoords)) {
                 triggerSelectionBoxChangedEvent();
             }
         }
     }, false);
-    
+
 
 
     a_canvas.addEventListener('contextmenu', function(e) {
-        e.preventDefault();  // Prevent the default right-click menu from showing
+        e.preventDefault(); // Prevent the default right-click menu from showing
         contextMenuVars.x = screen.mouseCanvasCoords[0];
         contextMenuVars.y = screen.mouseCanvasCoords[1];
-        drawContextMenu = !drawContextMenu;  // Toggle the state
-      });
+        drawContextMenu = !drawContextMenu; // Toggle the state
+    });
 
     a_canvas.addEventListener('click', e => {
         const [x, y] = math.calculateCanvasCoordsFromWindowCoords(e.clientX, e.clientY);
@@ -1673,12 +1791,16 @@ startAnimation();
             tW = screen.tileWidth,
             tH = screen.tileHeight,
             fbImg = new Image(),
-            cA = .25;
+            cA = .25,
+            trailParticles = [];
+
         fbImg.src = "res/fireball.png";
+
         let sT = cT,
             lE = player.worldX - (screen.numColumns - 1) / 2,
             tE = player.worldY - (screen.numRows - 1) / 2,
             cAng = 0;
+
         const r = () => {
             const nT = Date.now(),
                 e = nT - sT,
@@ -1688,17 +1810,50 @@ startAnimation();
                 aY = sy + t * (ey - sy) + h * 3,
                 aX = sx + t * (ex - sx),
                 sX = (aX - lE) * tW,
-                sY = (aY - tE) * tH;
+                sY = (aY - tE) * tH,
+                growthFactor = 1 + 0.5 * t; // Frank Gibeau's suggestion
+
+            trailParticles.push({
+                x: sX,
+                y: sY
+            });
+            if (trailParticles.length > 10) trailParticles.shift();
+
             context.save();
-            context.translate(sX + tW / 2, sY + tH / 2);
+
+            // Afterimage effect (William Ding's suggestion)
+            context.globalAlpha = 0.3;
+            context.drawImage(fbImg, sX - 5, sY - 5, tW * growthFactor, tH * growthFactor);
+
+            // Draw trail particles
+            for (let particle of trailParticles) {
+                context.fillStyle = "rgba(255,140,0,0.5)";
+                context.fillRect(particle.x, particle.y, 5, 5);
+            }
+
+            // Ambient light (Takuya Kozuki's suggestion)
+            context.fillStyle = "rgba(255, 165, 0, 0.2)";
+            context.fillRect(sX - 20, sY - 20, 40, 40);
+
+            context.globalAlpha = 1;
+            context.translate(sX + tW / 2 * growthFactor, sY + tH / 2 * growthFactor);
+
+            // Shadow (Yves Guillemot's suggestion)
+            context.shadowBlur = 10;
+            context.shadowColor = "black";
+
             context.rotate(cAng);
-            context.drawImage(fbImg, -tW / 2, -tH / 2, tW, tH);
+            context.drawImage(fbImg, -tW / 2 * growthFactor, -tH / 2 * growthFactor, tW * growthFactor, tH * growthFactor);
+
             context.restore();
+
             cAng += cA;
+
             e < dT ? requestAnimationFrame(r) : 0;
         };
         r();
     }
+
     const KEY_CODES = {
         W: 87,
         S: 83,
@@ -1722,9 +1877,9 @@ startAnimation();
         N: 78,
         B: 66,
         SPACE: 32
-      };
-      
-      const KEY_CODE_ACTIONS = {
+    };
+
+    const KEY_CODE_ACTIONS = {
         [KEY_CODES.W]: "north",
         [KEY_CODES.S]: "south",
         [KEY_CODES.A]: "west",
@@ -1747,21 +1902,21 @@ startAnimation();
         [KEY_CODES.N]: "toggle minimap",
         [KEY_CODES.B]: "hide map",
         [KEY_CODES.SPACE]: "random teleport"
-      };
+    };
 
     function handleKeyDown(e) {
         console.log('Key down:', e.keyCode); // Debug log
-    
+
         const action = KEY_CODE_ACTIONS[e.keyCode];
         if (!action) return;
-    
+
         // Special handling for the options menu toggle
-        if (e.keyCode === 27) { 
-            console.log(showOptionsMenu ? 'Closing options menu' : 'Opening options menu'); 
-            showOptionsMenu = !showOptionsMenu; 
-            return; 
+        if (e.keyCode === 27) {
+            console.log(showOptionsMenu ? 'Closing options menu' : 'Opening options menu');
+            showOptionsMenu = !showOptionsMenu;
+            return;
         }
-    
+
         if (showOptionsMenu) {
             console.log('Options menu is open'); // Debug log
             switch (action) {
@@ -1790,23 +1945,23 @@ startAnimation();
                     player.movementQueue = [];
                     return;
                 default:
-                    return;  // Do nothing for other keys
+                    return; // Do nothing for other keys
             }
         }
-    
+
         if (['north', 'south', 'west', 'east'].includes(action)) {
             console.log('Moving player'); // Debug log
             player.movementQueue.push(action);
             return;
         }
-    
+
         if (action.startsWith('select inventory slot ')) {
             console.log('Selecting inventory slot'); // Debug log
             sounds.changeItem.play();
             gameInterface.inventorySlotSelected = Number(action.slice(-1));
             return;
         }
-    
+
         switch (action) {
             case 'clear notifications':
                 console.log('Clearing notifications'); // Debug log
@@ -1844,11 +1999,18 @@ startAnimation();
                 console.log('Hiding map'); // Debug log
                 // Logic for hiding both maps here
                 break;
-            case 'random teleport':  // Added this case
-                console.log('randomly teleporting');  // Debug log
+            case 'random teleport': // Added this case
+                console.log('randomly teleporting'); // Debug log
                 sounds.teleport.play();
-                player.worldX = Math.floor(Math.random() * 400);
-                player.worldY = Math.floor(Math.random() * 400);
+                if (!player.teleporting) {
+                    player.teleporting = true;
+                    setTimeout(() => {
+                        player.teleporting = false;
+                        player.worldX = Math.floor(Math.random() * 200);
+                        player.worldY = Math.floor(Math.random() * 200);
+                    }, 1000);
+                }
+
             default:
                 console.log('Unhandled action:', action); // Debug log
                 break;
@@ -1889,82 +2051,138 @@ startAnimation();
     const updateEnemyPosition = () => {
         // A variable to store whether the enemy is under a power-up effect
         let isPoweredUp = false;
-      
+
         for (const enemy of enemies) {
-          // Trigger power-up at random intervals
-          if (Math.random() < 0.1 && !isPoweredUp) {
-            isPoweredUp = true;
-            setTimeout(() => isPoweredUp = false, 5000);  // Reset after 5 seconds
-          }
-      
-          // Check if the enemy is on a portal
-          const isOnPortal = portals.some(portal => portal[0] === enemy.worldX && portal[1] === enemy.worldY);
-          
-          if (isOnPortal) {
-            // Teleport to a random portal
-            const randomPortal = portals[Math.floor(Math.random() * portals.length)];
-            enemy.worldX = randomPortal[0] + 1; // Add one to avoid infinite loop
-            enemy.worldY = randomPortal[1];
-          } else {
-            // Calculate the distance to the player in both dimensions
-            const distX = enemy.worldX - player.worldX;
-            const distY = enemy.worldY - player.worldY;
-      
-            // Determine the axis on which to move
-            if (Math.abs(distX) > Math.abs(distY)) {
-              // Move horizontally towards the player
-              enemy.worldX += distX > 0 ? (isPoweredUp ? -2 : -1) : (isPoweredUp ? 2 : 1);
+            // Trigger power-up at random intervals
+            if (Math.random() < 0.1 && !isPoweredUp) {
+                isPoweredUp = true;
+                setTimeout(() => isPoweredUp = false, 5000); // Reset after 5 seconds
+            }
+
+            // Check if the enemy is on a portal
+            const isOnPortal = portals.some(portal => portal[0] === enemy.worldX && portal[1] === enemy.worldY);
+
+            if (isOnPortal) {
+                // Teleport to a random portal
+                const randomPortal = portals[Math.floor(Math.random() * portals.length)];
+                enemy.worldX = randomPortal[0] + 1; // Add one to avoid infinite loop
+                enemy.worldY = randomPortal[1];
             } else {
-              // Move vertically towards the player
-              enemy.worldY += distY > 0 ? (isPoweredUp ? -2 : -1) : (isPoweredUp ? 2 : 1);
+                // Calculate the distance to the player in both dimensions
+                const distX = enemy.worldX - player.worldX;
+                const distY = enemy.worldY - player.worldY;
+
+                // Determine the axis on which to move
+                if (Math.abs(distX) > Math.abs(distY)) {
+                    // Move horizontally towards the player
+                    enemy.worldX += distX > 0 ? (isPoweredUp ? -2 : -1) : (isPoweredUp ? 2 : 1);
+                } else {
+                    // Move vertically towards the player
+                    enemy.worldY += distY > 0 ? (isPoweredUp ? -2 : -1) : (isPoweredUp ? 2 : 1);
+                }
             }
-          }
         }
-      };
-      
+    };
 
-// Run the function every second
-setInterval(updateEnemyPosition, 500);
 
-function fireAtNearestEnemy() {
-    // Find the nearest enemy within a 10-tile radius
-    let nearestEnemy = null;
-    let nearestDistance = Infinity;
-    const radius = 10;
+    // Run the function every second
+    setInterval(updateEnemyPosition, 500);
 
-    for (const enemy of enemies) {
-        const distance = Math.sqrt(Math.pow(enemy.worldX - player.worldX, 2) + Math.pow(enemy.worldY - player.worldY, 2));
-        
-        if (distance < nearestDistance && distance <= radius) {
-            nearestEnemy = enemy;
-            nearestDistance = distance;
+    function fireAtNearestEnemy() {
+        // Find the nearest enemy within a 10-tile radius
+        let nearestEnemy = null;
+        let nearestDistance = Infinity;
+        const radius = 10;
+
+        for (const enemy of enemies) {
+            const distance = Math.sqrt(Math.pow(enemy.worldX - player.worldX, 2) + Math.pow(enemy.worldY - player.worldY, 2));
+
+            if (distance < nearestDistance && distance <= radius) {
+                nearestEnemy = enemy;
+                nearestDistance = distance;
+            }
+        }
+
+        if (nearestEnemy) {
+            player.currentAction = 'attack';
+
+            // Lower the enemy's health
+            nearestEnemy.health -= 25; // Adjust the amount as needed
+
+            // Play the attack animation (animate fireball)
+            animateFireball(player.worldX, player.worldY, nearestEnemy.worldX, nearestEnemy.worldY);
+
+            // Check if the enemy is defeated
+            if (nearestEnemy.health <= 0) {
+                const index = enemies.indexOf(nearestEnemy);
+                if (index > -1) {
+                    // Remove the defeated enemy from the array
+                    enemies.splice(index, 1);
+                }
+            }
+        }
+    }
+    setInterval(fireAtNearestEnemy, 1000 / player.attackSpeed);
+
+    let lastTeleportTime = null;
+
+    function drawTeleportScreenEffect() {
+        const context = a_canvas.getContext("2d");
+        const now = Date.now();
+
+        if (lastTeleportTime === null) {
+            lastTeleportTime = now;
+        }
+
+        const elapsed = now - lastTeleportTime;
+
+        if (elapsed < 2000) {
+            const alpha = Math.abs(Math.sin((Math.PI / 2000) * elapsed));
+
+            // Layer 1: Cosmic Background
+            context.fillStyle = `rgba(${Math.floor(Math.sin(elapsed * 0.001) * 128 + 128)}, ${Math.floor(Math.cos(elapsed * 0.001) * 128 + 128)}, ${Math.floor(Math.sin(elapsed * 0.001) * 128 + 128)}, ${alpha})`;
+            context.fillRect(0, 0, a_canvas.width, a_canvas.height);
+
+            // Layer 2: Space-time Distortion
+            const gradient = context.createRadialGradient(a_canvas.width / 2, a_canvas.height / 2, 5, a_canvas.width / 2, a_canvas.height / 2, Math.min(elapsed, a_canvas.width));
+            gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            context.fillStyle = gradient;
+            context.fillRect(0, 0, a_canvas.width, a_canvas.height);
+
+            // Layer 3: Spinning Stars
+            for (let i = 0; i < 100; i++) {
+                const angle = (elapsed * 0.05 + i * Math.PI * 2 / 100) % (Math.PI * 2);
+                const x = a_canvas.width / 2 + Math.cos(angle) * (i * 4);
+                const y = a_canvas.height / 2 + Math.sin(angle) * (i * 4);
+                context.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+                context.beginPath();
+                context.arc(x, y, 2, 0, Math.PI * 2);
+                context.fill();
+            }
+
+            // Layer 4: Spiraling Wormholes
+            for (let j = 0; j < 10; j++) {
+                const angleOffset = (j * Math.PI / 5);
+                for (let i = 0; i < 50; i++) {
+                    const angle = (elapsed * 0.03 + i * Math.PI * 2 / 50 + angleOffset) % (Math.PI * 2);
+                    const x = a_canvas.width / 2 + Math.cos(angle) * i * 4;
+                    const y = a_canvas.height / 2 + Math.sin(angle) * i * 4;
+                    context.fillStyle = `rgba(${Math.floor(Math.sin(elapsed * 0.001 + j) * 128 + 128)}, ${Math.floor(Math.cos(elapsed * 0.001 + j) * 128 + 128)}, 255, ${alpha})`;
+                    context.beginPath();
+                    context.arc(x, y, 3, 0, Math.PI * 2);
+                    context.fill();
+                }
+            }
+        } else {
+            lastTeleportTime = null;
         }
     }
 
-    if (nearestEnemy) {
-        player.currentAction = 'attack';
 
-        // Lower the enemy's health
-        nearestEnemy.health -= 25;  // Adjust the amount as needed
-
-        // Play the attack animation (animate fireball)
-        animateFireball(player.worldX, player.worldY, nearestEnemy.worldX, nearestEnemy.worldY);
-
-        // Check if the enemy is defeated
-        if (nearestEnemy.health <= 0) {
-            const index = enemies.indexOf(nearestEnemy);
-            if (index > -1) {
-                // Remove the defeated enemy from the array
-                enemies.splice(index, 1);
-            }
-        }
-    }
-}
-// Call fireAtNearestEnemy every 0.5 seconds
-setInterval(fireAtNearestEnemy, 500);
 
     function gameLoop() {
-        if(!showOptionsMenu){
+        if (!showOptionsMenu) {
             graphics.drawMap();
             const [distLeftRight, distTopBot] = [(screen.numColumns - 1) / 2 + 6, (screen.numRows - 1) / 2 + 6];
             enemies.forEach(e => {
@@ -1972,9 +2190,10 @@ setInterval(fireAtNearestEnemy, 500);
                 e.screenTileY = e.worldY - player.worldY + distTopBot;
             });
             processPlayerMovement();
+            graphics.drawEnemies();
             graphics.drawSelectionBox(screen.oldSelectionBoxCoords, screen.selectionBoxCoords, 1, 'hexagon');
-            graphics.drawSelectionBox(screen.oldSelectionBoxCoords, screen.selectionBoxCoords, 1, 'triangle');
-            graphics.drawSelectionBox(screen.oldSelectionBoxCoords, screen.selectionBoxCoords);
+            //graphics.drawSelectionBox(screen.oldSelectionBoxCoords, screen.selectionBoxCoords, 1, 'triangle');
+            //graphics.drawSelectionBox(screen.oldSelectionBoxCoords, screen.selectionBoxCoords);
             graphics.drawPlayer();
             notifications.push("failed to draw player");
             graphics.drawTrees();
@@ -1983,32 +2202,36 @@ setInterval(fireAtNearestEnemy, 500);
             //graphics.drawMiniMap();
             graphics.drawInterface();
         } else {
-            try{
+            //try {
                 graphics.drawOptionsMenu();
-            } catch(error){
-                notifications.push(error);
-            }
-            
+            //} catch (error) {
+             //   notifications.push(error);
+            //}
+
         }
-        if(drawContextMenu){
-            graphics.drawContextMenu(contextMenuVars.x,contextMenuVars.y);
+        if (drawContextMenu) {
+            graphics.drawContextMenu(contextMenuVars.x, contextMenuVars.y);
         }
         graphics.drawCursor();
-        graphics.drawEnemies();
+        
         //notifications.push(player.worldX + "," + player.worldY);
         //notifications.push("player is standing on: " + map.tileMap[player.worldX][player.worldY]);
-        if(map.tileMap[player.worldX][player.worldY] == 6){
+        if (map.tileMap[player.worldX][player.worldY] == 6) {
             const randomIndex = Math.floor(Math.random() * portals.length);
             const selectedPortal = portals[randomIndex];
             player.worldX = selectedPortal[0] + 1;
             player.worldY = selectedPortal[1];
             sounds.teleport.play();
         }
-        if(1 == 2) map.tileMap[player.worldX][player.worldY] = 0; // we could leave a trail of any tile type
-        if (!player.isMoving){
-            if(player.stamina < 100){
+        if (1 == 1) map.tileMap[player.worldX][player.worldY] = 0; // we could leave a trail of any tile type
+        if (!player.isMoving) {
+            if (player.stamina < 100) {
                 player.stamina += 1;
             }
+        }
+
+        if (player.teleporting) {
+            drawTeleportScreenEffect();
         }
         requestAnimationFrame(gameLoop);
     }
