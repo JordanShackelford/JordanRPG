@@ -1615,10 +1615,11 @@ window.onload = function() {
                 player.isMoving = false;
                 screen.offsetX = screen.offsetY = 0;
             };
-            if (player.stamina > 5) {
+            if (player.stamina >= 5) {
                 player.moveSpeed = 1;
                 player.stamina -= 5;
             } else {
+                player.movementQueue = [];
                 player.moveSpeed = 0.25;
             }
             requestAnimationFrame(upd);
@@ -2273,6 +2274,7 @@ window.onload = function() {
         if (1 == 1) map.tileMap[player.worldX][player.worldY] = 0; // we could leave a trail of any tile type
         if (player.timeIdle >= 120) {
             if (player.stamina < 100) {
+                player.moveSpeed = 1;
                 player.stamina += 1;
             }
         }
