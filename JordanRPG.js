@@ -363,6 +363,7 @@ window.onload = function() {
                         context.drawImage(tileImages['grass'], x, y, tileW, tileH);
 
                         if (tileKey === 'portal') {
+                            player.movementQueue = [];
                             // Save the current context state
                             context.save();
 
@@ -1697,10 +1698,10 @@ window.onload = function() {
                 mousemove_mouseMovedDistance = 0; // Reset distance
             }
 
-            // Notify other components if the selection box has changed
-            if (JSON.stringify(screen.oldSelectionBoxCoords) !== JSON.stringify(screen.selectionBoxCoords)) {
-                triggerSelectionBoxChangedEvent();
-            }
+            // Notify other components if the selection box has changed 
+            //if (JSON.stringify(screen.oldSelectionBoxCoords) !== JSON.stringify(screen.selectionBoxCoords)) {
+            //    triggerSelectionBoxChangedEvent();
+            //}
         }
     }, false);
 
