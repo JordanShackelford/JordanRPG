@@ -758,22 +758,40 @@ window.onload = function() {
               if (Math.abs(i) <= lR && Math.abs(j) <= tB) {
                 const drawX = (i + lR) * screen.tileWidth + screen.offsetX;
                 const drawY = (j + tB) * screen.tileHeight + screen.offsetY;
-                
+          
+                // Reset shadow properties before drawing the enemy
+                context.shadowBlur = 0;
+                context.shadowColor = 'transparent';
                 context.drawImage(enemyImg, drawX, drawY, screen.tileWidth, screen.tileHeight);
-                
-                // Drawing health bars 
+          
+                // Drawing health bars based on rarity
+                switch(enemy.rarity) {
+                  case 'Rare': context.fillStyle = 'blue'; break;
+                  case 'Elite': context.fillStyle = 'gold'; break;
+                  default: context.fillStyle = 'red'; break;
+                }
                 const healthBarWidth = screen.tileWidth * (enemy.health / enemy.maxHealth);
-                context.fillStyle = 'red';
                 context.fillRect(drawX, drawY - 5, healthBarWidth, 3); 
           
-                // Drawing enemy's name above health bar
+                // Drawing enemy's name with shadow for readability
                 context.fillStyle = 'white';
                 context.font = "12px Arial";
+                context.shadowColor = 'black';
+                context.shadowBlur = 4;
                 const textWidth = context.measureText(enemy.name).width;
                 context.fillText(enemy.name, drawX + (screen.tileWidth - textWidth) / 2, drawY - 10);
+                context.shadowBlur = 0;  // Resetting shadow
+          
+                // Drawing aggro indicator if enemy is aggressive
+                if (enemy.isAggressive) {
+                  context.fillStyle = 'red';
+                  context.fillText('!', drawX + screen.tileWidth/2, drawY - 20);
+                }
               }
             }
           },
+          
+          
           
           
         drawCursor: function() {
@@ -2048,7 +2066,7 @@ window.onload = function() {
             player.lastDirectionMoved = direction;
             move(direction);
             player.timeIdle = 0;
-        } else if (player.timeIdle >= 60) {
+        } else if (player.timeIdle >= 15) {
             // Set the animationFrame based on the lastDirectionMoved
             switch (player.lastDirectionMoved) {
                 case 'east':
@@ -2223,7 +2241,6 @@ window.onload = function() {
             } catch{
                 console.log("there was an error in drawTrees")
             }
-            graphics.drawEnemies();
             graphics.drawNotifications();
             //graphics.drawMiniMap();
             graphics.drawInterface();
@@ -2254,7 +2271,7 @@ window.onload = function() {
             sounds.teleport.play();
         }
         if (1 == 1) map.tileMap[player.worldX][player.worldY] = 0; // we could leave a trail of any tile type
-        if (!player.isMoving) {
+        if (player.timeIdle >= 120) {
             if (player.stamina < 100) {
                 player.stamina += 1;
             }
