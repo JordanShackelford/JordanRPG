@@ -91,7 +91,8 @@ window.onload = function() {
             worldY: Math.floor(Math.random() * 250),
             health: 100, // Initial health
             maxHealth: 100,// Maximum health
-            name: "Pikachu"
+            name: "Pikachu",
+            isElite : 'true'
         });
         enemies[0].worldX = 150;
         enemies[0].worldY = 151;
@@ -749,38 +750,32 @@ window.onload = function() {
         drawEnemies: () => {
             const lR = Math.floor(screen.numColumns / 2);
             const tB = Math.floor(screen.numRows / 2);
-        
-            const xLowerLimit = player.worldX - lR;
-            const xUpperLimit = player.worldX + lR;
-            const yLowerLimit = player.worldY - tB;
-            const yUpperLimit = player.worldY + tB;
-        
-            const playerRelativeX = player.worldX + lR;
-            const playerRelativeY = player.worldY + tB;
-        
+          
             for (const enemy of enemies) {
-                if (enemy.worldX >= xLowerLimit && enemy.worldX <= xUpperLimit &&
-                    enemy.worldY >= yLowerLimit && enemy.worldY <= yUpperLimit) {
-        
-                    const drawX = (enemy.worldX - playerRelativeX) * screen.tileWidth + screen.offsetX;
-                    const drawY = (enemy.worldY - playerRelativeY) * screen.tileHeight + screen.offsetY;
-        
-                    context.drawImage(enemyImg, drawX, drawY, screen.tileWidth, screen.tileHeight);
-        
-                    // Improved Health Bar with color coding
-                    const healthPercentage = enemy.hp / enemy.maxHp;
-                    const healthBarWidth = healthPercentage * screen.tileWidth;
-                    context.fillStyle = healthPercentage > 0.7 ? 'green' : (healthPercentage > 0.3 ? 'yellow' : 'red');
-                    context.fillRect(drawX, drawY - 10, healthBarWidth, 5);
-                    context.strokeStyle = 'black';
-                    context.lineWidth = 1;
-                    context.strokeRect(drawX, drawY - 10, screen.tileWidth, 5);
-        
-                    // Placeholder for enemy entrance/spawn animation and hover effect
-                    // Note: This would require additional code and resources to implement.
-                }
+              const i = enemy.worldX - player.worldX;
+              const j = enemy.worldY - player.worldY;
+          
+              if (Math.abs(i) <= lR && Math.abs(j) <= tB) {
+                const drawX = (i + lR) * screen.tileWidth + screen.offsetX;
+                const drawY = (j + tB) * screen.tileHeight + screen.offsetY;
+                
+                context.drawImage(enemyImg, drawX, drawY, screen.tileWidth, screen.tileHeight);
+                
+                // Drawing health bars 
+                const healthBarWidth = screen.tileWidth * (enemy.health / enemy.maxHealth);
+                context.fillStyle = 'red';
+                context.fillRect(drawX, drawY - 5, healthBarWidth, 3); 
+          
+                // Drawing enemy's name above health bar
+                context.fillStyle = 'white';
+                context.font = "12px Arial";
+                const textWidth = context.measureText(enemy.name).width;
+                context.fillText(enemy.name, drawX + (screen.tileWidth - textWidth) / 2, drawY - 10);
+              }
             }
-        },
+          },
+          
+          
         drawCursor: function() {
             const [mX, mY] = screen.mouseCanvasCoords;
             context.drawImage(cursor, mX, mY, 100, 100);
@@ -2248,6 +2243,10 @@ window.onload = function() {
         //notifications.push(player.worldX + "," + player.worldY);
         //notifications.push("player is standing on: " + map.tileMap[player.worldX][player.worldY]);
         if (map.tileMap[player.worldX][player.worldY] == 6) {
+            player.teleporting = true;
+            setTimeout(function() {
+                player.teleporting = false;
+            }, 2000);
             const randomIndex = Math.floor(Math.random() * portals.length);
             const selectedPortal = portals[randomIndex];
             player.worldX = selectedPortal[0] + 1;
