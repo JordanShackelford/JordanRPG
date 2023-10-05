@@ -217,7 +217,9 @@ window.onload = function() {
         statusEffects: [], // Any status effects applied to the player, like "poisoned" or "stunned"
         direction: 'none',
         stamina: 100,
-        attackSpeed: 0.5
+        attackSpeed: 0.5,
+        lastDirectionMoved: 'none',
+        timeIdle: 60
     };
     player.img = new Image();
     player.img.src = "res/chrono.png";
@@ -363,7 +365,6 @@ window.onload = function() {
                         context.drawImage(tileImages['grass'], x, y, tileW, tileH);
 
                         if (tileKey === 'portal') {
-                            player.movementQueue = [];
                             // Save the current context state
                             context.save();
 
@@ -400,7 +401,7 @@ window.onload = function() {
                                 try {
                                     context.drawImage(tileImage, -tileW / 2, -tileH / 2, tileW, tileH);
                                 } catch (e) {
-                                    notifications.push('Failed to draw image:');
+                                    //notifications.push('Failed to draw image:');
                                 }
 
 
@@ -754,30 +755,32 @@ window.onload = function() {
             const yLowerLimit = player.worldY - tB;
             const yUpperLimit = player.worldY + tB;
         
+            const playerRelativeX = player.worldX + lR;
+            const playerRelativeY = player.worldY + tB;
+        
             for (const enemy of enemies) {
                 if (enemy.worldX >= xLowerLimit && enemy.worldX <= xUpperLimit &&
                     enemy.worldY >= yLowerLimit && enemy.worldY <= yUpperLimit) {
         
-                    const drawX = (enemy.worldX - player.worldX + lR) * screen.tileWidth + screen.offsetX;
-                    const drawY = (enemy.worldY - player.worldY + tB) * screen.tileHeight + screen.offsetY;
+                    const drawX = (enemy.worldX - playerRelativeX) * screen.tileWidth + screen.offsetX;
+                    const drawY = (enemy.worldY - playerRelativeY) * screen.tileHeight + screen.offsetY;
         
                     context.drawImage(enemyImg, drawX, drawY, screen.tileWidth, screen.tileHeight);
         
-                    // Draw health bar with basic style
-                    const healthBarWidth = (enemy.hp / enemy.maxHp) * screen.tileWidth;
-                    context.fillStyle = 'red';
+                    // Improved Health Bar with color coding
+                    const healthPercentage = enemy.hp / enemy.maxHp;
+                    const healthBarWidth = healthPercentage * screen.tileWidth;
+                    context.fillStyle = healthPercentage > 0.7 ? 'green' : (healthPercentage > 0.3 ? 'yellow' : 'red');
                     context.fillRect(drawX, drawY - 10, healthBarWidth, 5);
                     context.strokeStyle = 'black';
                     context.lineWidth = 1;
                     context.strokeRect(drawX, drawY - 10, screen.tileWidth, 5);
+        
+                    // Placeholder for enemy entrance/spawn animation and hover effect
+                    // Note: This would require additional code and resources to implement.
                 }
             }
         },
-        
-        
-
-
-
         drawCursor: function() {
             const [mX, mY] = screen.mouseCanvasCoords;
             context.drawImage(cursor, mX, mY, 100, 100);
@@ -883,7 +886,7 @@ window.onload = function() {
             try {
                 drawItemSlots(context, iX, iY, sW, sH, sp, icons, qtys);
             } catch (e) {
-                notifications.push("failed to draw item slots");
+                //notifications.push("failed to draw item slots");
             }
             renderInventorySlots(context, tG, slots, iX, iY, sW, sH, gameInterface);
         },
@@ -1715,6 +1718,7 @@ window.onload = function() {
     });
 
     a_canvas.addEventListener('click', e => {
+        drawContextMenu = false;
         const [x, y] = math.calculateCanvasCoordsFromWindowCoords(e.clientX, e.clientY);
         const tileX = Math.floor(x / screen.tileWidth);
         const tileY = Math.floor(y / screen.tileHeight);
@@ -2044,8 +2048,30 @@ window.onload = function() {
     };
 
     function processPlayerMovement() {
-        if (player.movementQueue.length > 0 && !player.isMoving) move(player.movementQueue.shift());
+        if (player.movementQueue.length > 0 && !player.isMoving) {
+            var direction = player.movementQueue.shift();
+            player.lastDirectionMoved = direction;
+            move(direction);
+            player.timeIdle = 0;
+        } else if (player.timeIdle >= 60) {
+            // Set the animationFrame based on the lastDirectionMoved
+            switch (player.lastDirectionMoved) {
+                case 'east':
+                    player.animationFrame = 6;
+                    break;
+                case 'south':
+                    player.animationFrame = 0;
+                    break;
+                case 'west':
+                    player.animationFrame = 8;
+                    break;
+                case 'north':
+                    player.animationFrame = 14;
+                    break;
+            }
+        }
     }
+    
     window.addEventListener("keydown", handleKeyDown, false);
     sounds.music.play();
 
@@ -2183,6 +2209,7 @@ window.onload = function() {
 
 
     function gameLoop() {
+        player.timeIdle++;
         if (!showOptionsMenu) {
             graphics.drawMap();
             const [distLeftRight, distTopBot] = [(screen.numColumns - 1) / 2 + 6, (screen.numRows - 1) / 2 + 6];
@@ -2196,8 +2223,11 @@ window.onload = function() {
             //graphics.drawSelectionBox(screen.oldSelectionBoxCoords, screen.selectionBoxCoords, 1, 'triangle');
             //graphics.drawSelectionBox(screen.oldSelectionBoxCoords, screen.selectionBoxCoords);
             graphics.drawPlayer();
-            notifications.push("failed to draw player");
-            graphics.drawTrees();
+            try{
+                graphics.drawTrees();
+            } catch{
+                console.log("there was an error in drawTrees")
+            }
             graphics.drawEnemies();
             graphics.drawNotifications();
             //graphics.drawMiniMap();
@@ -2234,10 +2264,19 @@ window.onload = function() {
         if (player.teleporting) {
             drawTeleportScreenEffect();
         }
+
+        notifications.push(player.animationFrame);
         requestAnimationFrame(gameLoop);
+
+
     }
 
     // Start the game loop
-    requestAnimationFrame(gameLoop);
+    try{
+        requestAnimationFrame(gameLoop);
+    } catch{
+
+    }
+    
 
 }
